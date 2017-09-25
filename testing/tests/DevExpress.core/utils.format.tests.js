@@ -114,4 +114,7 @@ QUnit.test("percent format parsing", function(assert) {
     assert.strictEqual(parser("10.15%"), 0.1015, "parse float number with 2 digits");
     assert.strictEqual(parser("10.0%"), 0.1, "parse float number with 1 digit");
     assert.strictEqual(parser("10%"), null, "value without float part should be incorrect");
+    assert.strictEqual(parser("-10.15%"), -0.1015, "parse negative float number with 2 digits");
+    assert.strictEqual(parser("-10.0%"), -0.1, "parse negative float number with 1 digit");
+    assert.strictEqual(parser("-10%"), null, "negative value without float part should be incorrect");
 });
