@@ -2,10 +2,10 @@
 
 var FLOAT_SEPARATOR = ".";
 
-var CHARS_TO_ESCAPE_REGEXP = /([\\\/\.\*\+\?\|\(\)\[\]\{\}])/g;
-
 function escapeFormat(formatString) {
-    return formatString.replace(CHARS_TO_ESCAPE_REGEXP, "\\$1");
+    var charsToEscape = /([\\\/\.\*\+\?\|\(\)\[\]\{\}])/g;
+
+    return formatString.replace(charsToEscape, "\\$1");
 }
 
 function getIntegerPartRegExp(formatString) {
