@@ -218,21 +218,19 @@ var commonIndicator = {
     /**
 	* @name commonIndicator_horizontalOrientation
 	* @publicName horizontalOrientation
-	* @type string
+	* @type Enums.HorizontalEdge
 	* @default 'right' @for value_indicators
 	* @default 'left' @for subvalue_indicators
-	* @acceptValues 'left' | 'right'
-	* @propertyOf linearRangeBar
+		* @propertyOf linearRangeBar
 	*/
     horizontalOrientation: 'right',
     /**
 	* @name commonIndicator_verticalOrientation
 	* @publicName verticalOrientation
-	* @type string
+	* @type Enums.VerticalEdge
 	* @default 'bottom' @for value_indicators
 	* @default 'top' @for subvalue_indicators
-	* @acceptValues 'top' | 'bottom'
-	* @propertyOf linearRangeBar
+		* @propertyOf linearRangeBar
 	*/
     verticalOrientation: 'bottom'
 };
@@ -364,7 +362,7 @@ var linearRectangle = {
 	* @name linearRectangle_offset
 	* @publicName offset
     * @type number
-	* @default 10 @for value_and_subvalue_indicators
+	* @default 10 @for value_indicators|subvalue_indicators
 	* @inheritdoc
 	*/
     offset: 10
@@ -382,7 +380,7 @@ var linearCircle = {
 	* @name linearCircle_offset
 	* @publicName offset
     * @type number
-	* @default 10 @for value_and_subvalue_indicators
+	* @default 10 @for value_indicators|subvalue_indicators
 	* @inheritdoc
 	*/
     offset: 10
@@ -408,7 +406,7 @@ var linearRhombus = {
 	* @name linearRhombus_offset
 	* @publicName offset
     * @type number
-	* @default 10 @for value_and_subvalue_indicators
+	* @default 10 @for value_indicators|subvalue_indicators
 	* @inheritdoc
 	*/
     offset: 10
@@ -426,7 +424,7 @@ var linearRangeBar = {
 	* @name linearRangeBar_offset
 	* @publicName offset
     * @type number
-	* @default 10 @for value_and_subvalue_indicators
+	* @default 10 @for value_indicators|subvalue_indicators
 	* @inheritdoc
 	*/
     offset: 10
@@ -460,7 +458,7 @@ var linearTriangleMarker = {
 	* @name linearTriangleMarker_offset
 	* @publicName offset
     * @type number
-	* @default 10 @for value_and_subvalue_indicators
+	* @default 10 @for value_indicators|subvalue_indicators
 	* @inheritdoc
 	*/
     offset: 10

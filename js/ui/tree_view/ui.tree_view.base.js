@@ -150,9 +150,8 @@ var TreeViewBase = HierarchicalCollectionWidget.inherit({
             /**
             * @name dxTreeViewOptions_dataStructure
             * @publicName dataStructure
-            * @type string
+            * @type Enums.TreeViewDataStructure
             * @default 'tree'
-            * @acceptValues 'tree'|'plain'
             */
             dataStructure: "tree",
 
@@ -191,8 +190,7 @@ var TreeViewBase = HierarchicalCollectionWidget.inherit({
             /**
              * @name dxTreeViewOptions_showCheckBoxesMode
              * @publicName showCheckBoxesMode
-             * @type string
-             * @acceptValues 'none'|'normal'|'selectAll'
+             * @type Enums.TreeViewCheckBoxMode
              * @default 'none'
              */
             showCheckBoxesMode: "none",
@@ -212,6 +210,7 @@ var TreeViewBase = HierarchicalCollectionWidget.inherit({
             * @type function(e)
             * @type_function_param1 e:object
             * @type_function_param1_field7 node:dxTreeViewNode
+            * @type_function_param1_field8 itemElement:dxElement
             * @action
             */
             onItemSelectionChanged: null,
@@ -295,9 +294,8 @@ var TreeViewBase = HierarchicalCollectionWidget.inherit({
             /**
             * @name dxTreeViewOptions_scrollDirection
             * @publicName scrollDirection
-            * @type string
+            * @type Enums.ScrollDirection
             * @default "vertical"
-            * @acceptValues 'vertical'|'horizontal'|'both'
             */
             scrollDirection: "vertical",
 
@@ -322,9 +320,8 @@ var TreeViewBase = HierarchicalCollectionWidget.inherit({
             /**
              * @name dxTreeViewOptions_selectionMode
              * @publicName selectionMode
-             * @type string
+             * @type Enums.NavSelectionMode
              * @default "multiple"
-             * @acceptValues "single"|"multiple"
              */
             selectionMode: "multiple",
 
@@ -351,10 +348,6 @@ var TreeViewBase = HierarchicalCollectionWidget.inherit({
             * @name dxTreeViewOptions_onSelectionChanged
             * @publicName onSelectionChanged
             * @extends Action
-            * @type function(e)
-            * @type_function_param1 e:object
-            * @type_function_param1_field4 addedItems:Array<any>
-            * @type_function_param1_field5 removedItems:Array<any>
             * @action
             * @inheritdoc
             */
@@ -480,7 +473,8 @@ var TreeViewBase = HierarchicalCollectionWidget.inherit({
             * @deprecated dxTreeViewOptions_onItemSelectionChanged
             * @type function(e)
             * @type_function_param1 e:object
-            * @type_function_param1_field7 node:dxTreeViewNode
+            * @type_function_param1_field7 itemElement:dxElement
+            * @type_function_param1_field8 node:dxTreeViewNode
             * @action
             */
             "onItemSelected": { since: "16.1", alias: "onItemSelectionChanged" }

@@ -39,6 +39,7 @@ var COLUMN_CHOOSER_CLASS = "column-chooser",
                     allowHiding: column.allowHiding,
                     expanded: true,
                     id: column.index,
+                    disabled: column.allowHiding === false,
                     parentId: isDefined(column.ownerBand) ? column.ownerBand : null
                 };
 
@@ -414,8 +415,7 @@ module.exports = {
                 /**
                  * @name GridBaseOptions_columnChooser_mode
                  * @publicName mode
-                 * @type string
-                 * @acceptValues "dragAndDrop" | "select"
+                 * @type Enums.GridColumnChooserMode
                  * @default "dragAndDrop"
                  */
                 mode: "dragAndDrop",

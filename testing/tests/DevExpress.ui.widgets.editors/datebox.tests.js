@@ -342,8 +342,11 @@ QUnit.test("T266206 - validation should be correct when max value is chosen", fu
 });
 
 QUnit.test("T278148 - picker type should be 'rollers' if the real device is phone in generic theme", function(assert) {
-    var realDevice = devices.real();
-    devices.real({ platform: "generic", deviceType: "phone" });
+    var realDevice = devices.real(),
+        currentDevice = devices.current();
+
+    devices.real({ deviceType: "phone", platform: "android", version: [4, 3] });
+    devices.current({ platform: "generic" });
 
     try {
         var dateBox = $("<div>").dxDateBox({
@@ -352,6 +355,7 @@ QUnit.test("T278148 - picker type should be 'rollers' if the real device is phon
         assert.equal(dateBox.option("pickerType"), "rollers", "the 'pickerType' option is correct");
     } finally {
         devices.real(realDevice);
+        devices.current(currentDevice);
     }
 });
 
@@ -1105,17 +1109,19 @@ QUnit.test("pickerType should be 'native' on android >= 4.4 (Q588373, Q588012)",
         return true;
     };
 
-    var originalDevice;
+    var originalDevice = devices.real(),
+        currentDevice = devices.current();
 
     try {
-        originalDevice = devices.real();
         devices.real({ platform: "android", deviceType: "phone", version: [4, 4, 2], android: true });
+        devices.current({ platform: "android" });
 
         var dateBox = $("#dateBoxWithPicker").dxDateBox().dxDateBox("instance");
         assert.ok(dateBox.option("pickerType") === "native");
     } finally {
         support.inputType = this.originalInputType;
         devices.real(originalDevice);
+        devices.current(currentDevice);
     }
 });
 
@@ -1487,8 +1493,11 @@ QUnit.test("correct value in input should mark datebox as valid but keep text", 
 });
 
 QUnit.test("calendar picker should be used on generic device by default and 'type' is 'date'", function(assert) {
-    var currentDevice = devices.current();
-    devices.current({ platform: "generic", deviceType: "desktop" });
+    var currentDevice = devices.current(),
+        realDevice = devices.real();
+
+    devices.real({ platform: "generic", deviceType: "desktop", phone: false });
+    devices.current({ platform: "generic" });
 
     try {
         var $dateBox = $("#dateBox").dxDateBox(),
@@ -1498,6 +1507,7 @@ QUnit.test("calendar picker should be used on generic device by default and 'typ
         assert.equal(instance._strategy.NAME, "Calendar");
     } finally {
         devices.current(currentDevice);
+        devices.real(realDevice);
     }
 });
 

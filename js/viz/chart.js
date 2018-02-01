@@ -12,6 +12,7 @@ var noop = require("../core/utils/common").noop,
     AdvancedChart = require("./chart_components/advanced_chart").AdvancedChart,
     scrollBarModule = require("./chart_components/scroll_bar"),
     crosshairModule = require("./chart_components/crosshair"),
+    rangeModule = require("./translators/range"),
     DEFAULT_PANE_NAME = "default",
     DEFAULT_PANES = [{
         name: DEFAULT_PANE_NAME,
@@ -576,6 +577,10 @@ var dxChart = AdvancedChart.inherit({
 
                     range.min = _isDefined(seriesRange.min) ? (range.min < seriesRange.min ? range.min : seriesRange.min) : range.min;
                     range.max = _isDefined(seriesRange.max) ? (range.max > seriesRange.max ? range.max : seriesRange.max) : range.max;
+                    if(s.showZero) {
+                        range = new rangeModule.Range(range);
+                        range.correctValueZeroLevel();
+                    }
                     return range;
                 }, {});
                 if(_isDefined(viewport.min) && _isDefined(viewport.max)) {
@@ -1102,8 +1107,8 @@ var dxChart = AdvancedChart.inherit({
             zoomArg = axis.zoom(min, max, gesturesUsed);
         });
 
-        that._zoomMinArg = zoomArg.min;
-        that._zoomMaxArg = zoomArg.max;
+        that._zoomMinArg = zoomArg && zoomArg.min;
+        that._zoomMaxArg = zoomArg && zoomArg.max;
         that._notApplyMargins = gesturesUsed; //TODO
 
         that._doRender({

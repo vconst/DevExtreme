@@ -9,7 +9,6 @@ var $ = require("../../core/renderer"),
     typeUtils = require("../../core/utils/type"),
     extend = require("../../core/utils/extend").extend,
     focused = require("../widget/selectors").focused,
-    deepExtendArraySafe = require("../../core/utils/object").deepExtendArraySafe,
     equalByValue = commonUtils.equalByValue,
     messageLocalization = require("../../localization/message"),
     Button = require("../button"),
@@ -27,6 +26,7 @@ var INVALIDATE_CLASS = "invalid",
     INVALID_MESSAGE_ALWAYS_CLASS = "dx-invalid-message-always",
     REVERT_BUTTON_CLASS = "dx-revert-button",
     CELL_HIGHLIGHT_OUTLINE = "dx-highlight-outline",
+    VALIDATOR_CLASS = "validator",
 
     INSERT_INDEX = "__DX_INSERT_INDEX__",
     PADDING_BETWEEN_TOOLTIPS = 2,
@@ -212,6 +212,7 @@ var ValidatingController = modules.Controller.inherit((function() {
                 editData = editingController._editData[editIndex];
 
                 var useDefaultValidator = $container && $container.hasClass("dx-widget");
+                $container && $container.addClass(that.addWidgetPrefix(VALIDATOR_CLASS));
 
                 var validator = new Validator($container || {}, {
                     name: column.caption,
@@ -222,7 +223,7 @@ var ValidatingController = modules.Controller.inherit((function() {
                         applyValidationResults: defaultValidationResult
                     },
                     dataGetter: function() {
-                        return deepExtendArraySafe(deepExtendArraySafe({}, editData.oldData), editData.data);
+                        return gridCoreUtils.createObjectWithChanges(editData.oldData, editData.data);
                     }
                 });
 
@@ -646,7 +647,7 @@ module.exports = {
                 focus: function($element, hideBorder) {
                     var that = this,
                         $focus = $element && $element.closest(that._getFocusCellSelector()),
-                        validator = $focus && ($focus.data("dxValidator") || $element.find(".dx-validator").eq(0).data("dxValidator")),
+                        validator = $focus && ($focus.data("dxValidator") || $element.find("." + that.addWidgetPrefix(VALIDATOR_CLASS)).eq(0).data("dxValidator")),
                         rowOptions = $focus && $focus.closest(".dx-row").data("options"),
                         editData = rowOptions ? that.getController("editing").getEditDataByKey(rowOptions.key) : null,
                         validationResult,

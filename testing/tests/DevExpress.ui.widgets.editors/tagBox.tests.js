@@ -2958,6 +2958,46 @@ QUnit.testInActiveWindow("input should be focused after click on field (searchEn
     assert.ok($input.is(":focus"), "input was focused");
 });
 
+QUnit.test("Select all' checkBox is checked when filtered items are selected only", function(assert) {
+    var items = ["111", "222", "333"],
+        $element = $("#tagBox").dxTagBox({
+            searchTimeout: 0,
+            items: items,
+            searchEnabled: true,
+            showSelectionControls: true,
+            selectAllMode: "allPages"
+        }),
+        instance = $element.dxTagBox("instance"),
+        $input = $element.find("input");
+
+    keyboardMock($input).type("1");
+    $input.trigger("focusout");
+    $(".dx-list-item").trigger("dxclick");
+
+    assert.equal(instance.option("selectedItems").length, 1, "selected items count");
+});
+
+QUnit.test("filter should not be cleared when no focusout and no item selection happened", function(assert) {
+    var items = ["111", "222", "333"],
+        $element = $("#tagBox").dxTagBox({
+            searchTimeout: 0,
+            items: items,
+            searchEnabled: true,
+            opened: true,
+            showSelectionControls: true,
+            selectAllMode: "allPages"
+        }),
+        $input = $element.find("input");
+
+    var keyboard = keyboardMock($input);
+    keyboard.type("1");
+    keyboard.press("esc");
+
+    $input.trigger("dxclick");
+
+    assert.equal($(".dx-item").length, 1, "items count of list");
+    assert.equal($.trim($(".dx-item").first().text()), "111", "value of first item");
+});
 
 QUnit.module("popup position and size", moduleSetup);
 
@@ -3884,11 +3924,13 @@ QUnit.test("focusOut should be prevented when tagContainer clicked - T454876", f
 
     var $inputWrapper = this.$element.find(".dx-dropdowneditor-input-wrapper");
 
-    $inputWrapper.on("dxpointerdown", function(e) {
-        assert.ok(e.isDefaultPrevented(), "pointerdown was prevented and lead to focusout prevent");
+    $inputWrapper.on("mousedown", function(e) {
+        //note: you should not prevent pointerdown because it will prevent click on ios real devices
+        //you must use preventDefault in code because it is possible to use .on('focusout', handler) instead of onFocusOut option
+        assert.ok(e.isDefaultPrevented(), "mousedown was prevented and lead to focusout prevent");
     });
 
-    $inputWrapper.trigger("dxpointerdown");
+    $inputWrapper.trigger("mousedown");
 });
 
 
@@ -4348,6 +4390,34 @@ QUnit.test("Select All should use cache", function(assert) {
     //assert
     assert.equal(keyGetterCounter, 144, "key getter call count");
     assert.equal(isValueEqualsSpy.callCount, 0, "_isValueEquals is not called");
+});
+
+QUnit.test("Unnecessary a load calls do not happen of custom store when item is selected", function(assert) {
+    var loadCallCounter = 0,
+        store = new CustomStore({
+            key: "id",
+            loadMode: "raw",
+            load: function() {
+                loadCallCounter++;
+                return [{ id: 1, text: "item 1" }, { id: 2, text: "item 2" }];
+            }
+        });
+
+    $("#tagBox").dxTagBox({
+        dataSource: {
+            store: store
+        },
+        valueExpr: "id",
+        displayExpr: "text",
+        opened: true,
+        hideSelectedItems: true
+    });
+
+    var $item = $(".dx-list-item").eq(0);
+
+    $item.trigger("dxclick");
+
+    assert.equal(loadCallCounter, 1);
 });
 
 QUnit.module("deprecated options");

@@ -123,9 +123,8 @@ var DateBox = DropDownEditor.inherit({
             /**
             * @name dxDateBoxOptions_type
             * @publicName type
-            * @type string
+            * @type Enums.DateBoxType
             * @default "date"
-            * @acceptValues 'date'|'time'|'datetime'
             */
             type: "date",
 
@@ -209,18 +208,16 @@ var DateBox = DropDownEditor.inherit({
             /**
             * @name dxDateBoxOptions_maxZoomLevel
             * @publicName maxZoomLevel
-            * @type string
+            * @type Enums.CalendarZoomLevel
             * @default 'month'
-            * @acceptValues 'month'|'year'|'decade'|'century'
             */
             maxZoomLevel: "month",
 
             /**
             * @name dxDateBoxOptions_minZoomLevel
             * @publicName minZoomLevel
-            * @type string
+            * @type Enums.CalendarZoomLevel
             * @default 'century'
-            * @acceptValues 'month'|'year'|'decade'|'century'
             */
             minZoomLevel: "century",
 
@@ -236,11 +233,10 @@ var DateBox = DropDownEditor.inherit({
             /**
             * @name dxDateBoxOptions_pickerType
             * @publicName pickerType
-            * @type string
-            * @default 'native'
-            * @acceptValues 'native'|'calendar'|'rollers'|'list'
+            * @type Enums.DateBoxPickerType
+            * @default 'calendar'
             */
-            pickerType: PICKER_TYPE["native"],
+            pickerType: PICKER_TYPE["calendar"],
 
             /**
             * @name dxDateBoxOptions_invalidDateMessage
@@ -299,6 +295,12 @@ var DateBox = DropDownEditor.inherit({
             {
                 device: { platform: "ios" },
                 options: {
+                    /**
+                    * @name dxDateBoxOptions_pickerType
+                    * @publicName pickerType
+                    * @default 'native' @for iOS
+                    */
+                    pickerType: PICKER_TYPE.native,
                     showPopupTitle: true
                 }
             },
@@ -307,6 +309,12 @@ var DateBox = DropDownEditor.inherit({
                     return device.platform === "android";
                 },
                 options: {
+                    /**
+                    * @name dxDateBoxOptions_pickerType
+                    * @publicName pickerType
+                    * @default 'native' @for Android
+                    */
+                    pickerType: PICKER_TYPE.native,
                     buttonsLocation: "bottom after"
                 }
             },
@@ -330,17 +338,16 @@ var DateBox = DropDownEditor.inherit({
                 device: function() {
                     var realDevice = devices.real(),
                         platform = realDevice.platform,
-                        version = realDevice.version;
-
-                    return platform === "generic" || platform === "win" || (platform === "android" && compareVersions(version, [4, 4]) < 0);
+                        version = realDevice.version,
+                        isPhone = realDevice.phone;
+                    return platform === "generic" && isPhone || platform === "win" && isPhone || (platform === "android" && compareVersions(version, [4, 4]) < 0);
                 },
                 options: {
                     /**
                     * @name dxDateBoxOptions_pickerType
                     * @publicName pickerType
-                    * @default 'rollers' @for android_below_version_4.4
-                    * @default 'rollers' @for desktop
-                    * @default 'rollers' @for windows
+                    * @default 'rollers' @for Android_below_version_4.4
+                    * @default 'rollers' @for mobile_devices
                     */
                     pickerType: PICKER_TYPE.rollers
                 }
@@ -351,30 +358,7 @@ var DateBox = DropDownEditor.inherit({
                     deviceType: "desktop"
                 },
                 options: {
-                    /**
-                    * @name dxDateBoxOptions_pickerType
-                    * @publicName pickerType
-                    * @default 'calendar' @for generic_desktop
-                    */
-                    pickerType: PICKER_TYPE.calendar,
                     buttonsLocation: "bottom after"
-                }
-            },
-            {
-                device: function() {
-                    var realDevice = devices.real(),
-                        platform = realDevice.platform,
-                        isPhone = realDevice.phone;
-
-                    return platform === "win" && !isPhone;
-                },
-                options: {
-                    /**
-                    * @name dxDateBoxOptions_pickerType
-                    * @publicName pickerType
-                    * @default 'calendar' @for no-phone_windows
-                    */
-                    pickerType: PICKER_TYPE.calendar
                 }
             }
         ]);

@@ -24,11 +24,7 @@ var $ = require("../../../core/renderer"),
     PI_DIV_180 = mathPI / 180,
     _parseInt = parseInt,
     SHARPING_CORRECTION = 0.5,
-    ARC_COORD_PREC = 5,
-    WAVED_LINE_LENGTH = 24,
-    WAVED_LINE_TOP = 0,
-    WAVED_LINE_CENTER = 2,
-    WAVED_LINE_BOTTOM = 4;
+    ARC_COORD_PREC = 5;
 
 var pxAddingExceptions = {
     "column-count": true,
@@ -743,7 +739,7 @@ function parseMultiline(text) {
         i = 0,
         items = [];
     for(; i < texts.length; i++) {
-        items.push({ value: texts[i], height: 0 });
+        items.push({ value: texts[i].trim(), height: 0 });
     }
     return items;
 }
@@ -889,7 +885,7 @@ function createTextNodes(wrapper, text, isStroked) {
     } else if(/\n/g.test(text)) {
         items = parseMultiline(text);
     } else if(isStroked) {
-        items = [{ value: text, height: 0 }];
+        items = [{ value: text.trim(), height: 0 }];
     }
     if(items) {
         if(items.length) {     // T227388
@@ -1071,6 +1067,11 @@ function SvgElement(renderer, tagName, type) {
         that.type = type || "line";
     }
 }
+
+function removeFuncIriCallback(callback) {
+    fixFuncIriCallbacks.remove(callback);
+}
+
 exports.SvgElement = SvgElement;
 
 SvgElement.prototype = {
@@ -1081,19 +1082,33 @@ SvgElement.prototype = {
     },
 
     _addFixIRICallback: function() {
-        var that = this;
-        that._fixFuncIri = function() {
-            fixFuncIri(that, "fill");
-            fixFuncIri(that, "clip-path");
-            fixFuncIri(that, "filter");
-        };
-        that._fixFuncIri.renderer = that.renderer;
-        fixFuncIriCallbacks.add(that._fixFuncIri);
+        var that = this,
+            fn = function() {
+                fixFuncIri(that, "fill");
+                fixFuncIri(that, "clip-path");
+                fixFuncIri(that, "filter");
+            };
+
+        that.element._fixFuncIri = fn;
+        fn.renderer = that.renderer;
+        fixFuncIriCallbacks.add(fn);
         that._addFixIRICallback = function() {};
     },
 
     dispose: function() {
-        fixFuncIriCallbacks.remove(this._fixFuncIri);
+        var clearChildren = function(element) {
+            var i;
+
+            for(i = 0; i < element.childNodes.length; i++) {
+                removeFuncIriCallback(element.childNodes[i]._fixFuncIri);
+                clearChildren(element.childNodes[i]);
+            }
+        };
+
+        removeFuncIriCallback(this.element._fixFuncIri);
+        clearChildren(this.element);
+
+
         this._getJQElement().remove();
         return this;
     },
@@ -1714,64 +1729,6 @@ Renderer.prototype = {
             }
             return point;
         });
-    },
-
-    linePattern: function(options) {
-        var that = this,
-            id = getNextDefsSvgId(),
-            size = options.size,
-            strokeWidth = 1,
-            attr = {
-                "stroke-width": strokeWidth,
-                stroke: options.borderColor,
-                sharp: !options.isWaved ? options.isHorizontal ? "h" : "v" : undefined
-            },
-            elements = [],
-            lineParams = options.isWaved ? {
-                points: [0, 2,
-                    WAVED_LINE_LENGTH / 4, WAVED_LINE_TOP,
-                    WAVED_LINE_LENGTH / 4, WAVED_LINE_TOP,
-                    WAVED_LINE_LENGTH / 2, WAVED_LINE_CENTER,
-                    3 * WAVED_LINE_LENGTH / 4, WAVED_LINE_BOTTOM,
-                    3 * WAVED_LINE_LENGTH / 4, WAVED_LINE_BOTTOM,
-                    WAVED_LINE_LENGTH, WAVED_LINE_CENTER],
-                type: "bezier",
-                width: WAVED_LINE_LENGTH / options.canvasLength,
-                maxSize: WAVED_LINE_BOTTOM + size
-            } : {
-                points: [0, 0, size, 0],
-                type: "line",
-                width: size / options.canvasLength,
-                maxSize: size
-            },
-            line = that._createElement("pattern", {
-                id: id,
-                width: options.isHorizontal ? 1 : lineParams.width,
-                height: options.isHorizontal ? lineParams.width : 1
-            }).append(that._defs);
-
-        elements.push(that.path(that._getPointsWithYOffset(lineParams.points, size / 2), lineParams.type)
-            .attr({ stroke: options.color, "stroke-width": size, "stroke-linecap": "round" }));
-        elements.push(that.path(that._getPointsWithYOffset(lineParams.points, 0), lineParams.type).attr(attr));
-        elements.push(that.path(that._getPointsWithYOffset(lineParams.points, size), lineParams.type).attr(attr));
-
-        if(options.isHorizontal) {
-            elements.forEach(function(element) {
-                element.rotate(90, lineParams.maxSize / 2, lineParams.maxSize / 2);
-            });
-        }
-        elements.forEach(function(element) {
-            element.append(line);
-        });
-
-        line.id = id;
-        line.size = lineParams.maxSize + strokeWidth * 2;
-
-        ///#DEBUG
-        line.elements = elements;
-        ///#ENDDEBUG
-
-        return line;
     },
 
     //appended automatically

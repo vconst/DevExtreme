@@ -550,6 +550,47 @@ QUnit.test("Check grouping context menu operability", function(assert) {
     clock.restore();
 });
 
+//T315857
+QUnit.test("Editing should work with classes as data objects", function(assert) {
+    //arrange
+    function DataItem(id, text) {
+        this.id = id;
+        this.text = text;
+    }
+    Object.defineProperty(DataItem.prototype, "ID", {
+        configurable: true,
+        enumerable: false,
+        get: function() { return this.id; },
+        set: function(value) { this.id = value; }
+    });
+    Object.defineProperty(DataItem.prototype, "Text", {
+        configurable: true,
+        enumerable: false,
+        get: function() { return this.text; },
+        set: function(value) { this.text = value; }
+    });
+    var dataItem0 = new DataItem(0, "text0"),
+        dataItem1 = new DataItem(1, "text1"),
+        dataGrid = $("#dataGrid").dxDataGrid({
+            loadingTimeout: undefined,
+            columns: ["ID", "Text"],
+            dataSource: {
+                store: [ dataItem0, dataItem1 ]
+            },
+            editing: { allowUpdating: true, mode: "batch" }
+        }).dxDataGrid("instance");
+
+    // act
+    dataGrid.cellValue(1, 1, "test");
+
+    // assert
+    var rows = dataGrid.getVisibleRows();
+    assert.equal(rows.length, 2);
+    assert.equal(rows[1].data.ID, 1);
+    assert.equal(rows[1].data.Text, "test");
+    assert.deepEqual(rows[1].values, [1, "test"]);
+});
+
 QUnit.test("Group panel should set correct 'max-width' after clear grouping", function(assert) {
     var clock = sinon.useFakeTimers(),
         dataGrid = $("#dataGrid").dxDataGrid({
@@ -5125,6 +5166,39 @@ QUnit.test("pager.visible change", function(assert) {
     assert.ok($("#dataGrid").find(".dx-datagrid-rowsview").height() > rowsViewHeight, "rowsView height updated");
 });
 
+//T121445
+QUnit.test("pager light-mode should be correct after change pageSize", function(assert) {
+    //arrange, act
+    var data = [];
+    for(var i = 0; i < 11; ++i) {
+        data.push({ value: i });
+    }
+    var dataGrid = createDataGrid({
+        width: 250,
+        loadingTimeout: undefined,
+        dataSource: data,
+        pager: {
+            allowedPageSizes: [2, 6],
+            showInfo: true,
+            showNavigationButtons: true,
+            showPageSizeSelector: true,
+            visible: true
+        },
+        paging: {
+            pageSize: 6
+        }
+    });
+
+    //assert
+    assert.notOk($("#dataGrid .dx-pager").hasClass("dx-light-mode"));
+
+    //act
+    dataGrid.option("paging.pageSize", 2);
+    dataGrid.option("paging.pageSize", 6);
+
+    //assert
+    assert.notOk($("#dataGrid .dx-pager").hasClass("dx-light-mode"), "is not light-mode");
+});
 
 QUnit.test("scrolling change", function(assert) {
     //arrange, act

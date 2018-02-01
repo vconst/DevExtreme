@@ -120,9 +120,8 @@ var Scrollable = DOMComponent.inherit({
             /**
             * @name dxScrollableOptions_direction
             * @publicName direction
-            * @type string
+            * @type Enums.ScrollDirection
             * @default "vertical"
-            * @acceptValues 'vertical'|'horizontal'|'both'
             */
             direction: VERTICAL,
 
@@ -259,7 +258,7 @@ var Scrollable = DOMComponent.inherit({
             $wrapper = this._$wrapper = $("<div>").addClass(SCROLLABLE_WRAPPER_CLASS),
             $content = this._$content = $("<div>").addClass(SCROLLABLE_CONTENT_CLASS);
 
-        if(beforeActivateExists) {
+        if(beforeActivateExists && browser.msie && browser.version < 12) {
             eventsEngine.on($element, eventUtils.addNamespace("beforeactivate", SCROLLABLE), function(e) {
                 if(!$(e.target).is(selectors.focusable)) {
                     e.preventDefault();

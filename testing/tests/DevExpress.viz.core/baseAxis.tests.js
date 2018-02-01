@@ -304,7 +304,10 @@ QUnit.test("Disposing", function(assert) {
 
     this.axis.dispose();
 
-    assert.ok(renderer.g.getCall(3).returnValue.dispose.called, "dispose is called");
+    assert.ok(renderer.g.getCall(0).returnValue.dispose.called, "axis group was cleared");
+    assert.ok(renderer.g.getCall(1).returnValue.dispose.called, "strips group was cleared");
+    assert.ok(renderer.g.getCall(3).returnValue.dispose.called, "elements group was cleared");
+    assert.ok(renderer.g.getCall(10).returnValue.dispose.called, "breaks group was cleared");
 });
 
 QUnit.test("calculateInterval - returns absolute difference of two numbers", function(assert) {
@@ -690,6 +693,22 @@ QUnit.module("Zoom", {
         environment.afterEach.call(this);
     },
     updateOptions: environment.updateOptions
+});
+
+QUnit.test("hold min/max for single point series", function(assert) {
+    var businessRange;
+    this.updateOptions({
+        tick: {
+            visible: true
+        }
+    });
+
+    this.axis.setBusinessRange({ min: 4, max: 4, minVisible: 3.1, maxVisible: 4.9 });
+    this.generatedTicks = [3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8];
+    this.axis.createTicks(this.canvas);
+    businessRange = this.axis.getTranslator().getBusinessRange();
+    assert.equal(businessRange.min, 4, "min");
+    assert.equal(businessRange.max, 4, "max");
 });
 
 QUnit.test("range min and max are not defined", function(assert) {
@@ -1704,6 +1723,34 @@ QUnit.test("Do not calculate any margin for discrete axis", function(assert) {
         expectedRange: {
             categories: ["a", "b", "c", "d", "e"]
         }
+    });
+});
+
+QUnit.test("Do not calculate any margin for semidiscrete axis", function(assert) {
+    this.testMargins(assert, {
+        options: {
+            type: "semidiscrete",
+            dataType: "numeric",
+            minRange: 1,
+            valueMarginsEnabled: true
+        },
+        marginOptions: {
+            checkInterval: true
+        },
+        range: {
+            min: 1,
+            max: 2,
+            interval: 1
+        },
+        ticks: [0, 1, 2],
+        expectedRange: {
+            min: 0,
+            max: 2,
+            minVisible: 0,
+            maxVisible: 2,
+            interval: 1
+        },
+        isArgumentAxis: true
     });
 });
 

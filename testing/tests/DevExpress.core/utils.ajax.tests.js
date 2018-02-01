@@ -21,6 +21,29 @@ QUnit.module("sendRequest", {
     }
 });
 
+QUnit.test("cache=false for dataType=json (cross domain)", function(assert) {
+    if(browser.msie && parseInt(browser.version) < 10) {
+        assert.expect(0);
+        return;
+    }
+
+    var json = { foo: "bar" };
+    var crossDomainResult;
+
+    ajax.sendRequest({
+        url: "http://example.com/json-url",
+        dataType: "json",
+        cache: false
+    }).done(function(data) {
+        crossDomainResult = data;
+    });
+
+    var xhr = this.requests[0];
+    xhr.respond(200, { "Content-Type": "application/json" }, JSON.stringify(json));
+
+    assert.deepEqual(crossDomainResult, json);
+});
+
 QUnit.test("Get JSON", function(assert) {
     var json = { foo: "bar" };
     var result;
@@ -638,4 +661,3 @@ QUnit.test("Script request (cross domain)", function(assert) {
     });
 
 });
-

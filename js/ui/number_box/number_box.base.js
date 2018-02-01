@@ -97,9 +97,8 @@ var NumberBoxBase = TextEditor.inherit({
             /**
              * @name dxNumberBoxOptions_mode
              * @publicName mode
-             * @type string
+             * @type Enums.NumberBoxMode
              * @default "text"
-             * @acceptValues 'text'|'number'|'tel'
              */
             mode: "text",
 
@@ -566,6 +565,10 @@ var NumberBoxBase = TextEditor.inherit({
         }
 
         return mathUtils.fitIntoRange(number, this.option("min"), this.option("max"));
+    },
+
+    reset: function() {
+        this.option("value", null);
     },
 
     _clean: function() {

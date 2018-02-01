@@ -320,6 +320,29 @@ QUnit.test("Check readOnly state for editor when readOnly is enabled in the edit
     assert.ok($testContainer.find("." + internals.FIELD_ITEM_CLASS + " .dx-texteditor").hasClass("dx-state-readonly"), "editor is read only");
 });
 
+QUnit.test("Editor's read only state should not be reset on the dxForm 'readOnly' option changing", function(assert) {
+    //arrange, act
+    var $testContainer = $("#container").dxLayoutManager({
+            items: [
+                {
+                    dataField: "name",
+                    editorType: "dxTextBox",
+                    editorOptions: {
+                        readOnly: true
+                    }
+                }
+            ]
+        }),
+        layoutManager = $testContainer.dxLayoutManager("instance");
+
+    layoutManager.option("readOnly", true);
+    layoutManager.option("readOnly", false);
+
+    //assert
+    var $textEditor = $testContainer.find("." + internals.FIELD_ITEM_CLASS + " .dx-texteditor");
+    assert.ok($textEditor.hasClass("dx-state-readonly"), "editor is read only");
+});
+
 QUnit.test("Layout strategy when flex is not supported", function(assert) {
     //arrange, act
     var items = [
@@ -1277,6 +1300,41 @@ QUnit.test("Set values from layoutData", function(assert) {
     assert.equal($editors.eq(1).dxCheckBox("instance").option("value"), true, "2 editor");
     assert.equal($editors.eq(2).dxNumberBox("instance").option("value"), 1200, "3 editor");
     assert.deepEqual($editors.eq(3).dxDateBox("instance").option("value"), new Date("10/10/2010"), "4 editor");
+});
+
+QUnit.test("Value from layoutData shouldn't pass to the editor in case when the 'dataField' options isn't specified", function(assert) {
+    //arrange, act
+    var $testContainer = $("#container");
+
+    $testContainer.dxLayoutManager({
+        layoutData: {
+            firstName: "Alex",
+        },
+        items: [{ name: "firstName", editorType: "dxTextBox" }]
+    });
+
+    var editor = $testContainer.find(".dx-texteditor").dxTextBox("instance");
+
+    //assert
+    assert.equal(editor.option("value"), null, "Editor hasn't a value");
+});
+
+QUnit.test("layoutData isn't updating on editor value change if the 'dataField' option isn't specified", function(assert) {
+    //arrange, act
+    var $testContainer = $("#container");
+
+    $testContainer.dxLayoutManager({
+        layoutData: {
+            firstName: "Alex",
+        },
+        items: [{ name: "firstName", editorType: "dxTextBox" }]
+    });
+
+    $testContainer.find(".dx-texteditor").dxTextBox("option", "value", "John");
+
+    //assert
+    var layoutManager = $testContainer.dxLayoutManager("instance");
+    assert.deepEqual(layoutManager.option("layoutData"), { firstName: "Alex" }, "layoutData keeps the same data");
 });
 
 QUnit.test("Set value via editor options", function(assert) {

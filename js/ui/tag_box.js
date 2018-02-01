@@ -310,9 +310,8 @@ var TagBox = SelectBox.inherit({
             /**
              * @name  dxTagBoxOptions_selectAllMode
              * @publicName selectAllMode
-             * @type string
+             * @type Enums.SelectAllMode
              * @default 'page'
-             * @acceptValues 'page'|'allPages'
              */
             selectAllMode: 'page',
 
@@ -368,9 +367,8 @@ var TagBox = SelectBox.inherit({
             /**
             * @name dxTagBoxOptions_applyValueMode
             * @publicName applyValueMode
-            * @type string
+            * @type Enums.EditorApplyValueMode
             * @default "instantly"
-            * @acceptValues 'useButtons'|'instantly'
             */
 
             /**
@@ -659,7 +657,6 @@ var TagBox = SelectBox.inherit({
 
     _restoreInputText: function() {
         this._clearTextValue();
-        this._clearFilter();
     },
 
     _focusOutHandler: function(e) {
@@ -721,7 +718,6 @@ var TagBox = SelectBox.inherit({
             .addClass(NATIVE_CLICK_CLASS);
 
         this._renderInputSize();
-        this._clearFilter();
         this._renderTags();
         this._popup && this._popup.refreshPosition();
     },
@@ -1170,7 +1166,7 @@ var TagBox = SelectBox.inherit({
             dataSource.filter(this._dataSourceFilterFunction.bind(this));
         }
 
-        dataSource.reload();
+        dataSource.load();
     },
 
     _dataSourceFilterExpr: function() {
@@ -1201,6 +1197,7 @@ var TagBox = SelectBox.inherit({
     _applyButtonHandler: function() {
         this.option("value", this._getListValues());
         this._clearTextValue();
+        this._clearFilter();
         this.callBase();
     },
 
@@ -1290,6 +1287,15 @@ var TagBox = SelectBox.inherit({
             default:
                 this.callBase(args);
         }
+    },
+
+    _getActualSearchValue: function() {
+        return this.callBase() || this._searchValue();
+    },
+
+    _popupHidingHandler: function() {
+        this.callBase();
+        this._clearFilter();
     },
 
     reset: function() {
