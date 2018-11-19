@@ -11464,7 +11464,7 @@ QUnit.module("Refresh changesOnly", {
         that.setupModules = function(options) {
             setupModule.call(that);
 
-            that.array = [
+            that.array = that.array || [
                 { id: 1, name: 'Alex', age: 30 },
                 { id: 2, name: 'Dan', age: 25 },
                 { id: 3, name: 'Bob', age: 20 }
