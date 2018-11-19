@@ -11432,7 +11432,7 @@ QUnit.module("Refresh changesOnly", {
         that.setupModules = function(options) {
             setupModule.call(that);
 
-            that.array = [
+            that.array = that.array || [
                 { id: 1, name: 'Alex', age: 30 },
                 { id: 2, name: 'Dan', age: 25 },
                 { id: 3, name: 'Bob', age: 20 }
@@ -12110,6 +12110,41 @@ QUnit.test("update one cell when summary values are changed", function(assert) {
     assert.deepEqual(changedArgs.columnIndices, [[2]]);
     assert.deepEqual(changedArgs.totalColumnIndices, [2]);
     assert.strictEqual(this.dataController.footerItems()[0].summaryCells[2][0].value, 31, "summaryValue is updated");
+});
+
+// T681470
+QUnit.test("remove invisible items if repaintChangesOnly and expanded grouping are enabled", function(assert) {
+    this.options = {
+        grouping: { autoExpandAll: true },
+        scrolling: { mode: "virtual", removeInvisiblePages: true },
+        remoteOperations: { sorting: true, filtering: true, paging: true }
+    };
+
+    this.array = [];
+    for(var i = 0; i < 100; i++) {
+        this.array.push({ id: i, name: "text " + i });
+    }
+
+    this.setupModules();
+
+    this.dataController.viewportSize(10);
+
+    var changedArgs;
+
+    this.dataController.changed.add(function(args) {
+        changedArgs = args;
+    });
+
+    this.columnOption("id", "groupIndex", 0);
+
+    // act
+    this.dataController.setViewportItemIndex(40);
+
+    // assert
+    var items = this.dataController.items();
+    assert.deepEqual(items[0].key, [20]);
+    assert.deepEqual(changedArgs.changeType, 'append');
+    assert.deepEqual(changedArgs.removeCount, 40, "removeCount is correct");
 });
 
 QUnit.module("Using DataSource instance", {
