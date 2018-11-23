@@ -44,6 +44,8 @@ var delayedNames = [];
 var delayedDeferreds = [];
 var executingName;
 
+var RESOLVED_PROMISE = new Deferred().resolve().promise();
+
 var deferExecute = function(name, func, deferred) {
     if(executingName && executingName !== name) {
         delayedFuncs.push(func);
@@ -75,7 +77,7 @@ var deferExecute = function(name, func, deferred) {
         if(!executingName && delayedFuncs.length) {
             (delayedNames.shift() === "render" ? deferRender : deferUpdate)(delayedFuncs.shift(), delayedDeferreds.shift());
         }
-        return result;
+        return result || RESOLVED_PROMISE;
     }
 };
 
