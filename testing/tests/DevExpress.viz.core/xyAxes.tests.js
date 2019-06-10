@@ -34,12 +34,12 @@ var environment = {
             var that = this;
 
             this.renderer = new vizMocks.Renderer();
-            this.tickGeneratorSpy = sinon.spy(function(args) {
+            this.tickGeneratorSpy = sinon.spy(function(_a, _b, _c, _d, _e, _f, _g, breaks) {
                 return {
                     ticks: that.generatedTicks || [],
                     minorTicks: that.generatedMinorTicks || [],
                     tickInterval: that.generatedTickInterval,
-                    breaks: args.breaks
+                    breaks: breaks
                 };
             });
             this.tickGenerator = sinon.stub(tickGeneratorModule, "tickGenerator", function() {
@@ -503,6 +503,31 @@ QUnit.test("Date format with month", function(assert) {
     axis._drawConstantLineLabels(new Date(2010, 0, 10), {}, 0, this.renderer.g());
 
     assert.equal(this.renderer.text.getCall(0).args[0], "January");
+});
+
+QUnit.module("Axis shift", environment2DTranslator);
+
+QUnit.test("axis without shifting", function(assert) {
+    this.options.isHorizontal = false;
+    var axis = this.createDrawnAxis({ position: "left" });
+    assert.deepEqual(axis.getAxisShift(), 0);
+});
+
+QUnit.test("axis shifted", function(assert) {
+    this.options.isHorizontal = true;
+    var axis = this.createDrawnAxis({ position: "bottom" });
+
+    axis.shift({ top: 10, bottom: 40, left: 10, right: 20 });
+    assert.deepEqual(axis.getAxisShift(), 40);
+});
+
+QUnit.test("axis shifted (multipleAxesSpacing)", function(assert) {
+    this.options.isHorizontal = true;
+    this.options.multipleAxesSpacing = 10;
+    var axis = this.createDrawnAxis({ position: "top" });
+
+    axis.shift({ top: 10, bottom: 40, left: 10, right: 20 });
+    assert.deepEqual(axis.getAxisShift(), 20);
 });
 
 QUnit.module("API methods", environment2DTranslator);
@@ -4212,7 +4237,7 @@ QUnit.module("XY axes margin calculation", {
         var axis = this.createAxis(this.renderSettings, data.options);
 
         this.generatedTicks = data.ticks;
-        this.generatedBreaks = data.options.breaks;
+        this.generatedBreaks = (data.options.breaks || []).map((b) => { return { from: b.startValue, to: b.endValue, cumulativeWidth: b.cumulativeWidth }; });
 
         axis.setBusinessRange(data.range);
         axis.setMarginOptions(data.marginOptions || {});
@@ -4264,10 +4289,10 @@ QUnit.test("Size margins with scale breaks", function(assert) {
         options: {
             valueMarginsEnabled: true,
             skipViewportExtending: true,
-            breakStyle: { width: 50 },
+            breakStyle: { width: 0 },
             breaks: [{
-                startValue: 100,
-                endValue: 900
+                startValue: 150,
+                endValue: 950
             }],
             isHorizontal: true
         },
@@ -4275,13 +4300,13 @@ QUnit.test("Size margins with scale breaks", function(assert) {
             size: 100
         },
         range: {
-            min: 0,
+            min: 100,
             max: 1000
         },
         ticks: [],
         expectedRange: {
-            minVisible: -250,
-            maxVisible: 1250
+            minVisible: 75,
+            maxVisible: 1025
         },
         expectedVisibleArea: {
             min: 250,
@@ -4297,10 +4322,10 @@ QUnit.test("Interval margins with scale breaks", function(assert) {
         options: {
             valueMarginsEnabled: true,
             skipViewportExtending: true,
-            breakStyle: { width: 50 },
+            breakStyle: { width: 0 },
             breaks: [{
-                startValue: 100,
-                endValue: 900
+                startValue: 200,
+                endValue: 880
             }],
             isHorizontal: true
         },
@@ -4308,19 +4333,19 @@ QUnit.test("Interval margins with scale breaks", function(assert) {
             checkInterval: true
         },
         range: {
-            min: 0,
+            min: 100,
             max: 1000,
-            interval: 55
+            interval: 10
         },
         ticks: [],
         expectedRange: {
-            minVisible: -25,
-            maxVisible: 1025,
-            interval: 55
+            minVisible: 95,
+            maxVisible: 1005,
+            interval: 10
         },
         expectedVisibleArea: {
-            min: 208,
-            max: 492
+            min: 207,
+            max: 493
         },
         isArgumentAxis: true
     });
@@ -4331,26 +4356,88 @@ QUnit.test("Percent margins with scale breaks", function(assert) {
         options: {
             valueMarginsEnabled: true,
             skipViewportExtending: true,
-            breakStyle: { width: 50 },
+            breakStyle: { width: 0 },
             breaks: [{
-                startValue: 100,
-                endValue: 900
+                startValue: 150,
+                endValue: 950
             }],
-            minValueMargin: 0.2,
-            maxValueMargin: 0.2,
+            minValueMargin: 0.1,
+            maxValueMargin: 0.1,
             isHorizontal: true
         },
         marginOptions: { },
         range: {
-            min: 0,
+            min: 100,
             max: 1000
         },
         ticks: [],
         expectedRange: {
-            minVisible: -154,
-            maxVisible: 1154
+            minVisible: 90,
+            maxVisible: 1010
         },
         isArgumentAxis: true
+    });
+});
+
+QUnit.test("Calculate correct margins if scale breaks in range start and end", function(assert) {
+    this.testMargins(assert, {
+        options: {
+            valueMarginsEnabled: true,
+            breakStyle: { width: 1 },
+            breaks: [{
+                startValue: 100,
+                endValue: 105,
+                cumulativeWidth: 1
+            }, {
+                startValue: 195,
+                endValue: 201,
+                cumulativeWidth: 2
+            }],
+            wholeRange: [0, 300]
+        },
+        marginOptions: {
+            size: 0
+        },
+        range: {
+            min: 100,
+            max: 200
+        },
+        ticks: [],
+        expectedRange: {
+            minVisible: 100,
+            maxVisible: 200
+        }
+    });
+});
+
+
+QUnit.test("Calculate correct margins if scalebreks in range start and end. Inverted", function(assert) {
+    this.testMargins(assert, {
+        options: {
+            valueMarginsEnabled: true,
+            breakStyle: { width: 1 },
+            breaks: [{
+                startValue: 100,
+                endValue: 105
+            }, {
+                startValue: 195,
+                endValue: 200
+            }],
+            inverted: true,
+            wholeRange: [0, 200]
+        },
+        marginOptions: {
+            size: 0
+        },
+        range: {
+            min: 100,
+            max: 200
+        },
+        ticks: [],
+        expectedRange: {
+            minVisible: 200,
+            maxVisible: 100
+        }
     });
 });
 

@@ -1355,13 +1355,14 @@ QUnit.module("widget sizing render", {}, () => {
             width: undefined
         }).dxDateBox("instance");
 
-        const initialWidth = $element.outerWidth();
+        const { width: initialWidth } = $element.get(0).getBoundingClientRect();
 
         $parent.css("transform", "scale(0.5)");
         component.repaint();
         $parent.css("transform", "scale(1)");
+        const { width: actualWidth } = component.$element().get(0).getBoundingClientRect();
 
-        assert.equal(component.$element().outerWidth(), initialWidth, "component has correct width");
+        assert.strictEqual(actualWidth, initialWidth, "component has correct width");
     });
 
     QUnit.test("component width calculation should consider buttons containers element", assert => {
@@ -1373,11 +1374,14 @@ QUnit.module("widget sizing render", {}, () => {
             width: undefined,
             showDropDownButton: false
         }).dxDateBox("instance");
-        const initialWidth = $element.outerWidth();
+        const { width: initialWidth } = $element.get(0).getBoundingClientRect();
         const instance = $element.dxDateBox("instance");
 
         instance.option("showDropDownButton", true);
-        assert.strictEqual(component.$element().outerWidth(), initialWidth + $(`.${BUTTONS_CONTAINER_CLASS}`).width());
+        const { width: actualWidth } = component.$element().get(0).getBoundingClientRect();
+        const { width: buttonWidth } = $(`.${BUTTONS_CONTAINER_CLASS}`).get(0).getBoundingClientRect();
+
+        assert.strictEqual(actualWidth, initialWidth + buttonWidth);
     });
 
     QUnit.test("change width", assert => {
@@ -4354,10 +4358,14 @@ QUnit.module("DateBox number and string value support", {
             pickerType: "calendar"
         });
 
-        const instance = $dateBox.dxDateBox("instance");
-        instance.open();
+        const dateBox = $dateBox.dxDateBox("instance");
 
+        dateBox.open();
         const formatSelectBox = $(".dx-timeview-format12").dxSelectBox("instance");
+        const $hourDown = $(dateBox.content()).parent().find(".dx-numberbox-spin-down").eq(0);
+        const $hourUp = $(dateBox.content()).parent().find(".dx-numberbox-spin-up").eq(0);
+        const $hoursInput = $(".dx-numberbox").eq(0).find("." + TEXTEDITOR_INPUT_CLASS);
+
         assert.equal(formatSelectBox.option("value"), TIMEVIEW_FORMAT12_PM, "correct value on init");
 
         formatSelectBox.option("value", TIMEVIEW_FORMAT12_AM);
@@ -4365,6 +4373,21 @@ QUnit.module("DateBox number and string value support", {
             .find(".dx-button.dx-popup-done")
             .trigger("dxclick");
 
-        assert.equal(instance.option("value").valueOf(), (new Date(2018, 6, 6, 4)).valueOf(), "DateBox value is formatted");
+        assert.equal(dateBox.option("value").valueOf(), (new Date(2018, 6, 6, 4)).valueOf(), "DateBox value is formatted");
+
+        dateBox.option("value", new Date(2018, 6, 6, 16));
+        dateBox.open();
+
+        $hourDown.trigger("dxpointerdown");
+        assert.ok(formatSelectBox.option("value") === TIMEVIEW_FORMAT12_PM, "date format should be PM after decrement hours");
+
+        $hourUp.trigger("dxpointerdown");
+        assert.ok(formatSelectBox.option("value") === TIMEVIEW_FORMAT12_PM, "date format should be PM after increment hours");
+
+        $hoursInput.val(9).trigger("change");
+        assert.ok(formatSelectBox.option("value") === TIMEVIEW_FORMAT12_AM, "date format should be AM after change value to 9");
+
+        $hoursInput.val(16).trigger("change");
+        assert.ok(formatSelectBox.option("value") === TIMEVIEW_FORMAT12_PM, "date format should be PM after change value to 16");
     });
 });

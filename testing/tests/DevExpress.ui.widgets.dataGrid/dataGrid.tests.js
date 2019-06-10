@@ -70,8 +70,7 @@ import keyboardMock from "../../helpers/keyboardMock.js";
 import pointerMock from "../../helpers/pointerMock.js";
 import ajaxMock from "../../helpers/ajaxMock.js";
 import themes from "ui/themes";
-import { PagerWrapper } from "../../helpers/wrappers/pagerWrapper.js";
-import { FilterPanelWrapper } from "../../helpers/wrappers/filterPanelWrapper.js";
+import { FilterPanelWrapper, PagerWrapper } from "../../helpers/wrappers/dataGridWrappers.js";
 
 var DX_STATE_HOVER_CLASS = "dx-state-hover",
     TEXTEDITOR_INPUT_SELECTOR = ".dx-texteditor-input",
@@ -3296,6 +3295,47 @@ QUnit.test("Focused row should be visible in virtual scrolling mode", function(a
     rowsViewRect = rowsView.element()[0].getBoundingClientRect();
     assert.ok(rect.top > rowsViewRect.top, "focusedRow.Y > rowsView.Y");
     assert.equal(rowsViewRect.bottom, rect.bottom, "focusedRow.bottom === rowsView.bottom");
+
+    clock.restore();
+});
+
+QUnit.test("Should navigate to the focused row by focusedRowIndex in virtual scrolling mode if corresponding page is not loaded (T733748)", function(assert) {
+    // arrange
+    var clock = sinon.useFakeTimers(),
+        dataGrid = $("#dataGrid").dxDataGrid({
+            height: 100,
+            focusedRowEnabled: true,
+            focusedRowKey: 11,
+            dataSource: [
+                { id: 2 }, { id: 3 },
+                { id: 4 }, { id: 5 },
+                { id: 6 }, { id: 7 },
+                { id: 8 }, { id: 9 },
+                { id: 10 }, { id: 11 },
+                { id: 12 }, { id: 13 }
+            ],
+            keyExpr: "id",
+            scrolling: {
+                mode: "virtual"
+            },
+            paging: {
+                pageSize: 2,
+                removeInvisiblePages: true
+            }
+        }).dxDataGrid("instance"),
+        rowsView = dataGrid.getView("rowsView");
+
+    clock.tick();
+
+    // act
+    dataGrid.option("focusedRowIndex", 0);
+    clock.tick();
+
+    // assert
+    assert.equal(dataGrid.option("focusedRowIndex"), 0, "focusedRowIndex");
+    assert.equal(dataGrid.option("focusedRowKey"), 2, "focusedRowKey");
+    assert.ok(rowsView.getRow(0).hasClass("dx-row-focused"), "Focused row");
+    assert.equal($(rowsView.getRow(0)).find("td").eq(0).text(), "2", "Focused row cell text");
 
     clock.restore();
 });
@@ -6757,6 +6797,51 @@ QUnit.test("Scroll to third page if expanded grouping is enabled and scrolling m
     assert.strictEqual(dataGrid.getVisibleRows()[0].data.key, 1);
     assert.strictEqual(dataGrid.getVisibleRows()[40].data.key, 21);
     assert.strictEqual(dataGrid.getVisibleRows()[80].data.key, 41);
+});
+
+// T742926
+QUnit.test("Scroll should works if error occurs during third page loading if scrolling mode is infinite", function(assert) {
+    var error = false;
+    var dataGrid = createDataGrid({
+        height: 300,
+        loadingTimeout: undefined,
+        dataSource: {
+            load: function(options) {
+                if(error) {
+                    return $.Deferred().reject("Load error");
+                }
+
+                var data = [];
+
+                for(var i = options.skip; i < options.skip + options.take; i++) {
+                    data.push({ id: i + 1 });
+                }
+
+                return $.Deferred().resolve(data);
+            }
+        },
+        remoteOperations: { paging: true },
+        scrolling: {
+            timeout: 0,
+            mode: "infinite",
+            useNative: false
+        }
+    });
+
+    error = true;
+    dataGrid.getScrollable().scrollTo({ y: 10000 });
+
+    // assert
+    assert.strictEqual(dataGrid.getVisibleRows().length, 20);
+    assert.strictEqual($(dataGrid.$element()).find(".dx-error-row").length, 1, "error row is visible");
+
+
+    error = false;
+    dataGrid.getScrollable().scrollTo({ y: 10000 });
+
+    // assert
+    assert.strictEqual(dataGrid.getVisibleRows().length, 40);
+    assert.strictEqual($(dataGrid.$element()).find(".dx-error-row").length, 0, "error row is hidden");
 });
 
 QUnit.test("Resize command column", function(assert) {

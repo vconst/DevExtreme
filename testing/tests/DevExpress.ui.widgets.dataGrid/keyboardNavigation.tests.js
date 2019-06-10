@@ -26,7 +26,7 @@ var KeyboardNavigationController = keyboardNavigationModule.controllers.keyboard
 import { RowsView } from "ui/data_grid/ui.data_grid.rows";
 import { setupDataGridModules, MockDataController, MockColumnsController, MockEditingController, MockSelectionController } from "../../helpers/dataGridMocks.js";
 import publicComponentUtils from "core/utils/public_component";
-import { PagerWrapper } from "../../helpers/wrappers/pagerWrapper.js";
+import { PagerWrapper, HeaderPanelWrapper, FilterPanelWrapper, DataGridWrapper, HeadersWrapper } from "../../helpers/wrappers/dataGridWrappers.js";
 import fx from "animation/fx";
 
 var device = devices.real();
@@ -1742,7 +1742,6 @@ QUnit.testInActiveWindow("Page down should not prevent default behaviour when pa
 QUnit.testInActiveWindow("Page down should scroll page down when paging disabled and vertial scroll exists", function(assert) {
     // arrange
     var that = this;
-    var done = assert.async();
 
     this.options = {
         height: 200
@@ -1756,19 +1755,13 @@ QUnit.testInActiveWindow("Page down should scroll page down when paging disabled
 
     this.focusFirstCell();
 
-    this.clock.restore();
-
     var isPreventDefaultCalled = this.triggerKeyDown("pageDown").preventDefault;
-
-    this.rowsView.getScrollable().on("scroll", function(e) {
-        setTimeout(function() {
-            assert.ok(that.rowsView.element().is(":focus"), "rowsView is focused");
-            assert.deepEqual(that.keyboardNavigationController._focusedCellPosition, { columnIndex: 0, rowIndex: 5 });
-            done();
-        });
-    });
+    $(this.rowsView.getScrollable()._container()).trigger("scroll");
+    this.clock.tick();
 
     // assert
+    assert.ok(that.rowsView.element().is(":focus"), "rowsView is focused");
+    assert.deepEqual(that.keyboardNavigationController._focusedCellPosition, { columnIndex: 0, rowIndex: 5 });
     assert.equal(this.rowsView.getScrollable().scrollTop(), 200);
     assert.ok(isPreventDefaultCalled, "preventDefault is called");
 });
@@ -5312,7 +5305,7 @@ QUnit.module("Keyboard navigation with real dataController and columnsController
         assert.notOk($cell.hasClass("dx-focused"), "cell has .dx-focused");
     });
 
-    QUnit.testInActiveWindow("DataGrid should not moved back to the edited cell if the next clicked cell canceled editing process", function(assert) {
+    QUnit.testInActiveWindow("DataGrid should not moved back to the edited cell if the next clicked cell canceled editing process (T718459)", function(assert) {
         // arrange
         var keyboardNavigationController,
             focusedCellChangingFiresCount = 0,
@@ -5354,15 +5347,85 @@ QUnit.module("Keyboard navigation with real dataController and columnsController
         // act
         $cell = $(this.rowsView.element().find(".dx-row").eq(0).find("td").eq(1));
         $cell.trigger(CLICK_EVENT);
+
+        // act
         this.editCell(0, 1);
         this.clock.tick();
 
         // assert
         assert.equal(focusedCellChangingFiresCount, 2, "onFocusedCellChanging fires count");
         assert.equal(focusedCellChangedFiresCount, 2, "onFocusedCellChanged fires count");
-        assert.ok(keyboardNavigationController._isHiddenFocus, "hidden focus");
+
+        assert.notOk(keyboardNavigationController._isHiddenFocus, "hidden focus");
+
         assert.notOk(keyboardNavigationController._editingController.isEditing(), "Is editing");
         assert.equal(this.rowsView.element().find("input").length, 0, "input");
+
+        assert.ok($cell.hasClass("dx-focused"), "cell has .dx-focused");
+    });
+
+    QUnit.testInActiveWindow("DataGrid should cancel editing cell if cell focusing canceled (T718459)", function(assert) {
+        // arrange
+        var keyboardNavigationController,
+            editingStartCount = 0,
+            focusedCellChangingFiresCount = 0,
+            focusedCellChangedFiresCount = 0,
+            $cell;
+
+        this.$element = function() {
+            return $("#container");
+        };
+
+        this.options = {
+            useKeyboard: true,
+            editing: { mode: 'cell', allowUpdating: true },
+            onEditingStart: function(e) {
+                ++editingStartCount;
+            },
+            onFocusedCellChanging: e => {
+                e.cancel = e.rows[e.newRowIndex].data.name === "Alex";
+                ++focusedCellChangingFiresCount;
+            },
+            onFocusedCellChanged: e => {
+                ++focusedCellChangedFiresCount;
+            },
+        };
+
+        this.setupModule();
+
+        // act
+        this.gridView.render($("#container"));
+        keyboardNavigationController = this.gridView.component.keyboardNavigationController;
+        $cell = $(this.rowsView.element().find(".dx-row").eq(1).find("td").eq(1));
+        $cell.trigger(CLICK_EVENT);
+        this.editCell(1, 1);
+        this.clock.tick();
+
+        // assert
+        assert.equal(editingStartCount, 1, "onStartEdiitng fires count");
+        assert.equal(focusedCellChangingFiresCount, 1, "onFocusedCellChanging fires count");
+        assert.equal(focusedCellChangedFiresCount, 1, "onFocusedCellChanged fires count");
+
+        // act
+        $cell = $(this.rowsView.element().find(".dx-row").eq(0).find("td").eq(1));
+        $cell.trigger(CLICK_EVENT);
+        // assert
+        assert.deepEqual(keyboardNavigationController._canceledCellPosition, { rowIndex: 0, columnIndex: 1 }, "Check _canceledCellPosition");
+
+        // act
+        this.editCell(0, 1);
+        this.clock.tick();
+        // assert
+        assert.notOk(keyboardNavigationController._canceledCellPosition, "Check _canceledCellPosition");
+        assert.equal(editingStartCount, 1, "onStartEdiitng fires count");
+        assert.equal(focusedCellChangingFiresCount, 2, "onFocusedCellChanging fires count");
+        assert.equal(focusedCellChangedFiresCount, 1, "onFocusedCellChanged fires count");
+
+        assert.notOk(keyboardNavigationController._isHiddenFocus, "hidden focus");
+
+        assert.notOk(keyboardNavigationController._editingController.isEditing(), "Is editing");
+        assert.equal(this.rowsView.element().find("input").length, 0, "input");
+
         assert.notOk($cell.hasClass("dx-focused"), "cell has .dx-focused");
     });
 
@@ -7495,6 +7558,38 @@ QUnit.module("Customize keyboard navigation", {
         assert.deepEqual(this.getController("data").items()[2].data, { name: "Dan2", date: "07/08/2009", room: 1, phone: 777777 }, "row 2 data");
     });
 
+    // T742967
+    testInDesktop("Editing start for a number cell with format if 'keyboardNavigation.editOnKeyPress'", function(assert) {
+        // arrange
+        this.options = {
+            editing: {
+                mode: "cell"
+            },
+            keyboardNavigation: {
+                editOnKeyPress: true
+            }
+        };
+
+        this.columns = [
+            { dataField: "name" },
+            { dataField: "room", dataType: "number", editorOptions: { format: "$#0.00" } }
+        ];
+
+        this.setupModule();
+        this.renderGridView();
+
+        // act
+        this.focusCell(1, 1);
+        this.triggerKeyDown("2");
+        this.clock.tick(300);
+
+        // arrange, assert
+        var $input = $(".dx-row .dx-texteditor-input").eq(0);
+        assert.equal($input.val(), "$2.00", "input value");
+        assert.equal($input.get(0).selectionStart, 2, "caret start position");
+        assert.equal($input.get(0).selectionEnd, 2, "caret end position");
+    });
+
     testInDesktop("Editing navigation mode for a number cell if 'keyboardNavigation.editOnKeyPress' and Left/Right arrow keys exit", function(assert) {
         // arrange
         this.options = {
@@ -8777,6 +8872,35 @@ QUnit.module("Keyboard navigation accessibility", {
         assert.equal(counter, 4, "_editingCellTabHandler counter");
     });
 
+    // T741590
+    testInDesktop("Focus column with showEditorAlways on tab", function(assert) {
+        // arrange
+        this.columns = [
+            { dataField: "name", allowSorting: true, allowFiltering: true },
+            { dataField: "room", dataType: "number", showEditorAlways: true }
+        ];
+
+        this.options = {
+            editing: {
+                mode: "cell"
+            }
+        };
+
+        this.setupModule();
+        this.gridView.render($("#container"));
+        this.clock.tick();
+
+        this.focusCell(0, 0);
+        this.clock.tick();
+
+        // act
+        this.triggerKeyDown("tab", false, false, $(this.getCellElement(0, 0)));
+        this.clock.tick();
+
+        // assert
+        assert.ok($(":focus").hasClass("dx-editor-cell"), "editor cell is focused");
+    });
+
     testInDesktop("Command column should not focused if batch editing mode", function(assert) {
         // arrange
         this.options = {
@@ -8910,8 +9034,7 @@ QUnit.module("Keyboard navigation accessibility", {
     // });
 
     testInDesktop("Enter, Space key down by header filter indicator", function(assert) {
-        var $firstCell,
-            $headerFilterCell;
+        var headersWrapper = new HeadersWrapper("#container");
 
         // arrange
         this.options = {
@@ -8926,24 +9049,19 @@ QUnit.module("Keyboard navigation accessibility", {
         this.setupModule();
         this.gridView.render($("#container"));
 
-        // arrange
-        $firstCell = $(this.$element()).find(".dx-header-row td").eq(0);
-        $headerFilterCell = $firstCell.find(".dx-header-filter");
-
         // act
-        $headerFilterCell.focus();
-        fireKeyDown($headerFilterCell, "Enter");
+        headersWrapper.getHeaderFilterItem(0, 0).focus();
+        fireKeyDown(headersWrapper.getHeaderFilterItem(0, 0), "Enter");
         this.clock.tick();
         this.headerFilterView.hideHeaderFilterMenu();
         this.clock.tick();
         // assert
-        assert.ok($headerFilterCell.is(":focus"), "Header filter icon focus state");
+        assert.ok(headersWrapper.getHeaderFilterItem(0, 0).is(":focus"), "Header filter icon focus state");
     });
 
     testInDesktop("Enter, Space key down on filter panel elements", function(assert) {
-        var $cell,
-            filterBuilderShownCount = 0,
-            filterPanelView;
+        var filterPanelWrapper = new FilterPanelWrapper("#container"),
+            filterBuilderShownCount = 0;
 
         // arrange
         this.options = {
@@ -8955,42 +9073,30 @@ QUnit.module("Keyboard navigation accessibility", {
 
         this.setupModule();
         this.gridView.render($("#container"));
-        filterPanelView = this.getView("filterPanelView");
-        filterPanelView._showFilterBuilder = () => {
+        this.getView("filterPanelView")._showFilterBuilder = () => {
             ++filterBuilderShownCount;
         };
 
-        // arrange
-        $cell = $(".dx-datagrid-filter-panel .dx-icon-filter");
-
         // act
-        $cell.focus();
-        fireKeyDown($cell, "Enter");
+        filterPanelWrapper.getIconFilter().focus();
+        fireKeyDown(filterPanelWrapper.getIconFilter(), "Enter");
         this.clock.tick();
-
         // assert
         assert.equal(filterBuilderShownCount, 1, "filterBuilderShownCount");
 
-        // arrange
-        $cell = $(".dx-datagrid-filter-panel .dx-datagrid-filter-panel-text");
-
         // act
-        $cell.focus();
-        fireKeyDown($cell, "Enter");
+        filterPanelWrapper.getPanelText().focus();
+        fireKeyDown(filterPanelWrapper.getPanelText(), "Enter");
         this.clock.tick();
-
         // assert
         assert.equal(filterBuilderShownCount, 2, "filterBuilderShownCount");
 
-        // arrange
-        $cell = $(".dx-datagrid-filter-panel .dx-datagrid-filter-panel-clear-filter");
-
+        // act
+        filterPanelWrapper.getClearFilterButton().focus();
         // assert
         assert.deepEqual(this.options.filterValue, ["name", "=", "Alex"], "filterValue");
-
         // act
-        $cell.focus();
-        fireKeyDown($cell, "Enter");
+        fireKeyDown(filterPanelWrapper.getClearFilterButton(), "Enter");
         this.clock.tick();
 
         // assert
@@ -9054,7 +9160,7 @@ QUnit.module("Keyboard navigation accessibility", {
     });
 
     testInDesktop("Group panel focus state", function(assert) {
-        var $headerPanel;
+        var headerPanelWrapper = new HeaderPanelWrapper("#container");
 
         // arrange
         this.columns = [
@@ -9072,57 +9178,55 @@ QUnit.module("Keyboard navigation accessibility", {
 
         this.setupModule();
         this.gridView.render($("#container"));
-        $headerPanel = $(".dx-datagrid-header-panel");
 
         // act
-        $headerPanel.find(".dx-group-panel-item").eq(0).focus();
+        headerPanelWrapper.getGroupPanelItem(0).focus();
         fireKeyDown($(":focus"), "Tab");
 
         // assert
-        assert.ok($headerPanel.hasClass("dx-state-focused"), "Group panel focus state");
+        assert.ok(headerPanelWrapper.getElement().hasClass("dx-state-focused"), "Group panel focus state");
 
         // act
         $(":focus").trigger("mousedown");
 
         // assert
-        assert.notOk($headerPanel.hasClass("dx-state-focused"), "Group panel focus state");
+        assert.notOk(headerPanelWrapper.getElement().hasClass("dx-state-focused"), "Group panel focus state");
 
         // act
-        $headerPanel.find(".dx-group-panel-item").eq(1).focus();
-        fireKeyDown($headerPanel.find(".dx-group-panel-item").eq(1), "enter");
+        headerPanelWrapper.getGroupPanelItem(1).focus();
+        fireKeyDown(headerPanelWrapper.getGroupPanelItem(1), "enter");
         this.clock.tick();
 
         // assert
-        assert.ok($headerPanel.hasClass("dx-state-focused"), "Group panel focus state");
-        assert.ok($headerPanel.find(".dx-group-panel-item").eq(1).is(":focus"), "Group panel item focus state");
+        assert.ok(headerPanelWrapper.getElement().hasClass("dx-state-focused"), "Group panel focus state");
+        assert.ok(headerPanelWrapper.getGroupPanelItem(1).is(":focus"), "Group panel item focus state");
     });
 
     testInDesktop("Header row focus state", function(assert) {
-        var $headers;
+        var headersWrapper = new HeadersWrapper("#container");
 
         // arrange
         this.setupModule();
         this.gridView.render($("#container"));
-        $headers = $(".dx-datagrid-headers");
 
         // act
         fireKeyDown($("body"), "Tab");
-        $headers.find(".dx-header-row > td").eq(1).focus();
+        headersWrapper.getHeaderItem(0, 1).focus();
 
         // assert
-        assert.ok($headers.hasClass("dx-state-focused"), "Header row focus state");
+        assert.ok(headersWrapper.getElement().hasClass("dx-state-focused"), "Header row focus state");
 
         // act
         fireKeyDown($(":focus"), "Tab");
 
         // assert
-        assert.ok($headers.hasClass("dx-state-focused"), "Header row focus state");
+        assert.ok(headersWrapper.getElement().hasClass("dx-state-focused"), "Header row focus state");
 
         // act
         $(":focus").trigger("mousedown");
 
         // assert
-        assert.notOk($headers.hasClass("dx-state-focused"), "Header row focus state");
+        assert.notOk(headersWrapper.getElement().hasClass("dx-state-focused"), "Header row focus state");
     });
 
     testInDesktop("Rows view focus state", function(assert) {
@@ -9151,7 +9255,7 @@ QUnit.module("Keyboard navigation accessibility", {
     });
 
     testInDesktop("Filter panel focus state", function(assert) {
-        var $filterPanel;
+        var filterPanelWrapper = new FilterPanelWrapper("#container");
 
         this.options = {
             filterPanel: {
@@ -9163,24 +9267,23 @@ QUnit.module("Keyboard navigation accessibility", {
         // arrange
         this.setupModule();
         this.gridView.render($("#container"));
-        $filterPanel = $(".dx-datagrid-filter-panel");
 
         // assert
-        assert.notOk($filterPanel.hasClass("dx-state-focused"), "Filter panel focus state");
+        assert.notOk(filterPanelWrapper.getElement().hasClass("dx-state-focused"), "Filter panel focus state");
 
         // act
-        $filterPanel.find(".dx-icon-filter").trigger("focus");
+        filterPanelWrapper.getIconFilter().trigger("focus");
         fireKeyDown($(":focus"), "Tab");
         // assert
-        assert.ok($filterPanel.hasClass("dx-state-focused"), "Filter panel focus state");
+        assert.ok(filterPanelWrapper.getElement().hasClass("dx-state-focused"), "Filter panel focus state");
         // act
         $(":focus").trigger("mousedown");
         // assert
-        assert.notOk($filterPanel.hasClass("dx-state-focused"), "Filter panel focus state");
+        assert.notOk(filterPanelWrapper.getElement().hasClass("dx-state-focused"), "Filter panel focus state");
         // act
         fireKeyDown($(":focus"), "Tab");
         // assert
-        assert.ok($filterPanel.hasClass("dx-state-focused"), "Filter panel focus state");
+        assert.ok(filterPanelWrapper.getElement().hasClass("dx-state-focused"), "Filter panel focus state");
     });
 
     testInDesktop("Pager focus state", function(assert) {
@@ -9223,7 +9326,7 @@ QUnit.module("Keyboard navigation accessibility", {
     });
 
     testInDesktop("View selector", function(assert) {
-        var $element;
+        var dataGridWrapper = new DataGridWrapper("#container");
 
         this.options = {
             headerFilter: { visible: true },
@@ -9250,57 +9353,52 @@ QUnit.module("Keyboard navigation accessibility", {
         this.clock.tick();
 
         // act
-        $element = $(".dx-datagrid-group-panel .dx-group-panel-item").first();
-        $element.focus();
+        dataGridWrapper.headerPanel.getGroupPanelItem(0).focus();
         fireKeyDown($(":focus"), "ArrowDown", true);
         // assert
-        assert.ok($(":focus").is(".dx-datagrid-headers .dx-header-row > td"), "focused element");
-        assert.equal($(":focus").index(), 0, "focused element index");
+        assert.ok(dataGridWrapper.headers.getHeaderItem(0, 0).is(":focus"), "focused element");
 
         // act
-        $element = $(".dx-datagrid-headers .dx-header-row > td").first();
-        $element.focus();
+        dataGridWrapper.headers.getHeaderItem(0, 0).focus();
         fireKeyDown($(":focus"), "ArrowDown", true);
         // assert
-        assert.ok($(":focus").is(".dx-datagrid-filter-row .dx-texteditor-input"), "focused element");
-        assert.equal($(":focus").index(), 0, "focused element index");
+        assert.ok(dataGridWrapper.filterRow.getTextEditorInput(0).is(":focus"), "focused element");
 
         // act
         $(this.getCellElement(1, 1)).trigger(CLICK_EVENT).focus();
         fireKeyDown($(":focus"), "ArrowUp", true);
         // assert
-        assert.ok($(":focus").is(".dx-datagrid-filter-row .dx-texteditor-input"), "focused element");
-        assert.equal($(":focus").index(), 0, "focused element index");
+        assert.ok(dataGridWrapper.filterRow.getTextEditorInput(0).is(":focus"), "focused element");
 
         // act
         fireKeyDown($(":focus"), "ArrowUp", true);
         // assert
-        assert.ok($(".dx-header-row > td").first().is(":focus"), "focused element");
+        assert.ok(dataGridWrapper.headers.getHeaderItem(0, 0).is(":focus"), "focused element");
 
         // act
         fireKeyDown($(":focus"), "ArrowUp", true);
         // assert
-        assert.ok($(".dx-datagrid-group-panel .dx-group-panel-item").first().is(":focus"), "focused element");
+        assert.ok(dataGridWrapper.headerPanel.getGroupPanelItem(0).is(":focus"), "focused element");
 
         // act
         fireKeyDown($(":focus"), "ArrowDown", true);
         // assert
-        assert.ok($(".dx-datagrid-headers .dx-header-row > td").first().is(":focus"), "focused element");
+        assert.ok(dataGridWrapper.headers.getHeaderItem(0, 0).is(":focus"), "focused element");
 
         // act
         $(this.getCellElement(1, 1)).trigger(CLICK_EVENT).focus();
         fireKeyDown($(":focus"), "ArrowDown", true);
         // assert
-        assert.ok($(":focus").is(".dx-datagrid-filter-panel .dx-icon-filter"), "focused element");
+        assert.ok(dataGridWrapper.filterPanel.getIconFilter().is(":focus"), "focused element");
 
         // act
         fireKeyDown($(":focus"), "ArrowDown", true);
         // assert
-        assert.ok($(":focus").is(".dx-datagrid-pager .dx-page-size[tabindex]"), "focused element");
+        assert.ok(dataGridWrapper.pager.getPagerPageSizeElement(0).is(":focus"), "focused element");
 
         // act
         fireKeyDown($(":focus"), "ArrowUp", true);
         // assert
-        assert.ok($(":focus").is(".dx-datagrid-filter-panel .dx-icon-filter"), "focused element");
+        assert.ok(dataGridWrapper.filterPanel.getIconFilter().is(":focus"), "focused element");
     });
 });
