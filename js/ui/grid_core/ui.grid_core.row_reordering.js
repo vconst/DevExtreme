@@ -124,17 +124,22 @@ module.exports = {
         return {
             /**
              * @name GridBaseOptions.rowDragging
+             * @type GridBaseRowDragging
+             */
+            /**
+             * @name GridBaseRowDragging
              * @type object
+             * @inherits dxSortable.Options
              */
             rowDragging: {
                 /**
-                * @name GridBaseOptions.rowDragging.enabled
+                * @name GridBaseRowDragging.enabled
                 * @type boolean
                 * @default false
                 */
                 enabled: false,
                 /**
-                * @name GridBaseOptions.rowDragging.showDragIcons
+                * @name GridBaseRowDragging.showDragIcons
                 * @type boolean
                 * @default true
                 */
