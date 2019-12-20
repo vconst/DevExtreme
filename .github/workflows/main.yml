@@ -18,6 +18,8 @@ jobs:
         run: Set-Variable -Name DEVEXTREME_QUNIT_CI -Value "true"
       - name: Run npm install
         run: npm install
+      - name: Transpile tests
+        run: node .\node_modules\gulp\bin\gulp.js transpile-tests
       - name: Run npm run build
         run: npm run build
       - name: Run QUnit tests
