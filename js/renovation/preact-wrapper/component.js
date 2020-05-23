@@ -18,8 +18,19 @@ export default class PreactWrapper extends DOMComponent {
         const isFirstRender = this.$element().children().length === 0;
         const hasParent = this.$element().parent().length > 0;
         const container = isFirstRender && hasParent ? this.$element().get(0) : undefined;
+        const origST = setTimeout;
+        const timeouts = [];
+        window.setTimeout = function(handler) {
+            timeouts.push(handler);
+        }
 
         Preact.render(Preact.h(this._viewComponent, this.getAllProps(isFirstRender)), this.$element().get(0), container);
+
+        while(timeouts.length) {
+            const handler = timeouts.shift();
+            handler();
+        }
+        window.setTimeout = origST;
     }
 
     _render() {
