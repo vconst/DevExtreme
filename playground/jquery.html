@@ -26,12 +26,39 @@
     <script type="text/javascript" src="../artifacts/js/dx.all.debug.js" charset="utf-8"></script>
 </head>
 <body>
-    <div id="button"></div>
+    <div id="button1"></div>
+    <div id="button2"></div>
+    <div id="button3"></div>
+    <div id="grid"></div>
     <script>
+        const data = [{key: 1, field1: '11', field2: '12', field3: '13' },{ key: 2, field1: '21', field2: '22', field3: '23' }];
+        let instance;
         $(function() {
-            $("#button").dxButton({
-                text: 'Click me!',
-                onClick: function() { alert("clicked"); }
+            $('#button1').dxrButton({ text: 'Toggle Visible', onClick: () => {
+                const visible = $('#grid').dxrDataGrid('instance').option('columns[1].visible');
+                $('#grid').dxrDataGrid('instance').option('columns[1].visible', !visible);
+            }
+        });
+        $('#button2').dxrButton({ text: 'Add to center', onClick: () => {
+                const columns = [...$('#grid').dxrDataGrid('instance').option('columns')];
+                columns.splice(1, 0, { dataField: 'field3' });
+                $('#grid').dxrDataGrid('instance').option('columns', columns);
+            }
+        });
+        $('#button3').dxrButton({ text: 'Delete from center', onClick: () => {
+                const columns = [ ...$('#grid').dxrDataGrid('instance').option('columns')];
+                columns.splice(0, 1);
+                $('#grid').dxrDataGrid('instance').option('columns', columns);
+            }
+        });
+            $('#grid').dxrDataGrid({
+                export: { enabled: false },
+                columns: [
+                    {dataField: 'key'},
+                    {dataField: 'field1'},
+                    {dataField: 'field2'},
+                ],
+                dataSource: { store: { type: 'array', key:'key', data} }
             });
         });
     </script>

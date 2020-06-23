@@ -21,18 +21,19 @@ import Widget from '../../ui/widget/ui.widget';
 
 export const viewFunction = ({
   widgetRef,
+  restAttributes,
 }: DataGrid) => (
-  <div>
-    Hello data-grid
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  <div {...restAttributes}>
+    Hello data-grid1
     <div className="dx-widget" ref={widgetRef as any} />
   </div>
 );
 
-
 type Column = {
   dataField: string;
   visible: boolean;
-} | string;
+};
 
 @ComponentBindings()
 export class DataGridProps {
@@ -73,7 +74,11 @@ gridCore.registerModulesOrder([
   'export',
   'gridView']);
 
-@Component({ defaultOptionRules: null, view: viewFunction })
+@Component({
+  defaultOptionRules: null,
+  jQuery: { register: true },
+  view: viewFunction,
+})
 export default class DataGrid extends JSXComponent(DataGridProps) {
   @InternalState() gridState: any = null;
 
@@ -86,13 +91,28 @@ export default class DataGrid extends JSXComponent(DataGridProps) {
     if (this.gridState === null) {
       instance = this.init();
       this.gridState = instance;
+      instance.getView('gridView').render($(this.widgetRef));
+    } else {
+      const changedColumn = (this.props.columns as Column[])[1] as Column;
+      const currentColumn = instance.option('columns[1]');
+      if (changedColumn.visible !== currentColumn.visible) {
+        instance.option('columns[1].visible', changedColumn.visible);
+      } else {
+        instance.option('columns', this.props.columns);
+      }
     }
-    instance.getView('gridView').render($(this.widgetRef));
   }
 
   init() {
+    const deepCloneProps = {
+      ...this.props,
+      columns: this.props.columns?.map((c) => ({ ...c })),
+    };
     const instance: any = new Widget(this.widgetRef, {
-      ...this.props as any,
+      ...deepCloneProps,
+      onOptionChanged: (args) => {
+        gridCore.callModuleItemsMethod(instance, 'optionChanged', [args]);
+      },
     });
     // eslint-disable-next-line no-underscore-dangle
     instance.getView = (name: string) => instance._views[name];
