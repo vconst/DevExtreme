@@ -1,6 +1,7 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  ComponentBindings, JSXComponent, OneWay, InternalState, Effect, Component, Ref,
+  ComponentBindings, JSXComponent, OneWay, InternalState, Effect, Component, Ref, Nested,
 } from 'devextreme-generator/component_declaration/common';
 import DataSource, { DataSourceOptions } from '../../data/data_source';
 
@@ -18,15 +19,20 @@ import '../../ui/data_grid/ui.data_grid.header_panel';
 
 import $ from '../../core/renderer';
 import Widget from '../../ui/widget/ui.widget';
+import DataGridPager, { DataGridPagerProps } from './data_grid_pager_view';
 
 export const viewFunction = ({
+  dataController,
+  props: { pager },
   widgetRef,
   restAttributes,
 }: DataGrid) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <div {...restAttributes}>
-    Hello data-grid1
+    Hello data-grid
     <div className="dx-widget" ref={widgetRef as any} />
+    pager
+    {dataController && <DataGridPager dataController={dataController} {...pager} />}
   </div>
 );
 
@@ -38,6 +44,8 @@ type Column = {
 @ComponentBindings()
 export class DataGridProps {
   @OneWay() dataSource?: string | Array<any> | DataSource | DataSourceOptions;
+
+  @Nested() pager?: DataGridPagerProps;
 
   @OneWay() columns?: Column[];
 
@@ -74,23 +82,24 @@ gridCore.registerModulesOrder([
   'export',
   'gridView']);
 
-@Component({
-  defaultOptionRules: null,
-  jQuery: { register: true },
-  view: viewFunction,
-})
+  type GridInstance = (Widget & {
+    getView(name: string): any;
+    getController(name: string): any;
+  });
+
+@Component({ defaultOptionRules: null, jQuery: { register: true }, view: viewFunction })
 export default class DataGrid extends JSXComponent(DataGridProps) {
-  @InternalState() gridState: any = null;
+  @InternalState() gridInstance!: GridInstance;
 
   @Ref()
   widgetRef!: HTMLDivElement;
 
   @Effect()
   setupWidget() {
-    let instance = this.gridState;
-    if (this.gridState === null) {
+    let instance = this.gridInstance;
+    if (!this.gridInstance) {
       instance = this.init();
-      this.gridState = instance;
+      this.gridInstance = instance;
       instance.getView('gridView').render($(this.widgetRef));
     } else {
       const changedColumn = (this.props.columns as Column[])[1] as Column;
@@ -101,6 +110,12 @@ export default class DataGrid extends JSXComponent(DataGridProps) {
         instance.option('columns', this.props.columns);
       }
     }
+  }
+
+  get dataController() {
+    // if (this.gridInstance) {
+    return this.gridInstance?.getController?.('data');
+    // }
   }
 
   init() {
@@ -121,7 +136,6 @@ export default class DataGrid extends JSXComponent(DataGridProps) {
 
     gridCore.processModules(instance, gridCore);
     gridCore.callModuleItemsMethod(instance, 'init');
-
-    return instance;
+    return instance as GridInstance;
   }
 }

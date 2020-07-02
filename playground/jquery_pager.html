@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DevExtreme jQuery Example</title>
+
+    <link rel="stylesheet" type="text/css" href="../artifacts/css/dx.common.css"/>
+
+    <link rel="stylesheet" type="text/css" href="../artifacts/css/dx.light.css"/>
+
+    <script type="text/javascript" src="../artifacts/js/jquery.js"></script>
+
+    <!--<script type="text/javascript" src="../artifacts/js/cldr.js"></script>
+    <script type="text/javascript" src="../artifacts/js/cldr/event.js"></script>
+    <script type="text/javascript" src="../artifacts/js/cldr/supplemental.js"></script>
+    <script type="text/javascript" src="../artifacts/js/cldr/unresolved.js"></script>
+    <script type="text/javascript" src="../artifacts/js/globalize.js"></script>
+    <script type="text/javascript" src="../artifacts/js/globalize/message.js"></script>
+    <script type="text/javascript" src="../artifacts/js/globalize/number.js"></script>
+    <script type="text/javascript" src="../artifacts/js/globalize/currency.js"></script>
+    <script type="text/javascript" src="../artifacts/js/globalize/date.js"></script>-->
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/1.7.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.2/jszip.min.js"></script> -->
+
+    <script type="text/javascript" src="../artifacts/js/dx.all.debug.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://unpkg.com/devextreme-aspnet-data@2.6.1/js/dx.aspnet.data.js" charset="utf-8"></script>
+</head>
+<body>
+    <div id="grid"></div>
+    <script>
+        $(function() {
+        var url = "https://js.devexpress.com/Demos/Mvc/api/DataGridWebApi";
+        $("#grid").dxrDataGrid({
+            export: { enabled: false },
+        showBorders: true,
+        pager: {visible: true, showInfo: true},
+        dataSource: DevExpress.data.AspNet.createStore({
+            key: "OrderID",
+            loadUrl: url + "/Orders",
+            insertUrl: url + "/InsertOrder",
+            updateUrl: url + "/UpdateOrder",
+            deleteUrl: url + "/DeleteOrder",
+            onBeforeSend: function(method, ajaxOptions) {
+                ajaxOptions.xhrFields = { withCredentials: true };
+            }
+        }),
+        remoteOperations: true,
+        columns: [{
+                dataField: "CustomerID",
+                caption: "Customer",
+                validationRules: [{
+                    type: "stringLength",
+                    message: "The field Customer must be a string with a maximum length of 5.",
+                    max: 5
+                }],
+                lookup: {
+                    dataSource: DevExpress.data.AspNet.createStore({
+                        key: "Value",
+                        loadUrl: url + "/CustomersLookup",
+                        onBeforeSend: function(method, ajaxOptions) {
+                            ajaxOptions.xhrFields = { withCredentials: true };
+                        }
+                    }),
+                    valueExpr: "Value",
+                    displayExpr: "Text"
+                }
+            }, {
+                dataField: "OrderDate",
+                dataType: "date",
+                validationRules: [{
+                    type: "required",
+                    message: "The OrderDate field is required."
+                }]
+            }, {
+                dataField: "Freight",
+                headerFilter: {
+                    groupInterval: 100
+                },
+                validationRules: [{
+                    type: "range",
+                    message: "The field Freight must be between 0 and 2000.",
+                    min: 0,
+                    max: 2000
+                }]
+            }, {
+                dataField: "ShipCountry",
+                validationRules: [{
+                    type: "stringLength",
+                    message: "The field ShipCountry must be a string with a maximum length of 15.",
+                    max: 15
+                }]
+            }, {
+                dataField: "ShipVia",
+                caption: "Shipping Company",
+                dataType: "number",
+                lookup: {
+                    dataSource: DevExpress.data.AspNet.createStore({
+                        key: "Value",
+                        loadUrl: url + "/ShippersLookup",
+                        onBeforeSend: function(method, ajaxOptions) {
+                            ajaxOptions.xhrFields = { withCredentials: true };
+                        }
+                    }),
+                    valueExpr: "Value",
+                    displayExpr: "Text"
+                }
+            }
+        ]
+    });
+        });
+    </script>
+</body>
+</html>
