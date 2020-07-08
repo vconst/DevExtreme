@@ -1,58 +1,28 @@
 import React, { useState } from 'react';
-import Button from './artifacts/react/renovation/button';
-import DataGrid from './artifacts/react/renovation/data_grid/data_grid';
-
-const data = [{key: 1, field1: '11', field2: '12', field3: '13' },{ key: 2, field1: '21', field2: '22', field3: '23' }];
-const dataSource = { store: { type: 'array', key:'key', data} };
+import { BrowserRouter, Switch, Link, Route } from 'react-router-dom';
+import columnsExample from "./pages/columns-sample"
+import pagerExample from "./pages/pager-sample"
 
 function App() {
-    const [visible, setVisible] = useState(true);
-    const [columns, setColumns] = useState([
-        {dataField: 'key', visible: true},
-        {dataField: 'field1', visible: true},
-        {dataField: 'field2', visible: true},
-    ]);
-        return (
-        <>
-        <Button
-            text={'Toggle column visible'}
-            onClick={() => {
-                const [column, miodifiedColums, ...restColumns] = columns;
-                setColumns([column, {...miodifiedColums, visible: !miodifiedColums.visible}, ...restColumns]);
-            }}
-        ></Button>
-        <Button
-            text={'Add to center'}
-            onClick={() => {
-                const [column, ...restColumns] = columns;
-                setColumns([column, { dataField: 'field3', visible: true }, ...restColumns]);
-            }}
-        ></Button>
-        <Button
-            text={'Delete from center'}
-            onClick={() => {
-                const [column, _, ...restColumns] = columns;
-                setColumns([column, ...restColumns]);
-            }}
-        ></Button>
-        <DataGrid columns={columns} dataSource={dataSource}></DataGrid>
-        {/* <DataGrid datsSource={dataSource}>
-            {
-                columns.map(c => <GridColums {...c}>)
-            }
-        </DataGrid> */}
-        <Button
-            text={'Toggle visible'}
-            onClick={() => {
-                setVisible(!visible)
-            }}
-        ></Button>
-        {/* <DataGrid dataSource={dataSource}>
-            <Column dataField={'key'} visible={true}></Column>
-            <Column dataField={'field1'} visible={visible}></Column>
-        </DataGrid> */}
-        </>
-    );
+  const routs = [
+    { name: "Columns", component: columnsExample },
+    { name: "Pager", component: pagerExample }
+  ];
+  return (
+    <BrowserRouter>
+    <div style={{display: 'flex'}}>
+      <div style={{width: '200px', margin: '10px' }}>{
+        routs.map(r => (<Link to={r.name} key={r.name}><div>{r.name}</div></Link>))
+      }</div>
+      <div style={ {width: '100%'}}>
+        <Switch>{
+          routs.map(r => (<Route exact key={r.name} path={`/${r.name}`} component={r.component} />))
+        }
+        </Switch>
+      </div>
+      </div>
+    </BrowserRouter>
+  );
 }
 
 export default App;
