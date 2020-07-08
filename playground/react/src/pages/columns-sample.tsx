@@ -35,7 +35,7 @@ export default function columnsExample() {
                 setColumns([column, ...restColumns]);
             }}
         ></Button>
-        <DataGrid columns={columns} dataSource={dataSource}></DataGrid>
+        <DataGrid columns={columns} dataSource={dataSource} export={{ enabled: false }}></DataGrid>
         {/* <DataGrid datsSource={dataSource}>
             {
                 columns.map(c => <GridColums {...c}>)
