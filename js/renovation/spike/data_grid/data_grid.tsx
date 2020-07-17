@@ -4,24 +4,24 @@
 import {
   ComponentBindings, JSXComponent, OneWay, InternalState, Effect, Component, Ref, Nested,
 } from 'devextreme-generator/component_declaration/common';
-import DataSource, { DataSourceOptions } from '../../data/data_source';
+import DataSource, { DataSourceOptions } from '../../../data/data_source';
 
-import gridCore from '../../ui/data_grid/ui.data_grid.core';
+import gridCore from '../../../ui/data_grid/ui.data_grid.core';
 
-import '../../ui/data_grid/ui.data_grid.column_headers';
-import '../../ui/data_grid/ui.data_grid.columns_controller';
-import '../../ui/data_grid/ui.data_grid.data_controller';
-import '../../ui/data_grid/ui.data_grid.sorting';
-import '../../ui/data_grid/ui.data_grid.rows';
-import '../../ui/data_grid/ui.data_grid.context_menu';
-import '../../ui/data_grid/ui.data_grid.error_handling';
-import '../../ui/data_grid/ui.data_grid.grid_view';
-import '../../ui/data_grid/ui.data_grid.header_panel';
+import '../../../ui/data_grid/ui.data_grid.column_headers';
+import '../../../ui/data_grid/ui.data_grid.columns_controller';
+import '../../../ui/data_grid/ui.data_grid.data_controller';
+import '../../../ui/data_grid/ui.data_grid.sorting';
+import '../../../ui/data_grid/ui.data_grid.rows';
+import '../../../ui/data_grid/ui.data_grid.context_menu';
+import '../../../ui/data_grid/ui.data_grid.error_handling';
+import '../../../ui/data_grid/ui.data_grid.grid_view';
+import '../../../ui/data_grid/ui.data_grid.header_panel';
 
-import '../../ui/data_grid/ui.data_grid';
+import '../../../ui/data_grid/ui.data_grid';
 
-import $ from '../../core/renderer';
-import Widget from '../../ui/widget/ui.widget';
+import $ from '../../../core/renderer';
+import Widget from '../../../ui/widget/ui.widget';
 import DataGridPager, { DataGridPagerProps } from './data_grid_pager_view';
 import { DataGridPagingProps } from './paging-props';
 

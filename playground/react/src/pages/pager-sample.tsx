@@ -92,7 +92,7 @@ export default function pagerExample() {
       <DataGrid
         export={{ enabled: false }}
         showBorders={true}
-        pager={{ visible: true, showInfo: true }}
+        pager={{ visible: true, showInfo: true } as any}
         //paging={{pageIndex}}
         paging={{ pageIndex, pageIndexChange: setPageIndex }}
         dataSource={{ store }}

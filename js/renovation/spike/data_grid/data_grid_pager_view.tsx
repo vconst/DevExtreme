@@ -2,8 +2,8 @@
 import {
   ComponentBindings, JSXComponent, OneWay, InternalState, Effect, Component,
 } from 'devextreme-generator/component_declaration/common';
-import Pager from '../pager/pager';
-import PagerProps from '../pager/pager-props';
+import Pager from '../../pager/pager';
+import PagerProps from '../../pager/pager-props';
 
 export const viewFunction = ({
   dataControllerProps,
