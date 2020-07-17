@@ -46,9 +46,6 @@ QUnit.testStart(function() {
     // $(gridMarkup).appendTo('body');
 });
 
-import 'common.css!';
-import 'generic_light.css!';
-
 import '../../../node_modules/underscore/underscore-min.js';
 import '../../../node_modules/jsrender/jsrender.min.js';
 
@@ -99,12 +96,6 @@ if('chrome' in window && devices.real().deviceType !== 'desktop') {
 }
 
 fx.off = true;
-
-DataGrid.defaultOptions({
-    options: {
-        loadingTimeout: 0
-    }
-});
 
 QUnit.testDone(function() {
     ajaxMock.clear();
@@ -9413,7 +9404,7 @@ QUnit.module('Virtual row rendering', baseModuleConfig, () => {
             data.push({ id: i + 1 });
         }
         const dataGrid = $('#dataGrid').dxDataGrid({
-            height: 400,
+            height: 500,
             dataSource: data,
             loadingTimeout: undefined,
             scrolling: {
@@ -12305,10 +12296,10 @@ QUnit.module('Assign options', baseModuleConfig, () => {
     // arrange
         let loadCallCount = 0;
         let changeEditorValue;
-        const data = [{ 'name': 'Alex', 'age': 22 }];
+        const data = [{ 'name': 'Alex', 'age': 22, 'id': 1 }];
         const dataGrid = createDataGrid({
             dataSource: {
-                key: 'name',
+                key: 'id',
                 load: () => {
                     if(loadCallCount > 0) {
                         data[0]['name'] = 'foo';
@@ -19786,6 +19777,114 @@ QUnit.module('Editing', baseModuleConfig, () => {
             // assert
             assert.equal($dropDownPopupElement.length, 0, 'drop-down window is hidden');
             assert.equal($dropDownBoxElement.length, 1, 'editor is found');
+        });
+    });
+
+    ['Row', 'Cell', 'Batch'].forEach(editMode => {
+        QUnit.testInActiveWindow(`${editMode} - Unmodified cell in a new row should not be validated (T913725)`, function(assert) {
+            // arrange
+            const gridConfig = {
+                dataSource: [],
+                keyExpr: 'field2',
+                editing: {
+                    mode: editMode.toLowerCase()
+                },
+                columns: [
+                    {
+                        dataField: 'field1',
+                        validationRules: [
+                            {
+                                type: 'required'
+                            }
+                        ]
+                    },
+                    'field2'
+                ]
+            };
+
+            const grid = createDataGrid(gridConfig);
+            this.clock.tick();
+
+            grid.addRow();
+            this.clock.tick();
+
+            const $firstCell = $(grid.getCellElement(0, 0));
+
+            // assert
+            assert.ok($firstCell.hasClass('dx-focused'), 'cell should be focused');
+            assert.notOk($firstCell.hasClass('dx-datagrid-invalid'), 'cell should not be invalid');
+        });
+    });
+
+    QUnit.testInActiveWindow('Row - Editing cell with undefined value should be validated (T913725)', function(assert) {
+        // arrange
+        const gridConfig = {
+            dataSource: [{ field1: undefined, field2: 1 }],
+            keyExpr: 'field2',
+            editing: {
+                mode: 'row',
+                allowUpdating: true
+            },
+            columns: [
+                {
+                    dataField: 'field1',
+                    validationRules: [
+                        {
+                            type: 'required'
+                        }
+                    ]
+                },
+                'field2'
+            ]
+        };
+
+        const grid = createDataGrid(gridConfig);
+        this.clock.tick();
+
+        grid.editRow(0);
+        this.clock.tick();
+
+        const $firstCell = $(grid.getCellElement(0, 0));
+
+        // assert
+        assert.ok($firstCell.hasClass('dx-focused'), 'cell should be focused');
+        assert.ok($firstCell.hasClass('dx-datagrid-invalid'), 'cell should be invalid');
+    });
+
+    ['Cell', 'Batch'].forEach(editMode => {
+        QUnit.testInActiveWindow(`${editMode} - Editing cell with undefined value should be validated (T913725)`, function(assert) {
+            // arrange
+            const gridConfig = {
+                dataSource: [{ field1: undefined, field2: 1 }],
+                keyExpr: 'field2',
+                editing: {
+                    mode: editMode.toLowerCase(),
+                    allowUpdating: true
+                },
+                columns: [
+                    {
+                        dataField: 'field1',
+                        validationRules: [
+                            {
+                                type: 'required'
+                            }
+                        ]
+                    },
+                    'field2'
+                ]
+            };
+
+            const grid = createDataGrid(gridConfig);
+            this.clock.tick();
+
+            grid.editCell(0, 0);
+            this.clock.tick();
+
+            const $firstCell = $(grid.getCellElement(0, 0));
+
+            // assert
+            assert.ok($firstCell.hasClass('dx-focused'), 'cell should be focused');
+            assert.ok($firstCell.hasClass('dx-datagrid-invalid'), 'cell should be invalid');
         });
     });
 });

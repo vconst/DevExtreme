@@ -13,12 +13,12 @@ import dataCoreUtils from '../../core/utils/data';
 import { getBoundingRect } from '../../core/utils/position';
 import dateUtils from '../../core/utils/date';
 import dateSerialization from '../../core/utils/date_serialization';
-import deferredUtils from '../../core/utils/deferred';
+import { Deferred, when, fromPromise } from '../../core/utils/deferred';
 import { extend } from '../../core/utils/extend';
 import { each } from '../../core/utils/iterator';
 import { touch } from '../../core/utils/support';
-import typeUtils from '../../core/utils/type';
-import windowUtils from '../../core/utils/window';
+import { isDefined, isString, isObject, isFunction, isEmptyObject, isDeferred, isPromise } from '../../core/utils/type';
+import { hasWindow } from '../../core/utils/window';
 import DataHelperMixin from '../../data_helper';
 import { triggerResizeEvent } from '../../events/visibility_change';
 import dateLocalization from '../../localization/date';
@@ -50,9 +50,7 @@ import SchedulerWorkSpaceMonth from './workspaces/ui.scheduler.work_space_month'
 import SchedulerWorkSpaceWeek from './workspaces/ui.scheduler.work_space_week';
 import SchedulerWorkSpaceWorkWeek from './workspaces/ui.scheduler.work_space_work_week';
 
-const when = deferredUtils.when;
-const Deferred = deferredUtils.Deferred;
-
+// STYLE scheduler
 const toMs = dateUtils.dateToMilliseconds;
 const MINUTES_IN_HOUR = 60;
 
@@ -1025,7 +1023,7 @@ class Scheduler extends Widget {
             return 'number';
         }
 
-        if(!typeUtils.isString(value)) {
+        if(!isString(value)) {
             return;
         }
 
@@ -1078,7 +1076,7 @@ class Scheduler extends Widget {
     getCorrectedDatesByDaylightOffsets(originalStartDate, dates, appointmentData) {
         const startDateTimeZone = this.fire('getField', 'startDateTimeZone', appointmentData);
         const convertedOriginalStartDate = this.fire('convertDateByTimezoneBack', new Date(originalStartDate.getTime()), startDateTimeZone);
-        const needCheckTimezoneOffset = typeUtils.isDefined(startDateTimeZone) && typeUtils.isDefined(this._getTimezoneOffsetByOption(originalStartDate));
+        const needCheckTimezoneOffset = isDefined(startDateTimeZone) && isDefined(this._getTimezoneOffsetByOption(originalStartDate));
 
         if(needCheckTimezoneOffset) {
             dates = dates.map((date) => {
@@ -1395,7 +1393,7 @@ class Scheduler extends Widget {
             allowDragging: !!editing
         };
 
-        if(typeUtils.isObject(editing)) {
+        if(isObject(editing)) {
             this._editing = extend(this._editing, editing);
         }
 
@@ -1529,7 +1527,7 @@ class Scheduler extends Widget {
     }
 
     _initMarkupCore(resources) {
-        this._readyToRenderAppointments = windowUtils.hasWindow();
+        this._readyToRenderAppointments = hasWindow();
 
         this._workSpace && this._cleanWorkspace();
 
@@ -1547,7 +1545,7 @@ class Scheduler extends Widget {
     }
 
     _isResourcesLoaded() {
-        return typeUtils.isDefined(this._loadedResources);
+        return isDefined(this._loadedResources);
     }
 
     _isDataSourceLoaded() {
@@ -1640,7 +1638,7 @@ class Scheduler extends Widget {
         this._currentView = currentView;
 
         each(views, function(_, view) {
-            const isViewIsObject = typeUtils.isObject(view);
+            const isViewIsObject = isObject(view);
             const viewName = isViewIsObject ? view.name : view;
             const viewType = view.type;
 
@@ -1807,7 +1805,7 @@ class Scheduler extends Widget {
     _updateOption(viewName, optionName, value) {
         const currentViewOptions = this._getCurrentViewOptions();
 
-        if(!currentViewOptions || !typeUtils.isDefined(currentViewOptions[optionName])) {
+        if(!currentViewOptions || !isDefined(currentViewOptions[optionName])) {
             this['_' + viewName].option(optionName, value);
         }
     }
@@ -2002,24 +2000,24 @@ class Scheduler extends Widget {
 
     _makeDateAsRecurrenceException(exceptionDate, targetAppointment) {
         const startDate = this._getStartDate(targetAppointment, true);
+        const isAllDay = this.fire('getField', 'allDay', targetAppointment);
         const startDateTimeZone = this.fire('getField', 'startDateTimeZone', targetAppointment);
-        const exceptionByDate = this._getRecurrenceExceptionDate(exceptionDate, startDate, startDateTimeZone);
+        const exceptionByDate = this._getRecurrenceExceptionDate(exceptionDate, startDate, startDateTimeZone, isAllDay);
         const recurrenceException = this.fire('getField', 'recurrenceException', targetAppointment);
 
         return recurrenceException ? recurrenceException + ',' + exceptionByDate : exceptionByDate;
     }
 
-    _getRecurrenceExceptionDate(exceptionStartDate, targetStartDate, startDateTimeZone) {
+    _getRecurrenceExceptionDate(exceptionStartDate, targetStartDate, startDateTimeZone, isAllDay) {
         exceptionStartDate = this.fire('convertDateByTimezoneBack', exceptionStartDate, startDateTimeZone);
         const appointmentStartDate = this.fire('convertDateByTimezoneBack', targetStartDate, startDateTimeZone);
 
-        exceptionStartDate.setHours(appointmentStartDate.getHours(),
+        exceptionStartDate = timeZoneUtils.correctRecurrenceExceptionByTimezone(exceptionStartDate, appointmentStartDate, this.option('timeZone'), startDateTimeZone, true);
+
+        isAllDay && exceptionStartDate.setHours(appointmentStartDate.getHours(),
             appointmentStartDate.getMinutes(),
             appointmentStartDate.getSeconds(),
             appointmentStartDate.getMilliseconds());
-
-        const timezoneDiff = targetStartDate.getTimezoneOffset() - exceptionStartDate.getTimezoneOffset();
-        exceptionStartDate = new Date(exceptionStartDate.getTime() + timezoneDiff * toMs('minute'));
 
         return dateSerialization.serializeDate(exceptionStartDate, UTC_FULL_DATE_FORMAT);
     }
@@ -2044,13 +2042,24 @@ class Scheduler extends Widget {
         const target = options.data || options;
         const cellData = this.getTargetCellData();
         const targetAllDay = this.fire('getField', 'allDay', target);
-        const targetStartDate = new Date(this.fire('getField', 'startDate', target));
-        const targetEndDate = new Date(this.fire('getField', 'endDate', target));
-        let date = cellData.date || targetStartDate;
-        const duration = targetEndDate.getTime() - targetStartDate.getTime();
+        let targetStartDate = new Date(this.fire('getField', 'startDate', target));
+        let targetEndDate = new Date(this.fire('getField', 'endDate', target));
+        let date = cellData.startDate || targetStartDate;
 
-        if(this._workSpace.keepOriginalHours() && !isNaN(targetStartDate.getTime())) {
-            const diff = targetStartDate.getTime() - dateUtils.trimTime(targetStartDate).getTime();
+        if(!targetStartDate || isNaN(targetStartDate)) {
+            targetStartDate = date;
+        }
+        const targetStartTime = targetStartDate.getTime();
+
+        if(!targetEndDate || isNaN(targetEndDate)) {
+            targetEndDate = cellData.endDate;
+        }
+        const targetEndTime = targetEndDate.getTime() || cellData.endData;
+
+        const duration = targetEndTime - targetStartTime;
+
+        if(this._workSpace.keepOriginalHours()) {
+            const diff = targetStartTime - dateUtils.trimTime(targetStartDate).getTime();
             date = new Date(dateUtils.trimTime(date).getTime() + diff);
         }
 
@@ -2120,10 +2129,10 @@ class Scheduler extends Widget {
         let appointmentStartDate;
         let appointmentEndDate;
 
-        if(typeUtils.isDefined($appointment)) {
+        if(isDefined($appointment)) {
             const apptDataCalculator = this.getRenderingStrategyInstance().getAppointmentDataCalculator();
 
-            if(typeUtils.isFunction(apptDataCalculator) && this._isAppointmentRecurrence(appointmentData)) {
+            if(isFunction(apptDataCalculator) && this._isAppointmentRecurrence(appointmentData)) {
                 updatedStartDate = apptDataCalculator($appointment, startDate).startDate;
             } else {
                 if(options.isAppointmentResized) {
@@ -2165,7 +2174,7 @@ class Scheduler extends Widget {
         const callback = this._subscribes[subject];
         const args = Array.prototype.slice.call(arguments);
 
-        if(!typeUtils.isFunction(callback)) {
+        if(!isFunction(callback)) {
             throw errors.Error('E1031', subject);
         }
 
@@ -2184,7 +2193,7 @@ class Scheduler extends Widget {
         };
 
         const performFailAction = function(err) {
-            if(typeUtils.isFunction(onUpdatePrevented)) {
+            if(isFunction(onUpdatePrevented)) {
                 onUpdatePrevented.call(this);
             }
 
@@ -2195,7 +2204,7 @@ class Scheduler extends Widget {
 
         this._actions['onAppointmentUpdating'](updatingOptions);
 
-        if(dragEvent && !typeUtils.isDeferred(dragEvent.cancel)) {
+        if(dragEvent && !isDeferred(dragEvent.cancel)) {
             dragEvent.cancel = new Deferred();
         }
 
@@ -2219,9 +2228,11 @@ class Scheduler extends Widget {
                         });
                 } catch(err) {
                     performFailAction(err);
+                    deferred.resolve();
                 }
             } else {
                 performFailAction();
+                deferred.resolve();
             }
 
             return deferred.promise();
@@ -2231,13 +2242,13 @@ class Scheduler extends Widget {
     _processActionResult(actionOptions, callback) {
         const deferred = new Deferred();
         const resolveCallback = callbackResult => {
-            when(deferredUtils.fromPromise(callbackResult))
+            when(fromPromise(callbackResult))
                 .always(deferred.resolve);
         };
 
-        if(typeUtils.isPromise(actionOptions.cancel)) {
-            when(deferredUtils.fromPromise(actionOptions.cancel)).always((cancel) => {
-                if(!typeUtils.isDefined(cancel)) {
+        if(isPromise(actionOptions.cancel)) {
+            when(fromPromise(actionOptions.cancel)).always((cancel) => {
+                if(!isDefined(cancel)) {
                     cancel = actionOptions.cancel.state() === 'rejected';
                 }
                 resolveCallback(callback.call(this, cancel));
@@ -2450,7 +2461,7 @@ class Scheduler extends Widget {
         const startDate = this.fire('getField', 'startDate', currentAppointmentData || appointmentData);
 
         this._checkRecurringAppointment(appointmentData, singleAppointment, startDate, function() {
-            if(createNewAppointment || typeUtils.isEmptyObject(appointmentData)) {
+            if(createNewAppointment || isEmptyObject(appointmentData)) {
                 delete this._editAppointmentData;
                 this._editing.allowAdding && this._showAppointmentPopup(appointmentData, true, true);
             } else {
@@ -2555,7 +2566,7 @@ class Scheduler extends Widget {
     }
 
     getFirstDayOfWeek() {
-        return typeUtils.isDefined(this.option('firstDayOfWeek')) ? this.option('firstDayOfWeek') : dateLocalization.firstDayOfWeekIndex();
+        return isDefined(this.option('firstDayOfWeek')) ? this.option('firstDayOfWeek') : dateLocalization.firstDayOfWeekIndex();
     }
 
     /**
@@ -2569,4 +2580,4 @@ Scheduler.include(DataHelperMixin);
 
 registerComponent('dxScheduler', Scheduler);
 
-module.exports = Scheduler;
+export default Scheduler;

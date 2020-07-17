@@ -147,7 +147,7 @@ function updateTicksPosition(ticks, options, animate) {
 function updateGridsPosition(ticks, animate) {
     callAction(ticks, 'updateGridPosition', animate);
 }
-const measureLabels = exports.measureLabels = function(items) {
+export const measureLabels = function(items) {
     items.forEach(function(item) {
         item.labelBBox = item.label ? item.label.getBBox() : { x: 0, y: 0, width: 0, height: 0 };
     });
@@ -285,7 +285,7 @@ function getConstantLineSharpDirection(coord, axisCanvas) {
     return Math.max(axisCanvas.start, axisCanvas.end) !== coord ? 1 : -1;
 }
 
-const calculateCanvasMargins = exports.calculateCanvasMargins = function(bBoxes, canvas) {
+export const calculateCanvasMargins = function(bBoxes, canvas) {
     const cLeft = canvas.left;
     const cTop = canvas.top;
     const cRight = canvas.width - canvas.right;
@@ -309,7 +309,7 @@ const calculateCanvasMargins = exports.calculateCanvasMargins = function(bBoxes,
         });
 };
 
-const Axis = exports.Axis = function(renderSettings) {
+export const Axis = function(renderSettings) {
     const that = this;
 
     that._renderer = renderSettings.renderer;
@@ -365,17 +365,19 @@ Axis.prototype = {
         return false;
     },
 
-    getOppositeAxis: _noop,
+    getOrthogonalAxis: _noop,
 
     getCustomPosition: _noop,
 
     getCustomBoundaryPosition: _noop,
 
+    resolveOverlappingForCustomPositioning: _noop,
+
     hasCustomPosition() {
         return false;
     },
 
-    customPositionIsBoundaryOppositeAxis() {
+    customPositionIsBoundaryOrthogonalAxis() {
         return false;
     },
 
@@ -794,6 +796,13 @@ Axis.prototype = {
         const options = this._options;
         const discreteAxisDivisionMode = options.discreteAxisDivisionMode;
         this._tickOffset = +(discreteAxisDivisionMode !== 'crossLabels' || !discreteAxisDivisionMode);
+    },
+
+    resetApplyingAnimation: function(isFirstDrawing) {
+        this._resetApplyingAnimation = true;
+        if(isFirstDrawing) {
+            this._firstDrawing = true;
+        }
     },
 
     getMargins: function() {
@@ -1673,7 +1682,7 @@ Axis.prototype = {
         const viewPort = that.getViewport();
         const screenDelta = that._getScreenDelta();
         const isDiscrete = (options.type || '').indexOf(constants.discrete) !== -1;
-        const valueMarginsEnabled = options.valueMarginsEnabled && !isDiscrete && !that.customPositionIsBoundaryOppositeAxis();
+        const valueMarginsEnabled = options.valueMarginsEnabled && !isDiscrete && !that.customPositionIsBoundaryOrthogonalAxis();
 
         const translator = that._translator;
 
@@ -2014,6 +2023,10 @@ Axis.prototype = {
         initTickCoords(that._minorTicks);
         initTickCoords(that._boundaryTicks);
 
+        if(this._resetApplyingAnimation && !this._firstDrawing) {
+            that._resetStartCoordinates();
+        }
+
         cleanUpInvalidTicks(that._majorTicks);
         cleanUpInvalidTicks(that._minorTicks);
         cleanUpInvalidTicks(that._boundaryTicks);
@@ -2046,11 +2059,22 @@ Axis.prototype = {
         if(!that._translator.getBusinessRange().isEmpty()) {
             that._firstDrawing = false;
         }
+        this._resetApplyingAnimation = false;
     },
 
     prepareAnimation() {
         const that = this;
         const action = 'saveCoords';
+        callAction(that._majorTicks, action);
+        callAction(that._minorTicks, action);
+        callAction(that._insideConstantLines, action);
+        callAction(that._outsideConstantLines, action);
+        callAction(that._strips, action);
+    },
+
+    _resetStartCoordinates() {
+        const that = this;
+        const action = 'resetCoordinates';
         callAction(that._majorTicks, action);
         callAction(that._minorTicks, action);
         callAction(that._insideConstantLines, action);

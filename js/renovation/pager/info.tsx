@@ -3,7 +3,7 @@ import {
 } from 'devextreme-generator/component_declaration/common';
 
 import { format } from '../../core/utils/string';
-import { GetHtmlElement } from './pager.types.d';
+import { GetHtmlElement } from './common/types.d';
 
 export const PAGER_INFO_CLASS = 'dx-info';
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -25,7 +25,7 @@ export class InfoTextProps {
 }
 
 @Component({ defaultOptionRules: null, view: viewFunction })
-export default class InfoText extends JSXComponent(InfoTextProps) implements GetHtmlElement {
+export class InfoText extends JSXComponent(InfoTextProps) implements GetHtmlElement {
   @Ref() htmlRef!: HTMLElement;
 
   @Method() getHtmlElement(): HTMLElement {
@@ -34,7 +34,7 @@ export default class InfoText extends JSXComponent(InfoTextProps) implements Get
 
   get text(): string {
     const {
-      infoText = '', pageIndex, pageCount, totalCount,
+      infoText, pageIndex, pageCount, totalCount,
     } = this.props as Required<InfoTextProps>;
     return format(infoText,
       (pageIndex + 1).toString(),

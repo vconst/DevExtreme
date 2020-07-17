@@ -1,12 +1,13 @@
 import {
   Component, ComponentBindings, JSXComponent, OneWay, Ref, Effect, Event,
 } from 'devextreme-generator/component_declaration/common';
+/* eslint-disable import/named */
 import DataSource, { DataSourceOptions } from '../data/data_source';
-import { WidgetProps } from './widget';
+import { WidgetProps } from './common/widget';
 import DxList, { dxListItem, Options } from '../ui/list';
 import { dxElement } from '../core/element';
 import { event } from '../events/index';
-import renderTemplate from './utils/render-template';
+import renderTemplate from './utils/render_template';
 
 export const viewFunction = (viewModel: List) => (
   <div ref={viewModel.widgetRef as any} />
@@ -158,7 +159,7 @@ export class ListProps extends WidgetProps {
   defaultOptionRules: null,
   view: viewFunction,
 })
-export default class List extends JSXComponent(ListProps) {
+export class List extends JSXComponent(ListProps) {
   @Ref()
   widgetRef!: HTMLDivElement;
 

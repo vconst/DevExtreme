@@ -9,6 +9,8 @@ import translator from '../animation/translator';
 import fx from '../animation/fx';
 import { Deferred } from '../core/utils/deferred';
 
+// STYLE sortable
+
 const SORTABLE = 'dxSortable';
 
 const PLACEHOLDER_CLASS = 'placeholder';
@@ -770,4 +772,4 @@ const Sortable = Draggable.inherit({
 
 registerComponent(SORTABLE, Sortable);
 
-module.exports = Sortable;
+export default Sortable;
