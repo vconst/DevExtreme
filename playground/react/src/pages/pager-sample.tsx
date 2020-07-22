@@ -1,9 +1,10 @@
 import React from 'react';
 import { useState, useCallback } from 'react';
-import DataGrid, { Paging } from '../artifacts/react/renovation/data_grid/data_grid';
+import DataGrid from '../artifacts/react/renovation/spike/data_grid/data_grid';
 import Button from '../artifacts/react/renovation/button';
 import { createStore } from 'devextreme-aspnet-data-nojquery';
 import { useMemo } from 'react';
+import type { DataGridColumn } from '../artifacts/react/renovation/data_grid/props';
 
 const url = "https://js.devexpress.com/Demos/Mvc/api/DataGridWebApi";
 const store = createStore({
@@ -16,7 +17,7 @@ const store = createStore({
     ajaxOptions.xhrFields = { withCredentials: true };
   }
 });
-const columns = [{
+const columns: DataGridColumn[] = [{
   dataField: "CustomerID",
   caption: "Customer",
   validationRules: [{
@@ -94,7 +95,7 @@ export default function pagerExample() {
         showBorders={true}
         pager={{ visible: true, showInfo: true } as any}
         //paging={{pageIndex}}
-        paging={{ pageIndex, pageIndexChange: setPageIndex }}
+        paging={{ pageIndex, pageIndexChange: setPageIndex } as any}
         dataSource={{ store }}
         remoteOperations={true}
         columns={columns}

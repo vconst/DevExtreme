@@ -1,10 +1,16 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  ComponentBindings, JSXComponent, OneWay, InternalState, Effect, Component, Ref, Nested,
+  JSXComponent, Effect, Component, Ref,
 } from 'devextreme-generator/component_declaration/common';
-import DataSource, { DataSourceOptions } from '../../../data/data_source';
+import {
+  DataGridProps, DataGridColumn,
+  // eslint-disable-next-line max-len, @typescript-eslint/no-unused-vars
+  DataGridColumnButton, DataGridColumnChooser, DataGridColumnFixing, DataGridColumnHeaderFilter, DataGridColumnLookup, DataGridEditing, DataGridEditingTexts, DataGridFilterPanel, DataGridFilterRow, DataGridGroupPanel, DataGridGrouping, DataGridHeaderFilter, DataGridKeyboardNavigation, DataGridLoadPanel, DataGridMasterDetail, DataGridPager, DataGridPaging, DataGridRowDragging, DataGridScrolling, DataGridSearchPanel, DataGridSelection, DataGridSortByGroupSummaryInfoItem, DataGridSorting, DataGridStateStoring, DataGridSummary, DataGridSummaryGroupItem, DataGridSummaryTotalItem,
+} from '../../data_grid/props';
 
 import gridCore from '../../../ui/data_grid/ui.data_grid.core';
 
@@ -20,10 +26,11 @@ import '../../../ui/data_grid/ui.data_grid.header_panel';
 
 import '../../../ui/data_grid/ui.data_grid';
 
-import $ from '../../../core/renderer';
-import Widget from '../../../ui/widget/ui.widget';
-import DataGridPager, { DataGridPagerProps } from './data_grid_pager_view';
+import { Widget } from '../../common/widget';
 import { DataGridPagingProps } from './paging-props';
+import { DataGridComponent } from './datagrid_component';
+import DataGridContent from './data_grid_content';
+import { GridInstance } from './common/types.d';
 
 gridCore.registerModulesOrder([
   'stateStoring',
@@ -56,75 +63,41 @@ gridCore.registerModulesOrder([
   'gridView']);
 
 export const viewFunction = ({
-  dataController,
-  pageIndexChange,
-  props: { pager },
+  gridInstance,
+  props,
   widgetRef,
   restAttributes,
 }: DataGrid) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <div {...restAttributes}>
-    Hello data-grid
-    <div className="dx-widget" ref={widgetRef as any} />
-    pager
-    {dataController && (
-    <DataGridPager
-      {...pager}
-      dataController={dataController}
-      pageIndexChange={pageIndexChange}
-    />
-    )}
-  </div>
+  <Widget {...restAttributes} ref={widgetRef as any}>
+    <DataGridContent gridInstance={gridInstance} gridProps={props} />
+  </Widget>
 );
 
-type Column = {
-  dataField: string;
-  visible?: boolean;
-};
-
-type Pager = DataGridPagerProps;
-type Paging = Partial<typeof DataGridPagingProps>;
-
-@ComponentBindings()
-export class DataGridProps {
-  @OneWay() dataSource?: string | Array<any> | DataSource | DataSourceOptions;
-
-  @Nested() pager?: Pager;
-
-  @Nested() paging?: Paging;
-
-  // @Nested() paging? = new DataGridPagingProps();
-
-  @Nested() columns?: Column[] = [];
-
-  @OneWay() showColumnHeaders? = true;
-}
-
-  type GridInstance = (Widget & {
-    getView(name: string): any;
-    getController(name: string): any;
-  });
-
-const pagingDefault: Paging = DataGridPagingProps;
+const pagingDefault = DataGridPagingProps;
 
 @Component({ defaultOptionRules: null, jQuery: { register: true }, view: viewFunction })
 export default class DataGrid extends JSXComponent(DataGridProps) {
-  @InternalState() gridInstance!: GridInstance;
+  componentHolder: { componentInstance?: GridInstance } = { componentInstance: undefined };
 
-  @Ref() widgetRef!: HTMLDivElement;
+  @Ref() widgetRef!: Widget;
 
-  @Effect() setupWidget() {
-    if (!this.gridInstance) {
-      const instance = this.init();
-      this.gridInstance = instance;
-      instance.getView('gridView').render($(this.widgetRef));
+  // It's impossible to define constructor, so it's workaround to lazy creation
+  // of gridInstance within componentHolder by imutable way
+  get gridInstance() {
+    if (!this.componentHolder.componentInstance) {
+      this.componentHolder.componentInstance = this.init();
     }
+    return this.componentHolder.componentInstance;
   }
 
-  pageIndexChange(pageIndex: number) {
-    this.props.paging?.pageIndexChange?.(pageIndex);
-  }
+  // Uncomment the following code if some view or controlles need element
+  // @Effect() renderViews() {
+  //   const el = $(this.widgetRef.getHtmlElement());
+  //   (this.gridInstance as any).setElement(el);
+  // }
 
+  // TODO sync props<->option engine. Possible move to DataGridComponent
   @Effect() updatePagingOptions() {
     const instance = this.gridInstance;
     if (instance) {
@@ -139,11 +112,12 @@ export default class DataGrid extends JSXComponent(DataGridProps) {
     }
   }
 
+  // TODO sync props<->option engine. Possible move to DataGridComponent
   @Effect() updateOptions() {
     const instance = this.gridInstance;
     if (instance) {
       if (this.props.columns!.length > 0) {
-        const changedColumn = (this.props.columns as Column[])[1] as Column;
+        const changedColumn = (this.props.columns as DataGridColumn[])[1] as DataGridColumn;
         const currentColumn = instance.option('columns[1]');
         if (changedColumn?.visible !== currentColumn.visible) {
           instance.option('columns[1].visible', changedColumn.visible);
@@ -154,19 +128,16 @@ export default class DataGrid extends JSXComponent(DataGridProps) {
     }
   }
 
-  get dataController() {
-    return this.gridInstance?.getController?.('data');
-  }
-
+  // TODO Move to constructor of DataGridComponent
   init() {
     const deepCloneProps = {
       ...this.props,
-      columns: this.props.columns?.map((c) => ({ ...c })),
+      columns: this.props.columns?.map((c) => (typeof c === 'string' ? c : { ...c })),
       paging: { ...pagingDefault, ...this.props.paging },
-      pager: { /* ...(new DataGridPagerProps()), */ ...this.props.pager },
-    };
+      pager: { ...this.props.pager },
+    } as {};
     console.log('deepCloneProps', deepCloneProps);
-    const instance: any = new Widget(this.widgetRef, {
+    const instance: any = new DataGridComponent({
       ...deepCloneProps,
       onOptionChanged: (args) => {
         gridCore.callModuleItemsMethod(instance, 'optionChanged', [args]);

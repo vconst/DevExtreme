@@ -2,17 +2,20 @@
 import {
   ComponentBindings, JSXComponent, OneWay, InternalState, Effect, Component,
 } from 'devextreme-generator/component_declaration/common';
-import Pager from '../../pager/pager';
-import PagerProps from '../../pager/pager-props';
+import { Pager } from '../../pager/pager';
+import PagerProps from '../../pager/common/pager_props';
+import { GridInstance } from './common/types.d';
+import { DataGridProps } from '../../data_grid/props';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
   dataControllerProps,
   pageIndexChanged,
   pageSizeChanged,
-  props,
-}: DataGridPager) => (
+  pagerProps,
+}: DataGridPagerView) => (
   <Pager
-    {...props}
+    {...pagerProps}
     {...dataControllerProps}
     pageIndexChange={pageIndexChanged}
     pageSizeChange={pageSizeChanged}
@@ -20,70 +23,82 @@ export const viewFunction = ({
 );
 
 @ComponentBindings()
-export class DataGridPagerProps {
-  @OneWay() dataController;
+export class DataGridPagerViewProps {
+  // @OneWay() dataController;
 
-  @OneWay() visible?: boolean = true;
+  @OneWay() gridInstance!: GridInstance;
+
+  @OneWay() gridProps!: DataGridProps;
+
+
+/*
+  @OneWay() visible?: boolean | 'auto' = true;
 
   @OneWay() showPageSizes? = true;
 
   @OneWay() pagesNavigatorVisible?: boolean | 'auto' = 'auto';
 
   @OneWay() showInfo?: boolean = false;
+  */
 }
 
 @Component({ defaultOptionRules: null, view: viewFunction })
-export default class DataGridPager extends JSXComponent(DataGridPagerProps) {
-  @InternalState() dataControllerProps: PagerProps = { };
+export class DataGridPagerView extends JSXComponent(DataGridPagerViewProps) {
+  // TODO type DataController
+  getDataController(): any {
+    return this.props.gridInstance.getController('data');
+  }
 
-  // TODO разобраться почему не работает (this.props.dataController undefined)
-  // pageIndexChanged(pageIndex: number) {
-  //   const { dataController } = this.props.dataController;
-  //   if (dataController.pageIndex() !== pageIndex) {
-  //     // setTimeout(() => {
-  //     dataController.pageIndex(pageIndex);
-  //     // });
-  //   }
-  // }
-  pageIndexChanged(pageIndex: number) {
-    if (this.props.dataController.pageIndex() !== pageIndex) {
+  @InternalState() dataControllerPropsCache: PagerProps = { };
+
+  pageIndexChanged(pageIndex: number): void {
+    const dataController = this.getDataController();
+    if (dataController.pageIndex() !== pageIndex) {
       // setTimeout(() => {
-      this.props.dataController.pageIndex(pageIndex);
+      dataController.pageIndex(pageIndex);
       // });
     }
   }
 
-  pageSizeChanged(pageSize: number) {
+  pageSizeChanged(pageSize: number): void {
     // setTimeout(() => {
-    this.props.dataController.pageSize(pageSize);
+    this.getDataController().pageSize(pageSize);
     // });
   }
 
-  updateDataControllerProps(dataController) {
-    // workaround for generator bug
-    const r = {
+  // TODO add return type
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  getDataControllerProps() {
+    const dataController = this.getDataController();
+    return {
       pageIndex: dataController.pageIndex(),
       pageSize: dataController.pageSize(),
       pageCount: dataController.pageCount(),
       totalCount: dataController.totalCount(),
-      // hasKnownLastPage: dataController.hasKnownLastPage(),
+      hasKnownLastPage: dataController.hasKnownLastPage(),
     };
-    this.dataControllerProps = r;
   }
 
-  @Effect() initDataController() {
-    const { dataController } = this.props;
-    this.updateDataControllerProps(dataController);
-    dataController.changed.add(() => {
-      this.updateDataControllerProps(dataController);
-      // if (e && e.repaintChangesOnly) {
-      //   } else {
-      //     that.render();
-      //   }
-      // } else if (!e || e.changeType !== 'update' && e.changeType !== 'updateSelection') {
-      //   that.render();
-      // }
+  // TODO add return type
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  get dataControllerProps() {
+    return this.dataControllerPropsCache || this.getDataControllerProps();
+  }
+
+  // TODO return dispose function this.dataController.changed.remove
+  @Effect({ run: 'once' })
+  initDataController(): void {
+    this.getDataController().changed.add(() => {
+      this.dataControllerPropsCache = this.getDataControllerProps();
     });
-    // return {};
+  }
+
+  // TODO 'auto' fake implementation
+  get pagerProps(): PagerProps {
+    const { visible, ...restProps } = this.props.gridProps.pager!;
+    return {
+      visible: visible === 'auto' ? true : (visible as boolean),
+      ...restProps,
+    };
   }
 }
