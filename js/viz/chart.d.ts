@@ -13,6 +13,10 @@ import {
 } from '../ui/widget/ui.widget';
 
 import {
+    template
+} from '../core/templates/template';
+
+import {
     BaseChart,
     BaseChartLegend,
     BaseChartOptions,
@@ -681,43 +685,40 @@ export interface dxChartOptions extends BaseChartOptions<dxChart> {
      * @extends Action
      * @type function(e)|string
      * @type_function_param1 e:object
-     * @type_function_param1_field4 jQueryEvent:jQuery.Event:deprecated(event)
-     * @type_function_param1_field5 event:event
-     * @type_function_param1_field6 argument:Date|Number|string
+     * @type_function_param1_field4 event:event
+     * @type_function_param1_field5 argument:Date|Number|string
      * @notUsedInTheme
      * @action
      * @prevFileNamespace DevExpress.viz
      * @public
      */
-    onArgumentAxisClick?: ((e: { component?: dxChart, element?: dxElement, model?: any, jQueryEvent?: JQueryEventObject, event?: event, argument?: Date | number | string }) => any) | string;
+    onArgumentAxisClick?: ((e: { component?: dxChart, element?: dxElement, model?: any, event?: event, argument?: Date | number | string }) => any) | string;
     /**
      * @docid dxChartOptions.onLegendClick
      * @extends Action
      * @type function(e)|string
      * @type_function_param1 e:object
-     * @type_function_param1_field4 jQueryEvent:jQuery.Event:deprecated(event)
-     * @type_function_param1_field5 event:event
-     * @type_function_param1_field6 target:chartSeriesObject
+     * @type_function_param1_field4 event:event
+     * @type_function_param1_field5 target:chartSeriesObject
      * @notUsedInTheme
      * @action
      * @prevFileNamespace DevExpress.viz
      * @public
      */
-    onLegendClick?: ((e: { component?: dxChart, element?: dxElement, model?: any, jQueryEvent?: JQueryEventObject, event?: event, target?: chartSeriesObject }) => any) | string;
+    onLegendClick?: ((e: { component?: dxChart, element?: dxElement, model?: any, event?: event, target?: chartSeriesObject }) => any) | string;
     /**
      * @docid dxChartOptions.onSeriesClick
      * @extends Action
      * @type function(e)|string
      * @type_function_param1 e:object
-     * @type_function_param1_field4 jQueryEvent:jQuery.Event:deprecated(event)
-     * @type_function_param1_field5 event:event
-     * @type_function_param1_field6 target:chartSeriesObject
+     * @type_function_param1_field4 event:event
+     * @type_function_param1_field5 target:chartSeriesObject
      * @notUsedInTheme
      * @action
      * @prevFileNamespace DevExpress.viz
      * @public
      */
-    onSeriesClick?: ((e: { component?: dxChart, element?: dxElement, model?: any, jQueryEvent?: JQueryEventObject, event?: event, target?: chartSeriesObject }) => any) | string;
+    onSeriesClick?: ((e: { component?: dxChart, element?: dxElement, model?: any, event?: event, target?: chartSeriesObject }) => any) | string;
     /**
      * @docid dxChartOptions.onSeriesHoverChanged
      * @extends Action
@@ -2482,6 +2483,39 @@ export interface dxChartCommonAnnotationConfig extends BaseChartAnnotationConfig
      * @public
      */
     axis?: string;
+    /**	
+     * @docid dxChartCommonAnnotationConfig.customizeTooltip	
+     * @type function(annotation)	
+     * @type_function_param1 annotation:dxChartAnnotationConfig|any	
+     * @type_function_return object	
+     * @default undefined	
+     * @notUsedInTheme	
+     * @prevFileNamespace DevExpress.viz	
+     * @public	
+     */	
+    customizeTooltip?: ((annotation: dxChartAnnotationConfig | any) => any);
+    /**	
+     * @docid dxChartCommonAnnotationConfig.template	
+     * @type template|function	
+     * @default undefined	
+     * @type_function_param1 annotation:dxChartAnnotationConfig|any	
+     * @type_function_param2 element:SVGGElement	
+     * @type_function_return string|SVGElement|jQuery	
+     * @prevFileNamespace DevExpress.viz	
+     * @public	
+     */	
+    template?: template | ((annotation: dxChartAnnotationConfig | any, element: SVGGElement) => string | SVGElement | JQuery);
+    /**	
+     * @docid dxChartCommonAnnotationConfig.tooltipTemplate	
+     * @type template|function(annotation, element)	
+     * @type_function_param1 annotation:dxChartAnnotationConfig|any	
+     * @type_function_param2 element:dxElement	
+     * @type_function_return string|Element|jQuery	
+     * @default undefined	
+     * @prevFileNamespace DevExpress.viz	
+     * @public	
+     */	
+    tooltipTemplate?: template | ((annotation: dxChartAnnotationConfig | any, element: dxElement) => string | Element | JQuery);
 }
 
 export interface dxChartSeriesTypes {

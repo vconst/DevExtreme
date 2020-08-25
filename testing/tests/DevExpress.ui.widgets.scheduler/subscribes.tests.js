@@ -5,7 +5,6 @@ import 'ui/scheduler/ui.scheduler';
 
 import $ from 'jquery';
 import fx from 'animation/fx';
-import { getRecurrenceProcessor } from 'ui/scheduler/recurrence';
 import dateUtils from 'core/utils/date';
 import config from 'core/config';
 
@@ -118,7 +117,7 @@ QUnit.test('\'setCellDataCacheAlias\' should call workSpace method with right ar
     }
 });
 
-QUnit.test('\'needCoordinates\' should return workSpace date table scrollable', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should return workSpace date table scrollable', function(assert) {
     this.createInstance({
         currentView: 'day',
         startDayHour: 2,
@@ -126,12 +125,9 @@ QUnit.test('\'needCoordinates\' should return workSpace date table scrollable', 
         currentDate: 1425416400000
     });
 
-    const coordinate = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            'startDate': new Date(2015, 2, 3, 22),
-            'endDate': new Date(2015, 2, 17, 10, 30)
-        },
-        startDate: new Date(2015, 2, 3, 22),
+    const coordinate = this.instance.fire('createAppointmentSettings', {
+        'startDate': new Date(2015, 2, 3, 22),
+        'endDate': new Date(2015, 2, 17, 10, 30)
     });
     assert.roughEqual(coordinate[0].top, 0, 1.001, 'Top coordinate is OK');
 });
@@ -192,7 +188,7 @@ QUnit.test('\'needRecalculateResizableArea\' should return true for vertical gro
     assert.ok(needRecalculate, 'Resizable area should be recalculated');
 });
 
-QUnit.test('\'needCoordinates\' should return correct count of coordinates for allDay recurrence appointment', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should return correct count of coordinates for allDay recurrence appointment', function(assert) {
     this.createInstance();
     this.instance.option({
         currentView: 'week',
@@ -202,18 +198,15 @@ QUnit.test('\'needCoordinates\' should return correct count of coordinates for a
         firstDayOfWeek: 1
     });
 
-    const result = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            'startDate': new Date(2015, 2, 2, 0),
-            'endDate': new Date(2015, 2, 3, 0),
-            'recurrenceRule': 'FREQ=DAILY'
-        },
-        startDate: new Date(2015, 2, 2, 0),
+    const result = this.instance.fire('createAppointmentSettings', {
+        'startDate': new Date(2015, 2, 2, 0),
+        'endDate': new Date(2015, 2, 3, 0),
+        'recurrenceRule': 'FREQ=DAILY'
     });
     assert.equal(result.length, 7, 'count is OK');
 });
 
-QUnit.test('\'needCoordinates\' should return correct count of coordinates for allDay recurrence appointment, allDay = true', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should return correct count of coordinates for allDay recurrence appointment, allDay = true', function(assert) {
     this.createInstance();
     this.instance.option({
         currentView: 'week',
@@ -223,19 +216,16 @@ QUnit.test('\'needCoordinates\' should return correct count of coordinates for a
         firstDayOfWeek: 1
     });
 
-    const result = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            'startDate': new Date(2015, 2, 2, 0),
-            'endDate': new Date(2015, 2, 3, 0),
-            'recurrenceRule': 'FREQ=DAILY',
-            allDay: true
-        },
-        startDate: new Date(2015, 2, 2, 0),
+    const result = this.instance.fire('createAppointmentSettings', {
+        'startDate': new Date(2015, 2, 2, 0),
+        'endDate': new Date(2015, 2, 3, 0),
+        'recurrenceRule': 'FREQ=DAILY',
+        allDay: true
     });
     assert.equal(result.length, 7, 'count is OK');
 });
 
-QUnit.test('\'needCoordinates\' should not change dateRange', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should not change dateRange', function(assert) {
     this.createInstance({
         currentView: 'week',
         startDayHour: 2,
@@ -247,50 +237,13 @@ QUnit.test('\'needCoordinates\' should not change dateRange', function(assert) {
     const instance = this.instance;
     const dateRange = instance._workSpace.getDateRange();
 
-    instance.fire('needCoordinates', {
-        appointmentData: {
-            'startDate': new Date(2015, 2, 2, 0),
-            'endDate': new Date(2015, 2, 3, 0),
-            'recurrenceRule': 'FREQ=DAILY',
-            allDay: true
-        },
-        startDate: new Date(2015, 2, 2, 0),
+    instance.fire('createAppointmentSettings', {
+        'startDate': new Date(2015, 2, 2, 0),
+        'endDate': new Date(2015, 2, 3, 0),
+        'recurrenceRule': 'FREQ=DAILY',
+        allDay: true
     });
     assert.deepEqual(dateRange, instance._workSpace.getDateRange(), 'Date range wasn\'t changed');
-});
-
-QUnit.test('\'needCoordinates\' should calculate correct dates fo recurring appts (T408509)', function(assert) {
-    this.createInstance({
-        currentView: 'week',
-        startDayHour: 2,
-        endDayHour: 10,
-        currentDate: new Date(2015, 2, 2, 0),
-        firstDayOfWeek: 1
-    });
-    const getDatesByRecurrenceStub = sinon.stub(getRecurrenceProcessor(), 'generateDates').returns([]);
-
-    try {
-        const instance = this.instance;
-
-
-        instance.fire('needCoordinates', {
-            appointmentData: {
-                'startDate': new Date(2015, 2, 2, 0),
-                'endDate': new Date(2015, 2, 3, 0),
-                'recurrenceRule': 'FREQ=DAILY',
-                allDay: true
-            },
-            startDate: new Date(2015, 2, 2, 0),
-            originalStartDate: new Date(2015, 2, 2, 1),
-        });
-
-        const startDate = getDatesByRecurrenceStub.getCall(0).args[0].start;
-
-        assert.equal(startDate.getTime(), new Date(2015, 2, 2, 1).getTime(), 'Original start date was used for dates calculation');
-
-    } finally {
-        getDatesByRecurrenceStub.restore();
-    }
 });
 
 QUnit.test('Long appointment in Timeline view should have right left coordinate', function(assert) {
@@ -303,17 +256,14 @@ QUnit.test('Long appointment in Timeline view should have right left coordinate'
     const $expectedCell = this.instance.$element().find('.dx-scheduler-date-table-cell').eq(1);
     const expectedLeftCoordinate = $expectedCell.position().left;
 
-    const coordinate = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            'startDate': new Date(2015, 2, 3, 0, 30),
-            'endDate': new Date(2015, 2, 5, 15, 30)
-        },
-        startDate: new Date(2015, 2, 3, 0, 30),
+    const coordinate = this.instance.fire('createAppointmentSettings', {
+        'startDate': new Date(2015, 2, 3, 0, 30),
+        'endDate': new Date(2015, 2, 5, 15, 30)
     });
     assert.equal(coordinate[0].left, expectedLeftCoordinate, 'left coordinate is OK');
 });
 
-QUnit.test('\'needCoordinates\' should work correct with custom data fields', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should work correct with custom data fields', function(assert) {
     this.createInstance({
         currentView: 'week',
         currentDate: new Date(2015, 2, 2, 0),
@@ -321,11 +271,8 @@ QUnit.test('\'needCoordinates\' should work correct with custom data fields', fu
         startDateExpr: 'Start'
     });
 
-    const result = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2015, 2, 2, 0)
-        },
-        startDate: new Date(2015, 2, 2, 0),
+    const result = this.instance.fire('createAppointmentSettings', {
+        Start: new Date(2015, 2, 2, 0)
     });
     assert.equal(result.length, 1, 'Coordinates are OK');
 });
@@ -340,10 +287,10 @@ QUnit.test('\'updateAppointmentStartDate\' should work correct with custom data 
     }));
 });
 
-QUnit.test('\'mapAppointmentFields\' should call getTargetedAppointmentData', function(assert) {
+QUnit.test('\'mapAppointmentFields\' should call getTargetedAppointment', function(assert) {
     this.createInstance();
 
-    const stub = sinon.stub(this.instance._subscribes, 'getTargetedAppointmentData');
+    const stub = sinon.stub(this.instance, 'getTargetedAppointment');
 
     this.instance.fire('mapAppointmentFields', {
         itemData: {
@@ -1469,7 +1416,7 @@ QUnit.test('\'isGroupedByDate\' should be true only for horizontal grouped works
     assert.equal(this.instance.fire('isGroupedByDate'), false, 'Workspace isn\'t grouped by date');
 });
 
-QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Day view', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should work correct when groupByDate = true, Day view', function(assert) {
     const priorityData = [
         {
             text: 'Low Priority',
@@ -1502,25 +1449,19 @@ QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Day
         ],
     });
 
-    this.checkNeedCoordinatesResult(assert, this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2018, 4, 21, 9, 0),
-            priorityId: 2
-        },
+    this.checkNeedCoordinatesResult(assert, this.instance.fire('createAppointmentSettings', {
         startDate: new Date(2018, 4, 21, 9, 0),
+        priorityId: 2
     })[0], 0, 0, 0, 324, 1.1);
 
 
-    this.checkNeedCoordinatesResult(assert, this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2018, 4, 22, 9, 0),
-            priorityId: 1
-        },
+    this.checkNeedCoordinatesResult(assert, this.instance.fire('createAppointmentSettings', {
         startDate: new Date(2018, 4, 22, 9, 0),
+        priorityId: 1
     })[0], 1, 0, 0, 548, 1.1);
 });
 
-QUnit.test('\'needCoordinates\' should work correct for allDay appointment when groupByDate = true, Week view', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should work correct for allDay appointment when groupByDate = true, Week view', function(assert) {
     const priorityData = [
         {
             text: 'Low Priority',
@@ -1553,22 +1494,20 @@ QUnit.test('\'needCoordinates\' should work correct for allDay appointment when 
         ],
     });
 
-    const results = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2018, 4, 21, 9, 0),
-            endDate: new Date(2018, 4, 23, 9, 0),
-            priorityId: 2,
-            allDay: true
-        },
+    const results = this.instance.fire('createAppointmentSettings', {
         startDate: new Date(2018, 4, 21, 9, 0),
+        endDate: new Date(2018, 4, 23, 9, 0),
+        priorityId: 2,
+        allDay: true
     });
 
-    assert.equal(results.length, 2, 'Result length is OK');
+    assert.equal(results.length, 3, 'Result length is OK');
     this.checkNeedCoordinatesResult(assert, results[0], 1, 0, 0, 196, 1.1);
     this.checkNeedCoordinatesResult(assert, results[1], 2, 0, 0, 260, 1.1);
+    this.checkNeedCoordinatesResult(assert, results[2], 3, 0, 0, 324, 1.1);
 });
 
-QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Week view', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should work correct when groupByDate = true, Week view', function(assert) {
     const priorityData = [
         {
             text: 'Low Priority',
@@ -1597,25 +1536,19 @@ QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Wee
         ],
     });
 
-    this.checkNeedCoordinatesResult(assert, this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2018, 4, 22, 10, 0),
-            priorityId: 2
-        },
+    this.checkNeedCoordinatesResult(assert, this.instance.fire('createAppointmentSettings', {
         startDate: new Date(2018, 4, 22, 10, 0),
+        priorityId: 2
     })[0], 2, 2, 100, 420, 1.5);
 
-    this.checkNeedCoordinatesResult(assert, this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2018, 4, 25, 1, 0),
-            priorityId: 1
-        },
+    this.checkNeedCoordinatesResult(assert, this.instance.fire('createAppointmentSettings', {
         startDate: new Date(2018, 4, 25, 11, 0),
+        priorityId: 1
     })[0], 5, 4, 200, 740, 1.5);
 });
 
 
-QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Month view', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should work correct when groupByDate = true, Month view', function(assert) {
     const priorityData = [
         {
             text: 'Low Priority',
@@ -1651,13 +1584,10 @@ QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Mon
     const cellWidth = $cell.getBoundingClientRect().width;
     const cellHeight = $cell.getBoundingClientRect().height;
 
-    const results = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2018, 4, 22, 10, 0),
-            endDate: new Date(2018, 4, 24),
-            priorityId: 2
-        },
+    const results = this.instance.fire('createAppointmentSettings', {
         startDate: new Date(2018, 4, 22, 10, 0),
+        endDate: new Date(2018, 4, 24),
+        priorityId: 2
     });
 
     assert.equal(results.length, 2, 'Coordinates count is ok');
@@ -1665,7 +1595,7 @@ QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Mon
     this.checkNeedCoordinatesResult(assert, results[1], 3, 3, cellHeight * 3, cellWidth * 7, 1.5);
 });
 
-QUnit.test('\'needCoordinates\' should work correct for recurrenceAppointment when groupByDate = true, Month view', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should work correct for recurrenceAppointment when groupByDate = true, Month view', function(assert) {
     const priorityData = [
         {
             text: 'Low Priority',
@@ -1701,14 +1631,11 @@ QUnit.test('\'needCoordinates\' should work correct for recurrenceAppointment wh
     const cellWidth = $cell.getBoundingClientRect().width;
     const cellHeight = $cell.getBoundingClientRect().height;
 
-    const results = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2018, 4, 22, 10, 0),
-            endDate: new Date(2018, 4, 23, 12),
-            priorityId: 2,
-            recurrenceRule: 'FREQ=DAILY;COUNT=3'
-        },
+    const results = this.instance.fire('createAppointmentSettings', {
         startDate: new Date(2018, 4, 22, 10, 0),
+        endDate: new Date(2018, 4, 23, 12),
+        priorityId: 2,
+        recurrenceRule: 'FREQ=DAILY;COUNT=3'
     });
 
     assert.equal(results.length, 6, 'Coordinates count is ok');
@@ -1720,7 +1647,7 @@ QUnit.test('\'needCoordinates\' should work correct for recurrenceAppointment wh
     this.checkNeedCoordinatesResult(assert, results[5], 5, 3, cellHeight * 3, cellWidth * 11, 1.5);
 });
 
-QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Timeline view', function(assert) {
+QUnit.test('\'createAppointmentSettings\' should work correct when groupByDate = true, Timeline view', function(assert) {
     const priorityData = [
         {
             text: 'Low Priority',
@@ -1757,13 +1684,10 @@ QUnit.test('\'needCoordinates\' should work correct when groupByDate = true, Tim
 
     const cellWidth = this.instance.$element().find('.dx-scheduler-date-table-cell').eq(0).get(0).getBoundingClientRect().width;
 
-    const results = this.instance.fire('needCoordinates', {
-        appointmentData: {
-            startDate: new Date(2018, 4, 21, 10, 0),
-            endDate: new Date(2018, 4, 21, 12, 0),
-            priorityId: 2
-        },
+    const results = this.instance.fire('createAppointmentSettings', {
         startDate: new Date(2018, 4, 21, 10, 0),
+        endDate: new Date(2018, 4, 21, 12, 0),
+        priorityId: 2
     });
 
     this.checkNeedCoordinatesResult(assert, results[0], 2, 0, 0, cellWidth * 5, 1.5);

@@ -22,8 +22,8 @@ export default gridCore.Controller.inherit((function() {
         return items;
     }
 
-    function calculateOperationTypes(loadOptions, lastLoadOptions) {
-        let operationTypes = {};
+    function calculateOperationTypes(loadOptions, lastLoadOptions, isFullReload) {
+        let operationTypes = { reload: true, fullReload: true };
 
         if(lastLoadOptions) {
             operationTypes = {
@@ -33,9 +33,11 @@ export default gridCore.Controller.inherit((function() {
                 filtering: !gridCore.equalFilterParameters(loadOptions.filter, lastLoadOptions.filter),
                 pageIndex: loadOptions.pageIndex !== lastLoadOptions.pageIndex,
                 skip: loadOptions.skip !== lastLoadOptions.skip,
-                take: loadOptions.take !== lastLoadOptions.take
+                take: loadOptions.take !== lastLoadOptions.take,
+                fullReload: isFullReload
             };
-            operationTypes.reload = operationTypes.sorting || operationTypes.grouping || operationTypes.filtering;
+
+            operationTypes.reload = isFullReload || operationTypes.sorting || operationTypes.grouping || operationTypes.filtering;
             operationTypes.paging = operationTypes.pageIndex || operationTypes.take;
         }
 
@@ -79,6 +81,7 @@ export default gridCore.Controller.inherit((function() {
             that._lastOperationTypes = {};
             that._eventsStrategy = dataSource._eventsStrategy;
             that._skipCorrection = 0;
+            that._isLoadingAll = false;
 
 
             that.changed = Callbacks();
@@ -131,16 +134,19 @@ export default gridCore.Controller.inherit((function() {
                 dataSource.dispose();
             }
         },
-        refresh: function(options, isReload, operationTypes) {
+        refresh: function(options, operationTypes) {
             const that = this;
             const dataSource = that._dataSource;
 
-            if(isReload || operationTypes.reload) {
-                that._currentTotalCount = 0;
-                that._skipCorrection = 0;
+            if(operationTypes.reload) {
+                that.resetCurrentTotalCount();
                 that._isLastPage = !dataSource.paginate();
                 that._hasLastPage = that._isLastPage;
             }
+        },
+        resetCurrentTotalCount: function() {
+            this._currentTotalCount = 0;
+            this._skipCorrection = 0;
         },
         resetCache: function() {
             this._cachedStoreData = undefined;
@@ -234,7 +240,7 @@ export default gridCore.Controller.inherit((function() {
 
             return currentOperationTypes.some(operationType => remoteOperations[operationType]);
         },
-        _customizeRemoteOperations: function(options, isReload, operationTypes) {
+        _customizeRemoteOperations: function(options, operationTypes) {
             const that = this;
             let cachedStoreData = that._cachedStoreData;
             let cachedPagingData = that._cachedPagingData;
@@ -246,7 +252,7 @@ export default gridCore.Controller.inherit((function() {
                 };
             }
 
-            if(isReload) {
+            if(operationTypes.fullReload) {
                 cachedStoreData = undefined;
                 cachedPagingData = undefined;
                 cachedPagesData = createEmptyPagesData();
@@ -291,7 +297,7 @@ export default gridCore.Controller.inherit((function() {
             options.originalStoreLoadOptions = options.storeLoadOptions;
             options.remoteOperations = extend({}, this.remoteOperations());
 
-            const isReload = !that.isLoaded() && !that._isRefreshing;
+            const isFullReload = !that.isLoaded() && !that._isRefreshing;
 
             if(that.option('integrationOptions.renderedOnServer') && !that.isLoaded()) {
                 options.delay = undefined;
@@ -299,9 +305,9 @@ export default gridCore.Controller.inherit((function() {
 
             const loadOptions = extend({ pageIndex: that.pageIndex() }, options.storeLoadOptions);
 
-            const operationTypes = calculateOperationTypes(loadOptions, lastLoadOptions);
+            const operationTypes = calculateOperationTypes(loadOptions, lastLoadOptions, isFullReload);
 
-            that._customizeRemoteOperations(options, isReload, operationTypes);
+            that._customizeRemoteOperations(options, operationTypes);
 
             if(!options.isCustomLoading) {
                 const isRefreshing = that._isRefreshing;
@@ -312,7 +318,7 @@ export default gridCore.Controller.inherit((function() {
                 that._loadingOperationTypes = operationTypes;
                 that._isRefreshing = true;
 
-                when(isRefreshing || that._isRefreshed || that.refresh(options, isReload, operationTypes)).done(function() {
+                when(isRefreshing || that._isRefreshed || that.refresh(options, operationTypes)).done(function() {
                     if(that._lastOperationId === options.operationId) {
                         that._isRefreshed = true;
                         that.load().always(function() {
@@ -542,7 +548,7 @@ export default gridCore.Controller.inherit((function() {
         },
         pageCount: function() {
             const that = this;
-            const count = that.totalItemsCount();
+            const count = that.totalItemsCount() - that._skipCorrection;
             const pageSize = that.pageSize();
 
             if(pageSize && count > 0) {
@@ -593,6 +599,8 @@ export default gridCore.Controller.inherit((function() {
                     }
                 });
 
+                this._isLoadingAll = options.isLoadingAll;
+
                 that._scheduleCustomLoadCallbacks(d);
                 dataSource._scheduleLoadCallbacks(d);
 
@@ -620,6 +628,8 @@ export default gridCore.Controller.inherit((function() {
 
                 return d.fail(function() {
                     that._eventsStrategy.fireEvent('loadError', arguments);
+                }).always(() => {
+                    this._isLoadingAll = false;
                 }).promise();
             } else {
                 return dataSource.load();

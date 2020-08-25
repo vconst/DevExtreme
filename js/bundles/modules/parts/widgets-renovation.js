@@ -4,10 +4,11 @@
 /* Renovation (dx.module-renovation.js) */
 
 const renovation = require('../../../bundles/modules/renovation');
-renovation.dxrButton = require('../../../renovation/button.j').default;
-renovation.dxrWidget = require('../../../renovation/common/widget.j').default;
-renovation.dxrGridPager = require('../../../renovation/pager/grid_pager.j').default;
-renovation.dxrDataGrid = require('../../../renovation/data_grid/data_grid.j').default;
-renovation.dxrTooltipItemLayout = require('../../../renovation/scheduler/appointment_tooltip/item_layout.j').default;
+renovation.dxButton = require('../../../renovation/ui/button.j').default;
+renovation.dxCheckBox = require('../../../renovation/ui/check_box.j').default;
+renovation.dxWidget = require('../../../renovation/ui/common/widget.j').default;
+renovation.dxGridPager = require('../../../renovation/ui/pager/pager.j').default;
+// renovation.dxDataGrid = require('../../../renovation/ui/data_grid/data_grid.j').default;
+renovation.dxTooltipItemLayout = require('../../../renovation/ui/scheduler/appointment_tooltip/item_layout.j').default;
 /// BUNDLER_PARTS_END
 module.exports = renovation;

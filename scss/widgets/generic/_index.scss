@@ -8,6 +8,8 @@ $size: null !default;
 @use "./widget";
 @use "./card";
 @use "./fieldset";
+@use "./common";
+
 // public widgets
 @use "./box";
 @use "./responsiveBox";

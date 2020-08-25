@@ -660,6 +660,11 @@
  */
 
 /**
+ * @typedef {string} Enums.SchedulerScrollingMode
+ * @enum {'standard'|'virtual'}
+ */
+
+/**
  * @typedef {string} Enums.ScrollDirection
  * @enum {'both'|'horizontal'|'vertical'}
  */
@@ -1062,6 +1067,11 @@
 /**
  * @typedef {string} Enums.FileManagerItemViewMode
  * @enum {'details'|'thumbnails'}
+ */
+
+/**
+ * @typedef {string} Enums.FileManagerViewArea
+ * @enum {'navPane'|'itemView'}
  */
 
 /**

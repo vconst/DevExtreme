@@ -249,12 +249,6 @@ QUnit.module('Initialization', {
 });
 
 (function() {
-
-    function getDeltaTz(schedulerTz) {
-        const defaultTz = new Date().getTimezoneOffset() / 60;
-        return schedulerTz + defaultTz;
-    }
-
     QUnit.module('Methods', {
         beforeEach: function() {
             this.createInstance = function(options) {
@@ -320,10 +314,8 @@ QUnit.module('Initialization', {
         assert.strictEqual(this.instance.option('dataSource').items()[2].text, '', 'new item was added with correct text');
     });
 
-    QUnit.test('Add new item when timezone doesn\'t equal to the default value', function(assert) {
+    QUnit.test('addAppointment shouldn\'t have an effect on data item, when timezone is set', function(assert) {
         const data = [];
-        const deltaTz = getDeltaTz(5);
-        const daylightOffset = (new Date().getTimezoneOffset() - new Date(2015, 1, 9).getTimezoneOffset()) / 60;
 
         this.createInstance({
             currentDate: new Date(2015, 1, 9),
@@ -333,115 +325,8 @@ QUnit.module('Initialization', {
 
         this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 16), endDate: new Date(2015, 1, 9, 17), text: 'first' });
 
-        assert.deepEqual(data[0].startDate, new Date(2015, 1, 9, 16 - deltaTz + daylightOffset), 'Start date is OK');
-        assert.deepEqual(data[0].endDate, new Date(2015, 1, 9, 17 - deltaTz + daylightOffset), 'End date is OK');
-
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9), endDate: new Date(2015, 1, 9, 0, 30), text: 'second' });
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 23, 30), endDate: new Date(2015, 1, 9, 23, 59), text: 'third' });
-
-        const $appointments = $(this.instance.$element().find('.dx-scheduler-appointment'));
-        assert.equal($appointments.length, 3, 'All appts are rendered');
-    });
-
-    QUnit.test('Add new item when timezone doesn\'t equal to the default value, startDay and endDay hours are set', function(assert) {
-        const data = [];
-        const deltaTz = getDeltaTz(10);
-        const daylightOffset = (new Date().getTimezoneOffset() - new Date(2015, 1, 9).getTimezoneOffset()) / 60;
-
-        this.createInstance({
-            currentDate: new Date(2015, 1, 9),
-            dataSource: data,
-            timezone: 5,
-            startDayHour: 3,
-            endDayHour: 20,
-            timeZone: 10
-        });
-
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 16), endDate: new Date(2015, 1, 9, 17), text: 'first' });
-
-        assert.deepEqual(data[0].startDate, new Date(2015, 1, 9, 16 - deltaTz + daylightOffset), 'Start date is OK');
-        assert.deepEqual(data[0].endDate, new Date(2015, 1, 9, 17 - deltaTz + daylightOffset), 'End date is OK');
-
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 3, 30), endDate: new Date(2015, 1, 9, 4), text: 'second' });
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 19), endDate: new Date(2015, 1, 9, 19, 30), text: 'third' });
-
-        const $appointments = $(this.instance.$element().find('.dx-scheduler-appointment'));
-        assert.equal($appointments.length, 3, 'All appts are rendered');
-    });
-
-    QUnit.test('Add new item when timezone doesn\'t equal to the default value, negative value', function(assert) {
-        const data = [];
-        const deltaTz = getDeltaTz(-7);
-        const daylightOffset = (new Date().getTimezoneOffset() - new Date(2015, 1, 9).getTimezoneOffset()) / 60;
-
-        this.createInstance({
-            currentDate: new Date(2015, 1, 9),
-            dataSource: data,
-            timeZone: -7
-        });
-
-        this.instance.addAppointment({
-            startDate: new Date(2015, 1, 9, 16),
-            endDate: new Date(2015, 1, 9, 17),
-            text: 'first'
-        });
-
-        assert.deepEqual(data[0].startDate, new Date(new Date(2015, 1, 9).setHours(16 - deltaTz + daylightOffset)), 'Start date is OK');
-        assert.deepEqual(data[0].endDate, new Date(new Date(2015, 1, 9).setHours(17 - deltaTz + daylightOffset)), 'End date is OK');
-
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9), endDate: new Date(2015, 1, 9, 0, 30), text: 'second' });
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 23, 30), endDate: new Date(2015, 1, 9, 23, 59), text: 'third' });
-
-        const $appointments = $(this.instance.$element().find('.dx-scheduler-appointment'));
-        assert.equal($appointments.length, 3, 'All appts are rendered');
-    });
-
-    QUnit.test('Add new item when timezone doesn\'t equal to the default value, negative value, startDay and endDay hours are set', function(assert) {
-        const data = [];
-        const deltaTz = getDeltaTz(-7);
-        const daylightOffset = (new Date().getTimezoneOffset() - new Date(2015, 1, 9).getTimezoneOffset()) / 60;
-
-        this.createInstance({
-            currentDate: new Date(2015, 1, 9),
-            dataSource: data,
-            timezone: 5,
-            startDayHour: 3,
-            endDayHour: 20,
-            timeZone: -7
-        });
-
-        this.instance.addAppointment({
-            startDate: new Date(2015, 1, 9, 16),
-            endDate: new Date(2015, 1, 9, 17),
-            text: 'first'
-        });
-
-        assert.deepEqual(data[0].startDate, new Date(new Date(2015, 1, 9).setHours(16 - deltaTz + daylightOffset)), 'Start date is OK');
-        assert.deepEqual(data[0].endDate, new Date(new Date(2015, 1, 9).setHours(17 - deltaTz + daylightOffset)), 'End date is OK');
-
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 3, 30), endDate: new Date(2015, 1, 9, 4), text: 'second' });
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 19), endDate: new Date(2015, 1, 9, 19, 30), text: 'third' });
-
-        const $appointments = $(this.instance.$element().find('.dx-scheduler-appointment'));
-        assert.equal($appointments.length, 3, 'All appts are rendered');
-    });
-
-    QUnit.test('Add new item when timezone doesn\'t equal to the default value and set as string', function(assert) {
-        this.clock.restore();
-        const data = [];
-        const deltaTz = getDeltaTz(4);
-        const daylightOffset = (new Date().getTimezoneOffset() - new Date(2015, 1, 9).getTimezoneOffset()) / 60;
-
-        this.createInstance({
-            currentDate: new Date(2015, 1, 9),
-            dataSource: data,
-            timeZone: 'Asia/Muscat'
-        });
-
-        this.instance.addAppointment({ startDate: new Date(2015, 1, 9, 16), endDate: new Date(2015, 1, 9, 17) });
-
-        assert.deepEqual(data[0].startDate, new Date(2015, 1, 9, 16 - deltaTz + daylightOffset), 'Start date is OK');
-        assert.deepEqual(data[0].endDate, new Date(2015, 1, 9, 17 - deltaTz + daylightOffset), 'End date is OK');
+        assert.deepEqual(data[0].startDate, new Date(2015, 1, 9, 16), 'Start date is OK');
+        assert.deepEqual(data[0].endDate, new Date(2015, 1, 9, 17), 'End date is OK');
     });
 
     QUnit.test('Update item', function(assert) {
@@ -2358,6 +2243,46 @@ QUnit.module('Initialization', {
             assert.equal(errors.log.callCount, 1, 'warning has been called once');
             assert.equal(errors.log.getCall(0).args[0], 'W1015', 'warning has correct error id');
         });
+    });
+
+    QUnit.test('Data source should not be loaded on option change if it is already being loaded (T916558)', function(assert) {
+        const dataSource = new DataSource({
+            store: []
+        });
+        this.createInstance({
+            currentDate: new Date(2015, 4, 24),
+            views: ['day', 'workWeek', { type: 'week' }],
+            currentView: 'day',
+            dataSource,
+        });
+
+        const initMarkupSpy = sinon.spy(this.instance, '_initMarkup');
+        const reloadDataSourceSpy = sinon.spy(this.instance, '_reloadDataSource');
+
+        const nextDataSource = new DataSource({
+            store: new CustomStore({
+                load: function() {
+                    const d = $.Deferred();
+                    setTimeout(function() {
+                        d.resolve([]);
+                    }, 300);
+
+                    return d.promise();
+                }
+            })
+        });
+        this.instance.option({
+            'dataSource': nextDataSource,
+        });
+        this.instance.option({
+            'views[2].intervalCount': 2,
+            'views[2].startDate': new Date(),
+        });
+
+        this.clock.tick(400);
+
+        assert.ok(initMarkupSpy.calledTwice, 'Init markup was called on the second and third option change');
+        assert.ok(reloadDataSourceSpy.calledOnce, '_reloadDataSource was not called on init mark up');
     });
 })('Options');
 
