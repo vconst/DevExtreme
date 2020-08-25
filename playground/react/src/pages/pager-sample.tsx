@@ -1,10 +1,10 @@
 import React from 'react';
 import { useState, useCallback } from 'react';
 import DataGrid from '../artifacts/react/renovation/spike/data_grid/data_grid';
-import Button from '../artifacts/react/renovation/button';
+import Button from '../artifacts/react/renovation/ui/button';
 import { createStore } from 'devextreme-aspnet-data-nojquery';
 import { useMemo } from 'react';
-import type { DataGridColumn } from '../artifacts/react/renovation/data_grid/props';
+import type { DataGridColumnType } from '../artifacts/react/renovation/ui/data_grid/props';
 
 const url = "https://js.devexpress.com/Demos/Mvc/api/DataGridWebApi";
 const store = createStore({
@@ -17,7 +17,7 @@ const store = createStore({
     ajaxOptions.xhrFields = { withCredentials: true };
   }
 });
-const columns: DataGridColumn[] = [{
+const columns: DataGridColumnType[] = [{
   dataField: "CustomerID",
   caption: "Customer",
   validationRules: [{

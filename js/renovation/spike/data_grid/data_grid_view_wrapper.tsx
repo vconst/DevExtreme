@@ -14,7 +14,7 @@ export class DataGridViewWrapperProps {
 }
 
 @Component({ defaultOptionRules: null, view: viewFunction })
-export class DataGridViewWrapper extends JSXComponent(DataGridViewWrapperProps) {
+export class DataGridViewWrapper extends JSXComponent<DataGridViewWrapperProps, 'view'>() {
   @Ref()
   widgetRef!: HTMLDivElement;
 

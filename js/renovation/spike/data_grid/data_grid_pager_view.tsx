@@ -1,11 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import {
-  ComponentBindings, JSXComponent, OneWay, InternalState, Effect, Component,
+  JSXComponent, InternalState, Effect, Component,
 } from 'devextreme-generator/component_declaration/common';
-import { Pager } from '../../pager/pager';
-import PagerProps from '../../pager/common/pager_props';
-import { GridInstance } from './common/types.d';
-import { DataGridProps } from '../../data_grid/props';
+import { Pager } from '../../ui/pager/pager';
+import PagerProps from '../../ui/pager/common/pager_props';
+import { DataGridViewProps } from './common/types.d';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
@@ -22,34 +21,15 @@ export const viewFunction = ({
   />
 );
 
-@ComponentBindings()
-export class DataGridPagerViewProps {
-  // @OneWay() dataController;
-
-  @OneWay() gridInstance!: GridInstance;
-
-  @OneWay() gridProps!: DataGridProps;
-
-
-/*
-  @OneWay() visible?: boolean | 'auto' = true;
-
-  @OneWay() showPageSizes? = true;
-
-  @OneWay() pagesNavigatorVisible?: boolean | 'auto' = 'auto';
-
-  @OneWay() showInfo?: boolean = false;
-  */
-}
-
 @Component({ defaultOptionRules: null, view: viewFunction })
-export class DataGridPagerView extends JSXComponent(DataGridPagerViewProps) {
+export class DataGridPagerView
+  extends JSXComponent<DataGridViewProps, 'gridInstance' | 'gridProps'>() {
   // TODO type DataController
   getDataController(): any {
     return this.props.gridInstance.getController('data');
   }
 
-  @InternalState() dataControllerPropsCache: PagerProps = { };
+  @InternalState() dataControllerPropsCache: Partial<PagerProps> = { };
 
   pageIndexChanged(pageIndex: number): void {
     const dataController = this.getDataController();
@@ -94,8 +74,8 @@ export class DataGridPagerView extends JSXComponent(DataGridPagerViewProps) {
   }
 
   // TODO 'auto' fake implementation
-  get pagerProps(): PagerProps {
-    const { visible, ...restProps } = this.props.gridProps.pager!;
+  get pagerProps(): Partial<PagerProps> {
+    const { visible = false, ...restProps } = this.props.gridProps.pager || {};
     return {
       visible: visible === 'auto' ? true : (visible as boolean),
       ...restProps,

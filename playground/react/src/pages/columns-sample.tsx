@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Button from '../artifacts/react/renovation/button';
-import DataGrid from '../artifacts/react/renovation/data_grid/data_grid';
+import Button from '../artifacts/react/renovation/ui/button';
+import DataGrid from '../artifacts/react/renovation/ui/data_grid/data_grid';
 
 const data = [{key: 1, field1: '11', field2: '12', field3: '13' },{ key: 2, field1: '21', field2: '22', field3: '23' }];
 const dataSource = { store: { type: 'array', key:'key', data} };

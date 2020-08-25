@@ -1,16 +1,10 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  JSXComponent, Effect, Component, Ref,
+  JSXComponent, Effect, Component,
 } from 'devextreme-generator/component_declaration/common';
 import {
-  DataGridProps, DataGridColumn,
-  // eslint-disable-next-line max-len, @typescript-eslint/no-unused-vars
-  DataGridColumnButton, DataGridColumnChooser, DataGridColumnFixing, DataGridColumnHeaderFilter, DataGridColumnLookup, DataGridEditing, DataGridEditingTexts, DataGridFilterPanel, DataGridFilterRow, DataGridGroupPanel, DataGridGrouping, DataGridHeaderFilter, DataGridKeyboardNavigation, DataGridLoadPanel, DataGridMasterDetail, DataGridPager, DataGridPaging, DataGridRowDragging, DataGridScrolling, DataGridSearchPanel, DataGridSelection, DataGridSortByGroupSummaryInfoItem, DataGridSorting, DataGridStateStoring, DataGridSummary, DataGridSummaryGroupItem, DataGridSummaryTotalItem,
-} from '../../data_grid/props';
+  DataGridProps,
+} from '../../ui/data_grid/props';
 
 import gridCore from '../../../ui/data_grid/ui.data_grid.core';
 
@@ -26,10 +20,10 @@ import '../../../ui/data_grid/ui.data_grid.header_panel';
 
 import '../../../ui/data_grid/ui.data_grid';
 
-import { Widget } from '../../common/widget';
+import { Widget } from '../../ui/common/widget';
 import { DataGridPagingProps } from './paging-props';
 import { DataGridComponent } from './datagrid_component';
-import DataGridContent from './data_grid_content';
+import DataGridViews from './data_grid_views';
 import { GridInstance } from './common/types.d';
 
 gridCore.registerModulesOrder([
@@ -65,12 +59,12 @@ gridCore.registerModulesOrder([
 export const viewFunction = ({
   gridInstance,
   props,
-  widgetRef,
+  // widgetRef,
   restAttributes,
 }: DataGrid) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <Widget {...restAttributes} ref={widgetRef as any}>
-    <DataGridContent gridInstance={gridInstance} gridProps={props} />
+  <Widget {...restAttributes}>
+    <DataGridViews gridInstance={gridInstance} gridProps={props} />
   </Widget>
 );
 
@@ -80,7 +74,7 @@ const pagingDefault = DataGridPagingProps;
 export default class DataGrid extends JSXComponent(DataGridProps) {
   componentHolder: { componentInstance?: GridInstance } = { componentInstance: undefined };
 
-  @Ref() widgetRef!: Widget;
+  // @Ref() widgetRef!: Widget;
 
   // It's impossible to define constructor, so it's workaround to lazy creation
   // of gridInstance within componentHolder by imutable way
@@ -117,7 +111,7 @@ export default class DataGrid extends JSXComponent(DataGridProps) {
     const instance = this.gridInstance;
     if (instance) {
       if (this.props.columns!.length > 0) {
-        const changedColumn = (this.props.columns as DataGridColumn[])[1] as DataGridColumn;
+        const changedColumn = this.props.columns![1] as any;// TODO generator bug as DataGridColumn;
         const currentColumn = instance.option('columns[1]');
         if (changedColumn?.visible !== currentColumn.visible) {
           instance.option('columns[1].visible', changedColumn.visible);

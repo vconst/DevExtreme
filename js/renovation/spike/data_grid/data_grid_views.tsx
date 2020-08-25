@@ -1,9 +1,9 @@
 import {
-  Fragment, JSXComponent, Component, OneWay, ComponentBindings,
+  Fragment, JSXComponent, Component,
 } from 'devextreme-generator/component_declaration/common';
-import { DataGridProps } from '../../data_grid/props';
+import { DataGridProps } from '../../ui/data_grid/props';
 import { DataGridPagerView } from './data_grid_pager_view';
-import { GridInstance, DataGridView } from './common/types.d';
+import { DataGridView, DataGridViewProps } from './common/types.d';
 import { DataGridViewWrapper } from './data_grid_view_wrapper';
 
 const GRIDBASE_CONTAINER_CLASS = 'dx-gridbase-container';
@@ -16,7 +16,7 @@ export const viewFunction = ({
   gridProps,
   views,
   props: { gridInstance },
-}: DataGridContent) => (
+}: DataGridViews) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <Fragment>
     <div className={GRIDBASE_CONTAINER_CLASS}>
@@ -32,19 +32,8 @@ export const viewFunction = ({
   </Fragment>
 );
 
-@ComponentBindings()
-class DataGridContentProps {
-  @OneWay() gridInstance!: GridInstance;
-
-  @OneWay() gridProps!: DataGridProps;
-}
-
 @Component({ defaultOptionRules: null, jQuery: { register: true }, view: viewFunction })
-export default class DataGridContent extends JSXComponent(DataGridContentProps) {
-  pageIndexChange(pageIndex: number) {
-    (this.gridProps.paging as any)?.pageIndexChange?.(pageIndex);
-  }
-
+export default class DataGridViews extends JSXComponent<DataGridViewProps, 'gridInstance' | 'gridProps'>() {
   get gridProps(): DataGridProps {
     return this.props.gridProps;
   }
