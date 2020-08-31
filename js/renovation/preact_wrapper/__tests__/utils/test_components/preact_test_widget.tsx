@@ -7,7 +7,6 @@ import {
   Method,
   OneWay,
   Ref,
-  TwoWay,
 } from 'devextreme-generator/component_declaration/common';
 import {
   keyboard,
@@ -34,8 +33,6 @@ export class PreactTestWidgetProps {
   @OneWay() width?: number;
 
   @OneWay() text = 'default text';
-
-  @TwoWay() twoWayProp?: number = 1;
 
   @OneWay() subscribeEffect?: any;
 
@@ -64,11 +61,6 @@ export default class PreactTestWidget extends JSXComponent(PreactTestWidgetProps
   @Method()
   apiMethodCheck(arg1, arg2): string {
     return `${this.props.text} - ${arg1} - ${arg2}`;
-  }
-
-  @Method()
-  updateTwoWayPropCheck(): void {
-    this.props.twoWayProp += 1;
   }
 
   @Method()

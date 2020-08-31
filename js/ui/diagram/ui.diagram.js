@@ -726,7 +726,10 @@ class Diagram extends Widget {
 
         this.optionsUpdateBar = new DiagramOptionsUpdateBar(this);
         this._diagramInstance.registerBar(this.optionsUpdateBar);
-
+        if(hasWindow()) {
+            // eslint-disable-next-line spellcheck/spell-checker
+            this._diagramInstance.initMeasurer(this.$element()[0]);
+        }
         this._updateCustomShapes(this._getCustomShapes());
         this._refreshDataSources();
     }
@@ -797,10 +800,20 @@ class Diagram extends Widget {
     _onDataSourceChanged() {
         this._bindDiagramData();
     }
+    _getChangesKeys(changes) {
+        return changes.map(change => change.type === 'update' && change.key).filter(key => !!key);
+    }
+
     _createOptionGetter(optionName) {
         const expr = this.option(optionName);
         return expr && dataCoreUtils.compileGetter(expr);
     }
+    _onRequestUpdateLayout(changes) {
+        if(isFunction(this.option('nodes.autoLayout.requestUpdate'))) {
+            return this.option('nodes.autoLayout.requestUpdate')(changes);
+        }
+    }
+
     _createOptionSetter(optionName) {
         const expr = this.option(optionName);
         if(isFunction(expr)) {
@@ -959,24 +972,25 @@ class Diagram extends Widget {
         };
         this._executeDiagramCommand(DiagramCommand.BindDocument, data);
     }
-    reloadContent(itemKey, applyLayout) {
+    _reloadContentByChanges(changes, isExternalChanges) {
+        const keys = this._getChangesKeys(changes);
+        const applyLayout = this._onRequestUpdateLayout(changes);
+        this._reloadContent(keys, applyLayout, isExternalChanges);
+    }
+    _reloadContent(itemKeys, applyLayout, isExternalChanges) {
         const getData = () => {
             let nodeDataSource;
             let edgeDataSource;
-            this._beginUpdateDiagram();
-            if(this._nodesOption) {
-                this._nodesOption.getDataSource().reload();
+            if(this._nodesOption && isExternalChanges) {
                 nodeDataSource = this._nodesOption.getItems();
             }
-            if(this._edgesOption) {
-                this._edgesOption.getDataSource().reload();
+            if(this._edgesOption && isExternalChanges) {
                 edgeDataSource = this._edgesOption.getItems();
             }
-            this._endUpdateDiagram(true);
             return { nodeDataSource, edgeDataSource };
         };
-        this._diagramInstance.reloadContent(itemKey, getData,
-            applyLayout && this._getDataBindingLayoutParameters()
+        this._diagramInstance.reloadContent(itemKeys, getData,
+            applyLayout && this._getDataBindingLayoutParameters(), isExternalChanges
         );
     }
     _getConnectorLineOption(lineType) {
@@ -1005,10 +1019,8 @@ class Diagram extends Widget {
         const { DataLayoutType, DataLayoutOrientation } = getDiagram();
         const layoutParametersOption = this.option('nodes.autoLayout') || 'off';
         const layoutType = layoutParametersOption.type || layoutParametersOption;
-        if(layoutType === 'off' || (layoutType === 'auto' && this._hasNodePositionExprs())) {
-            return undefined;
-        } else {
-            const parameters = {};
+        const parameters = {};
+        if(layoutType !== 'off' && (layoutType !== 'auto' || !this._hasNodePositionExprs())) {
             switch(layoutType) {
                 case 'tree':
                     parameters.type = DataLayoutType.Tree;
@@ -1028,8 +1040,9 @@ class Diagram extends Widget {
             if(this.option('edges.fromPointIndexExpr') || this.option('edges.toPointIndexExpr')) {
                 parameters.skipPointIndices = true;
             }
-            return parameters;
         }
+        parameters.autoSizeEnabled = !!this.option('nodes.autoSizeEnabled');
+        return parameters;
     }
     _hasNodePositionExprs() {
         return this.option('nodes.topExpr') && this.option('nodes.leftExpr');
@@ -1052,9 +1065,9 @@ class Diagram extends Widget {
     _beginUpdateDiagram() {
         this._updateDiagramLockCount++;
     }
-    _endUpdateDiagram(preventBindDiagram) {
+    _endUpdateDiagram() {
         this._updateDiagramLockCount = Math.max(this._updateDiagramLockCount - 1, 0);
-        if(!this._updateDiagramLockCount && !preventBindDiagram) {
+        if(!this._updateDiagramLockCount) {
             this._bindDiagramData();
         }
     }
@@ -1129,7 +1142,8 @@ class Diagram extends Widget {
                         templateLeft: s.templateLeft,
                         templateTop: s.templateTop,
                         templateWidth: s.templateWidth,
-                        templateHeight: s.templateHeight
+                        templateHeight: s.templateHeight,
+                        keepRatioOnAutoSize: s.keepRatioOnAutoSize
                     };
                 }
             ));
@@ -1440,6 +1454,12 @@ class Diagram extends Widget {
             startLineEnding: this._getConnectorLineEnding(this.option('defaultItemProperties.connectorLineStart')),
             endLineEnding: this._getConnectorLineEnding(this.option('defaultItemProperties.connectorLineEnd'))
         });
+        this._diagramInstance.applySettings({
+            shapeMinWidth: this.option('defaultItemProperties.shapeMinWidth'),
+            shapeMaxWidth: this.option('defaultItemProperties.shapeMaxWidth'),
+            shapeMinHeight: this.option('defaultItemProperties.shapeMinHeight'),
+            shapeMaxHeight: this.option('defaultItemProperties.shapeMaxHeight')
+        });
     }
 
     focus() {
@@ -1665,7 +1685,19 @@ class Diagram extends Widget {
                  * @name dxDiagramOptions.nodes.autoLayout.orientation
                  * @type Enums.DiagramDataLayoutOrientation
                  */
-                autoLayout: 'auto'
+                /**
+                 * @name dxDiagramOptions.nodes.autoLayout.requestUpdate
+                 * @type function(changes)
+                 * @type_function_param1 changes:Array<any>
+                 * @type_function_return boolean
+                 */
+                autoLayout: 'auto',
+                /**
+                * @name dxDiagramOptions.nodes.autoSizeEnabled
+                * @type boolean
+                * @default true
+                */
+                autoSizeEnabled: true,
             },
             edges: {
                 /**
