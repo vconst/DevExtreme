@@ -122,10 +122,21 @@ export default class DataGrid extends JSXComponent(DataGridProps) {
     }
   }
 
+  // TODO without normalization all nested props defaults inited by undefined
+  normalizeProps(): {} {
+    const result = {};
+    Object.keys(this.props).forEach((key) => {
+      if (this.props[key] !== undefined) {
+        result[key] = this.props[key];
+      }
+    });
+    return result;
+  }
+
   // TODO Move to constructor of DataGridComponent
   init() {
     const deepCloneProps = {
-      ...this.props,
+      ...this.normalizeProps(),
       columns: this.props.columns?.map((c) => (typeof c === 'string' ? c : { ...c })),
       paging: { ...pagingDefault, ...this.props.paging },
       pager: { ...this.props.pager },
@@ -141,7 +152,7 @@ export default class DataGrid extends JSXComponent(DataGridProps) {
     instance.getView = (name: string) => instance._views[name];
     // eslint-disable-next-line no-underscore-dangle
     instance.getController = (name: string) => instance._controllers[name];
-
+    instance.NAME = 'dxDataGrid';
     gridCore.processModules(instance, gridCore);
     gridCore.callModuleItemsMethod(instance, 'init');
     return instance as GridInstance;
