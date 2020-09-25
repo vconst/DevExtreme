@@ -4,7 +4,7 @@ import {
 } from 'devextreme-generator/component_declaration/common';
 import { Pager } from '../../ui/pager/pager';
 import PagerProps from '../../ui/pager/common/pager_props';
-import { DataGridViewProps } from './common/types.d';
+import { DataGridViewProps } from './common/data_grid_view_props';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({

@@ -2,7 +2,7 @@ import {
   JSXComponent, Component, Ref, OneWay, ComponentBindings, Effect,
 } from 'devextreme-generator/component_declaration/common';
 import $ from '../../../core/renderer';
-import type { DataGridView } from './common/types.d';
+import type { DataGridView } from './common/types';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({ widgetRef }: DataGridViewWrapper) => (

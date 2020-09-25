@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { BrowserRouter, Switch, Link, Route } from 'react-router-dom';
 import columnsExample from "./pages/columns-sample"
 import pagerExample from "./pages/pager-sample"
+import extenderExample from "./pages/extenders_sample"
 
 function App() {
   const routs = [
     { name: "Columns", component: columnsExample },
-    { name: "Pager", component: pagerExample }
+    { name: "Pager", component: pagerExample },
+    { name: "Extenders", component: extenderExample }
   ];
   return (
     <BrowserRouter>
