@@ -43,6 +43,7 @@ const columns: DataGridColumnType[] = [{
   dataField: "OrderDate",
   dataType: "date",
   groupIndex: 1,
+  sortOrder: "desc",
   validationRules: [{
     type: "required",
     message: "The OrderDate field is required."

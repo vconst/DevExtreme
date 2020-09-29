@@ -2,9 +2,13 @@ import {
   JSXComponent, Component, InternalState, Effect,
 } from 'devextreme-generator/component_declaration/common';
 import { DataGridViewProps } from '../data_grid/common/data_grid_view_props';
-import { DataGridProps } from '../../ui/data_grid/props';
+// import { DataGridProps } from '../../ui/data_grid/props';
 import { ToolboxItemPositionType } from './toolbox_item';
-import { HeaderPanelExtender, ViewExtender } from './extender_types';
+// import { HeaderPanelExtender, ViewExtender } from './extender_types';
+
+import { isVisibleGetter, getToolbarItemsGetter } from './header_panel_getters';
+
+import { GroupPanelItemPlaceholder } from './group_panel_item_placeholder';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
@@ -13,7 +17,11 @@ export const viewFunction = ({
   // eslint-disable-next-line react/jsx-props-no-spreading
   <div>
     { (items
-      .map(({ caption, cssClass }) => (<div className={cssClass}>{caption}</div>))) }
+      .map((column) => (
+        <div className={column.cssClass}>
+          <GroupPanelItemPlaceholder column={column} />
+        </div>
+      ))) }
   </div>
 );
 
@@ -34,6 +42,7 @@ export class GroupingHeaderPanel extends JSXComponent<DataGridViewProps, 'gridIn
   }
 }
 
+/*
 export const groupingHeaderPanelExtender: HeaderPanelExtender & ViewExtender = {
   isVisible: (gridProps: DataGridProps) => {
     const groupPanelOptions = gridProps.groupPanel;
@@ -49,5 +58,34 @@ export const groupingHeaderPanelExtender: HeaderPanelExtender & ViewExtender = {
     }
     return isVisible;
   },
-  getToolbarItems: () => [{ name: 'groupPanel', location: 'before' as ToolboxItemPositionType, templateType: GroupingHeaderPanel }],
+  getToolbarItems: () => [{ name: 'groupPanel', location: 'before' as ToolboxItemPositionType,
+  templateType: GroupingHeaderPanel }],
 };
+*/
+
+export const getToolbarItemsGrouping = (
+  gridView: DataGridViewProps,
+  base: Function,
+): [] => base().concat([{ name: 'groupPanel', location: 'before' as ToolboxItemPositionType, templateType: GroupingHeaderPanel }]);
+
+getToolbarItemsGetter.register(getToolbarItemsGrouping);
+
+export const isVisibleGrouping = (
+  gridView: DataGridViewProps,
+  base: Function,
+): boolean => {
+  const groupPanelOptions = gridView.gridProps.groupPanel;
+  let isVisible;
+  if (groupPanelOptions) {
+    isVisible = groupPanelOptions.visible;
+
+    if (isVisible === 'auto') {
+      // TODO Vitik
+      // isVisible = devices.current().deviceType === 'desktop' ? true : false;
+      isVisible = true;
+    }
+  }
+  return isVisible || base();
+};
+
+isVisibleGetter.register(isVisibleGrouping);

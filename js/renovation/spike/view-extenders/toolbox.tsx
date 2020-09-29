@@ -1,5 +1,5 @@
 import {
-  Fragment, JSXComponent, Component, ComponentBindings, OneWay, Nested,
+  Fragment, JSXComponent, Component, ComponentBindings, Nested,
 } from 'devextreme-generator/component_declaration/common';
 import { ToolboxItem } from './toolbox_item';
 
