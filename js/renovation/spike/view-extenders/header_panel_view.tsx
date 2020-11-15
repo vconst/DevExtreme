@@ -2,35 +2,37 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  JSXComponent, Component, InternalState, Effect, Fragment,
+  JSXComponent, Component, InternalState, Effect, Fragment, Consumer,
 } from 'devextreme-generator/component_declaration/common';
 import { DataGridViewProps } from '../data_grid/common/data_grid_view_props';
 import { Toolbox } from './toolbox';
-// import { groupingHeaderPanelExtender } from './grouping_header_panel_extender';
 import { View } from './view';
 import { RenovatedViewInstance } from './view_instance';
 import { ToolbarItemType } from './extender_types';
-import { getToolbarItemsGetter, isVisibleGetter } from './header_panel_getters';
-// import { editHeaderPanelExtender } from './editing_header_panel_extender';
-// import { exportHeaderPanelExtender } from './export_header_panel_extender';
-// import { DataGridView } from '../data_grid/common/types';
+import { ToolbarItems } from './header_panel_getters';
 
-import './grouping_header_panel_extender';
-import './export_header_panel_extender';
-import './editing_header_panel_extender';
+import { HeaderPanelEditing } from './header_panel_editing';
 
-import './sorting_extender';
-import './filtering_extender';
+import { HeaderPanelExport } from './header_panel_export';
+import { HeaderPanelGrouping } from './header_panel_grouping';
+
+import './group_panel_item_sorting';
+import './group_panel_item_filtering';
+import { Plugins, PluginsContext } from '../plugins/context';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
-  items, isVisible,
+  toolbarItems, isVisible,
   props: { gridInstance, gridProps },
 }: HeaderPanelView) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <Fragment>
     <View isVisible={isVisible}>
-      <Toolbox items={(items
+      <HeaderPanelGrouping gridInstance={gridInstance} gridProps={gridProps} />
+      <HeaderPanelEditing gridInstance={gridInstance} gridProps={gridProps} />
+      <HeaderPanelExport gridInstance={gridInstance} gridProps={gridProps} />
+
+      <Toolbox items={(toolbarItems
         .map(({
           location, name, props, templateType: ItemTemplate,
         }) => ({
@@ -54,34 +56,25 @@ export class HeaderPanelView extends JSXComponent<DataGridViewProps, 'gridInstan
     return viewInstance;
   }
 
-  @InternalState() cachedItems: ToolbarItemType[] | null = null;
+  @InternalState() toolbarItems: ToolbarItemType[] = [];
 
-  getItems() {
-    return getToolbarItemsGetter.execute(this.props);
-    /* return extenders
-      .reduce<ToolbarItemType[]>((items, extender) => ([
-      ...items,
-      ...extender.getToolbarItems(this.props.gridInstance)]),
-    []); */
-  }
+  @Consumer(PluginsContext)
+  plugins!: Plugins;
 
-  get items(): ToolbarItemType[] {
-    if (!this.cachedItems) {
-      const items = this.getItems() as ToolbarItemType[];
-      this.cachedItems = items;
-      return items;
-    }
-    return this.cachedItems;
+  @Effect()
+  updateToolbarItems() {
+    return this.plugins.watch(ToolbarItems, (items) => {
+      this.toolbarItems = items;
+    });
   }
 
   get isVisible() {
-    return isVisibleGetter.execute(this.props) as boolean;
-    // return extenders.some((extender) => !extender.isVisible(this.props.gridProps)) === null;
+    return this.toolbarItems.length > 0;
   }
 
   setToolbarItemDisabled(itemName: string, disabled: boolean) {
     let needUpdate = false;
-    const items = this.cachedItems?.map((item) => {
+    const items = this.toolbarItems?.map((item) => {
       if (item.name === itemName && item.props?.disabled !== disabled) {
         needUpdate = true;
         return {
@@ -93,7 +86,7 @@ export class HeaderPanelView extends JSXComponent<DataGridViewProps, 'gridInstan
     }) as ToolbarItemType[] || [];
     if (needUpdate) {
       console.log('updated items', itemName, items);
-      this.cachedItems = items;
+      this.toolbarItems = items;
     }
   }
 

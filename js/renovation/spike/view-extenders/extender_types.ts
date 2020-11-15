@@ -7,7 +7,7 @@ export interface ViewExtender {
 export interface ToolbarItemType {
   location: ToolboxItemPositionType;
   name: string;
-  props?: { disabled?: boolean; onClick: any };
+  props?: { disabled?: boolean; onClick: any; text: string };
   templateType: any;
 }
 export interface HeaderPanelExtender {

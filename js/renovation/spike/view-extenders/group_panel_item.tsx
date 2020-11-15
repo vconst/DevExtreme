@@ -1,5 +1,5 @@
 import {
-  JSXComponent, Component, ComponentBindings, OneWay, Fragment, Template,
+  JSXComponent, Component, ComponentBindings, OneWay, Fragment, Slot,
 } from 'devextreme-generator/component_declaration/common';
 
 // import { isVisibleGetter, getToolbarItemsGetter } from './header_panel_getters';
@@ -18,7 +18,9 @@ export const viewFunction = ({
 export class GroupPanelItemProps {
   @OneWay() column: any;
 
-  @Template() baseTemplate?: any;
+  @Slot() children?: any;
+
+  // @Template() baseTemplate?: any;
 }
 
 @Component({ defaultOptionRules: null, view: viewFunction })

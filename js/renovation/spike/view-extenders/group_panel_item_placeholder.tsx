@@ -15,8 +15,9 @@ export const viewFunction = ({
   && (
   <CurrentComponent
     column={column}
-    baseTemplate={() => <GroupPanelItemPlaceholder column={column} index={index + 1} />}
-  />
+  >
+    <GroupPanelItemPlaceholder column={column} index={index + 1} />
+  </CurrentComponent>
   )
 }
   </Fragment>

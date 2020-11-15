@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  JSXComponent, Effect, Component,
+  JSXComponent, Effect, Component, Provider,
 } from 'devextreme-generator/component_declaration/common';
 import {
   DataGridProps,
@@ -27,6 +27,7 @@ import { DataGridViews } from './data_grid_views';
 import { GridInstance } from './common/types';
 // import { HeaderPanelViewInstance } from '../view-extenders/header_panel_view';
 import { RenovatedViewInstance } from '../view-extenders/view_instance';
+import { Plugins, PluginsContext } from '../plugins/context';
 
 gridCore.registerModulesOrder([
   'stateStoring',
@@ -89,6 +90,9 @@ const pagingDefault = DataGridPagingProps;
 @Component({ defaultOptionRules: null, jQuery: { register: true }, view: viewFunction })
 export class DataGrid extends JSXComponent(DataGridProps) {
   componentHolder: { componentInstance?: GridInstance } = { componentInstance: undefined };
+
+  @Provider(PluginsContext)
+  plugins = new Plugins();
 
   // @Ref() widgetRef!: Widget;
 
