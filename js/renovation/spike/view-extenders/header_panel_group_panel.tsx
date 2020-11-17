@@ -2,7 +2,8 @@ import {
   JSXComponent, Component, InternalState, Effect,
 } from 'devextreme-generator/component_declaration/common';
 import { DataGridViewProps } from '../data_grid/common/data_grid_view_props';
-import { GroupPanelItemPlaceholder } from './group_panel_item_placeholder';
+import { GroupPanelItemPlaceholder } from './group_panel_item';
+import { Placeholder } from './placeholder';
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 
 export const viewFunction = ({ items }: GroupPanel) => (
@@ -11,7 +12,7 @@ export const viewFunction = ({ items }: GroupPanel) => (
     {(items
       .map((column) => (
         <div className={column.cssClass}>
-          <GroupPanelItemPlaceholder column={column} />
+          <Placeholder type={GroupPanelItemPlaceholder} column={column} />
         </div>
       )))}
   </div>

@@ -12,13 +12,13 @@ import { ToolbarItemType } from './extender_types';
 import { ToolbarItems } from './header_panel_getters';
 
 import { HeaderPanelEditing } from './header_panel_editing';
-
 import { HeaderPanelExport } from './header_panel_export';
 import { HeaderPanelGrouping } from './header_panel_grouping';
 
-import './group_panel_item_sorting';
-import './group_panel_item_filtering';
+import { GroupPanelItemSorting } from './group_panel_item_sorting';
+import { GroupPanelItemFilter } from './group_panel_item_filtering';
 import { Plugins, PluginsContext } from '../plugins/context';
+import { GroupPanelItem, GroupPanelItemPlaceholder } from './group_panel_item';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
@@ -60,6 +60,13 @@ export class HeaderPanelView extends JSXComponent<DataGridViewProps, 'gridInstan
 
   @Consumer(PluginsContext)
   plugins!: Plugins;
+
+  @Effect()
+  updateGroupItemExtenders() {
+    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, GroupPanelItem);
+    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, GroupPanelItemFilter);
+    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, GroupPanelItemSorting);
+  }
 
   @Effect()
   updateToolbarItems() {

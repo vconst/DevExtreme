@@ -29,10 +29,6 @@ class PluginGetter<T> extends PluginEntity<T, ((base: T) => T)[]> {
   getValue(value: ((base: T) => T)[]): T {
     return value.reduce((base, func) => func(base), this.defaultValue);
   }
-
-  /* createValue(): (() => T)[] {
-    return [(): T => this.defaultValue];
-  } */
 }
 
 export function createValue<T>(): PluginEntity<T, T> {
@@ -41,6 +37,17 @@ export function createValue<T>(): PluginEntity<T, T> {
 
 export function createGetter<T>(defaultValue: T): PluginGetter<T> {
   return new PluginGetter<T>(defaultValue);
+}
+
+/*
+// TODO
+export class PluginPlaceholder extends PluginEntity<unknown[], unknown[]> {
+
+}
+*/
+
+export function createPlaceholder(): PluginEntity<unknown[], unknown[]> {
+  return new PluginEntity<unknown[], unknown[]>(); // TODO PluginPlaceholder
 }
 
 export class Plugins {
@@ -62,10 +69,20 @@ export class Plugins {
     const value = this.items[entity.id] as ((base: T) => T)[] || [];
     this.items[entity.id] = value;
     value.push(func);
+    // TODO events
   }
 
-  getValue<T>(entity: PluginGetter<T>): T {
-    const value = this.items[entity.id] as ((base: T) => T)[] || [];
+  extendPlaceholder(
+    entity: PluginEntity<unknown[], unknown[]>/* TODO PluginPlaceholder */,
+    component: unknown,
+  ): void {
+    const value = this.items[entity.id] as unknown[] || [];
+    const newValue = [component, ...value];
+    this.set(entity, newValue);
+  }
+
+  getValue<T, S>(entity: PluginEntity<T, S>): T {
+    const value = this.items[entity.id] as S;
     return entity.getValue(value);
   }
 
@@ -91,4 +108,4 @@ export class Plugins {
   }
 }
 
-export const PluginsContext = createContext<Plugins>(null as unknown as Plugins);
+export const PluginsContext = createContext<Plugins | null>(null);

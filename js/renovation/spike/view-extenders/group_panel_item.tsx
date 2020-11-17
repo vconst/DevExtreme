@@ -1,6 +1,7 @@
 import {
   JSXComponent, Component, ComponentBindings, OneWay, Fragment, Slot,
 } from 'devextreme-generator/component_declaration/common';
+import { createPlaceholder } from '../plugins/context';
 
 // import { isVisibleGetter, getToolbarItemsGetter } from './header_panel_getters';
 
@@ -19,10 +20,10 @@ export class GroupPanelItemProps {
   @OneWay() column: any;
 
   @Slot() children?: any;
-
-  // @Template() baseTemplate?: any;
 }
 
 @Component({ defaultOptionRules: null, view: viewFunction })
 export class GroupPanelItem extends JSXComponent<GroupPanelItemProps>() {
 }
+
+export const GroupPanelItemPlaceholder = createPlaceholder();

@@ -1,15 +1,39 @@
-export class Placeholder {
-  private readonly componentTypes: any[] = [];
+import {
+  JSXComponent, Component, ComponentBindings, OneWay, Consumer, InternalState, Effect,
+} from 'devextreme-generator/component_declaration/common';
 
-  constructor(defaultComponentType) {
-    this.componentTypes = [defaultComponentType];
-  }
+import { PlaceholderItem } from './placeholder_item';
+import {
+  createPlaceholder, /* PluginPlaceholder, */ PluginsContext, Plugins,
+} from '../plugins/context';
 
-  register(componentType): void {
-    this.componentTypes.unshift(componentType);
-  }
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const viewFunction = ({
+  // eslint-disable-next-line react/prop-types
+  componentTypes, props: { column },
+}: Placeholder) => (
+  <PlaceholderItem componentTypes={componentTypes} column={column} />
+);
+@ComponentBindings()
+export class GroupPanelItemPlaceholderProps {
+  @OneWay() type!: any /* TODO PluginPlaceholder */;
 
-  getComponentTypes() {
-    return this.componentTypes;
+  @OneWay() column: any;
+}
+
+@Component({ defaultOptionRules: null, view: viewFunction })
+export class Placeholder extends JSXComponent<GroupPanelItemPlaceholderProps>() {
+  @Consumer(PluginsContext)
+  plugins!: Plugins;
+
+  @InternalState() componentTypes: any /* [] */ = [];
+
+  @Effect()
+  updateComponentTypes(): () => void {
+    return this.plugins.watch(this.props.type, (componentTypes) => {
+      this.componentTypes = componentTypes;
+    });
   }
 }
+
+export const GroupPanelItemPlaceholder = createPlaceholder();
