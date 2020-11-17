@@ -34,9 +34,9 @@ export default class Editing extends JSXComponent<DataGridEditing>() {
   }
 
   @Effect()
-  extendToolbarItems(): void {
+  extendToolbarItems(): () => void {
     return this.plugins.extend(
-      ToolbarItems,
+      ToolbarItems, 2,
       (base: ToolbarItemType[]) => {
         if (isVisibleEditing(this.props)) {
           return this.plugins.getValue(Grid)

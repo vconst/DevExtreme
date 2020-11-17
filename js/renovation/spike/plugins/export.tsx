@@ -26,9 +26,9 @@ export default class Export extends JSXComponent<DataGridExport>() {
   }
 
   @Effect()
-  extendToolbarItems(): void {
+  extendToolbarItems(): () => void {
     return this.plugins.extend(
-      ToolbarItems,
+      ToolbarItems, 3,
       (base: ToolbarItemType[]) => {
         if (this.props.enabled) {
           return base.concat([{

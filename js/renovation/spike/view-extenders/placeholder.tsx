@@ -30,8 +30,8 @@ export class Placeholder extends JSXComponent<GroupPanelItemPlaceholderProps>() 
 
   @Effect()
   updateComponentTypes(): () => void {
-    return this.plugins.watch(this.props.type, (componentTypes) => {
-      this.componentTypes = componentTypes;
+    return this.plugins.watch(this.props.type, (items: { order: number; component: unknown }[]) => {
+      this.componentTypes = items.map((item) => item.component).reverse();
     });
   }
 }

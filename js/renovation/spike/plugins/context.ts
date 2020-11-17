@@ -17,7 +17,11 @@ class PluginEntity<T, S> {
   }
 }
 
-class PluginGetter<T> extends PluginEntity<T, ((base: T) => T)[]> {
+type GetterStoreValue<T> = ({ order: number; func: (base: T) => T})[];
+
+type PlaceholderStoreValue = { order: number; component: unknown }[];
+
+class PluginGetter<T> extends PluginEntity<T, GetterStoreValue<T>> {
   private readonly defaultValue: T;
 
   constructor(defaultValue: T) {
@@ -26,8 +30,8 @@ class PluginGetter<T> extends PluginEntity<T, ((base: T) => T)[]> {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getValue(value: ((base: T) => T)[]): T {
-    return value.reduce((base, func) => func(base), this.defaultValue);
+  getValue(value: GetterStoreValue<T>): T {
+    return value.reduce((base, item) => item.func(base), this.defaultValue);
   }
 }
 
@@ -46,8 +50,8 @@ export class PluginPlaceholder extends PluginEntity<unknown[], unknown[]> {
 }
 */
 
-export function createPlaceholder(): PluginEntity<unknown[], unknown[]> {
-  return new PluginEntity<unknown[], unknown[]>(); // TODO PluginPlaceholder
+export function createPlaceholder(): PluginEntity<PlaceholderStoreValue, PlaceholderStoreValue> {
+  return new PluginEntity<PlaceholderStoreValue, PlaceholderStoreValue>(); // TODO PluginPlaceholder
 }
 
 export class Plugins {
@@ -67,19 +71,38 @@ export class Plugins {
     }
   }
 
-  extend<T>(entity: PluginGetter<T>, func: (base: T) => T): void {
-    const value = this.items[entity.id] as ((base: T) => T)[] || [];
-    const newValue = [...value, func];
-    this.set(entity, newValue);
+  extend<T>(entity: PluginGetter<T>, order: number, func: (base: T) => T): () => void {
+    const value = (this.items[entity.id] || []) as GetterStoreValue<T>;
+    const insertIndex = value.filter((item) => item.order < order).length;
+    const item = { order, func };
+    value.splice(insertIndex, 0, item);
+
+    this.set(entity, value);
+
+    return (): void => {
+      const index = value.indexOf(item);
+      if (index >= 0) {
+        value.splice(index, 1);
+      }
+    };
   }
 
   extendPlaceholder(
-    entity: PluginEntity<unknown[], unknown[]>/* TODO PluginPlaceholder */,
+    entity: PluginEntity<PlaceholderStoreValue, PlaceholderStoreValue>, /* TODO PluginPlaceholder */
+    order: number,
     component: unknown,
-  ): void {
-    const value = this.items[entity.id] as unknown[] || [];
-    const newValue = [component, ...value];
-    this.set(entity, newValue);
+  ): () => void {
+    const value = (this.items[entity.id] || []) as PlaceholderStoreValue;
+    const insertIndex = value.filter((item) => item.order < order).length;
+    const item = { order, component };
+    value.splice(insertIndex, 0, item);
+    this.set(entity, value);
+    return (): void => {
+      const index = value.indexOf(item);
+      if (index >= 0) {
+        value.splice(index, 1);
+      }
+    };
   }
 
   getValue<T, S>(entity: PluginEntity<T, S>): T {

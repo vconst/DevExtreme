@@ -18,6 +18,6 @@ export default class Filtering extends JSXComponent<FilteringProps>() {
 
   @Effect({ run: 'once' })
   updateGroupPanel(): void {
-    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, GroupPanelItemFilter);
+    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 2, GroupPanelItemFilter);
   }
 }

@@ -44,9 +44,9 @@ export default class GroupPanel extends JSXComponent<DataGridGroupPanel>() {
   }
 
   @Effect()
-  extendToolbarItems(): void {
+  extendToolbarItems(): () => void {
     return this.plugins.extend(
-      ToolbarItems,
+      ToolbarItems, 1,
       (base: ToolbarItemType[]) => {
         if (isVisibleGrouping(this.props)) {
           return base.concat([{
@@ -62,7 +62,7 @@ export default class GroupPanel extends JSXComponent<DataGridGroupPanel>() {
 
   @Effect({ run: 'once' })
   updateGroupItemExtenders(): void {
-    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, GroupPanelItem);
-    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, GroupPanelItemSorting);
+    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 1, GroupPanelItem);
+    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 3, GroupPanelItemSorting);
   }
 }
