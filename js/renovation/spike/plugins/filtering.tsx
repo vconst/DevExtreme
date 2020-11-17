@@ -16,8 +16,8 @@ export default class Filtering extends JSXComponent<FilteringProps>() {
   @Consumer(PluginsContext)
   plugins!: Plugins;
 
-  @Effect({ run: 'once' })
-  updateGroupPanel(): void {
-    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 2, GroupPanelItemFilter);
+  @Effect()
+  updateGroupPanel(): () => void {
+    return this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 2, GroupPanelItemFilter);
   }
 }

@@ -83,6 +83,7 @@ export class Plugins {
       const index = value.indexOf(item);
       if (index >= 0) {
         value.splice(index, 1);
+        this.set(entity, value);
       }
     };
   }
@@ -101,6 +102,7 @@ export class Plugins {
       const index = value.indexOf(item);
       if (index >= 0) {
         value.splice(index, 1);
+        this.set(entity, value);
       }
     };
   }

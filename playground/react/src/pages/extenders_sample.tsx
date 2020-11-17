@@ -1,6 +1,8 @@
 import React from 'react';
 import { useState, useCallback } from 'react';
 import DataGrid from '../artifacts/react/renovation/spike/data_grid/data_grid';
+import CheckBox from '../artifacts/react/renovation/ui/check_box';
+
 import Editing from '../artifacts/react/renovation/spike/plugins/editing';
 import GroupPanel from '../artifacts/react/renovation/spike/plugins/group_panel';
 import Filtering from '../artifacts/react/renovation/spike/plugins/filtering';
@@ -90,8 +92,34 @@ const columns: DataGridColumnType[] = [{
 ];
 
 export default function pagerExample() {
+  const [allowDeleting, setAllowDeleting] = useState(true);
+  const [editing, setEditing] = useState(true);
+  const [grouping, setGrouping] = useState(true);
+  const [filtering, setFiltering] = useState(true);
+  const [exporting, setExporting] = useState(true);
+
   return (
     <>
+      <CheckBox
+        text="allowUpdating"
+        value={allowDeleting}
+        valueChange={setAllowDeleting} />
+      <CheckBox
+        text="editing"
+        value={editing}
+        valueChange={setEditing} />
+      <CheckBox
+        text="grouping"
+        value={grouping}
+        valueChange={setGrouping} />
+      <CheckBox
+        text="filtering"
+        value={filtering}
+        valueChange={setFiltering} />
+      <CheckBox
+        text="export"
+        value={exporting}
+        valueChange={setExporting} />
       <DataGrid
         showBorders={true}
         pager={{ visible: true, showInfo: true } as any}
@@ -99,15 +127,16 @@ export default function pagerExample() {
         remoteOperations={true}
         columns={columns}
       >
-        <GroupPanel visible={true} />
-        <Filtering />
-        <Editing
+        {grouping && <GroupPanel visible={true} />}
+        {filtering && <Filtering />}
+        {editing && <Editing
           mode="batch"
           allowUpdating={true}
+          allowDeleting={allowDeleting}
           startEditAction="click"
           selectTextOnEditStart={true}
-        />
-        <Export enabled={true} />
+        />}
+        {exporting && <Export enabled={true} />}
       </DataGrid>
     </>
   );

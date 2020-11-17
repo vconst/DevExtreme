@@ -15,12 +15,6 @@ import { Grid } from '../data_grid/data_grid';
 
 const EDIT_MODE_BATCH = 'batch';
 
-const isVisibleEditing = (editingOptions: DataGridEditing | undefined): boolean => !!(editingOptions
-  && (editingOptions.allowAdding
-    || ((editingOptions.allowUpdating || editingOptions.allowDeleting)
-        && editingOptions.mode === EDIT_MODE_BATCH))
-);
-
 const viewFunction = (): JSX.Element => <Fragment />;
 
 @Component({ defaultOptionRules: null, view: viewFunction })
@@ -33,17 +27,28 @@ export default class Editing extends JSXComponent<DataGridEditing>() {
     this.plugins.getValue(Grid).option('editing', this.props);
   }
 
+  get editingToolbarItems(): ToolbarItemType[] {
+    return this.plugins.getValue(Grid)
+      .getController('editing')
+      .prepareEditButtons({ _getToolbarButtonClass: () => {} })
+      .map((item) => ({ ...item, props: item.options, templateType: Button }));
+  }
+
+  isEditingToolbarItemsVisible(): boolean {
+    return !!(
+      (this.props.allowAdding
+        || ((this.props.allowUpdating || this.props.allowDeleting)
+            && this.props.mode === EDIT_MODE_BATCH)));
+  }
+
   @Effect()
   extendToolbarItems(): () => void {
+    const isVisibleEditing = this.isEditingToolbarItemsVisible();
     return this.plugins.extend(
       ToolbarItems, 2,
       (base: ToolbarItemType[]) => {
-        if (isVisibleEditing(this.props)) {
-          return this.plugins.getValue(Grid)
-            .getController('editing')
-            .prepareEditButtons({ _getToolbarButtonClass: () => {} })
-            .map((item) => ({ ...item, props: item.options, templateType: Button }))
-            .concat(base);
+        if (isVisibleEditing) {
+          return base.concat(this.editingToolbarItems);
         } return base;
       },
     );

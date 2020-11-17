@@ -15,22 +15,6 @@ import { GroupPanel as GroupPanelWidget } from '../view-extenders/header_panel_g
 import { GroupPanelItemPlaceholder, GroupPanelItem } from '../view-extenders/group_panel_item';
 import { GroupPanelItemSorting } from '../view-extenders/group_panel_item_sorting';
 
-export const isVisibleGrouping = (
-  groupPanelOptions: DataGridGroupPanel | undefined,
-): boolean => {
-  let isVisible;
-  if (groupPanelOptions) {
-    isVisible = groupPanelOptions.visible;
-
-    if (isVisible === 'auto') {
-      // TODO Vitik
-      // isVisible = devices.current().deviceType === 'desktop' ? true : false;
-      isVisible = true;
-    }
-  }
-  return isVisible;
-};
-
 const viewFunction = (): JSX.Element => <Fragment />;
 
 @Component({ defaultOptionRules: null, view: viewFunction })
@@ -48,7 +32,7 @@ export default class GroupPanel extends JSXComponent<DataGridGroupPanel>() {
     return this.plugins.extend(
       ToolbarItems, 1,
       (base: ToolbarItemType[]) => {
-        if (isVisibleGrouping(this.props)) {
+        if (this.props.visible) {
           return base.concat([{
             name: 'groupPanel',
             location: 'before',
