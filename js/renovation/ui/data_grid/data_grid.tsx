@@ -1,7 +1,7 @@
 import {
   Ref, Effect, Component, JSXComponent,
 } from 'devextreme-generator/component_declaration/common';
-import LegacyDataGrid from '../../../ui/data_grid';
+import LegacyDataGrid from '../../../ui/data_grid/ui.data_grid';
 
 import { DataGridProps } from './props';
 
@@ -16,23 +16,25 @@ export const viewFunction = ({ widgetRef, props: { className }, restAttributes }
 
 @Component({
   defaultOptionRules: null,
-  // jQuery: { register: true },
+  jQuery: { register: true },
   view: viewFunction,
 })
 export class DataGrid extends JSXComponent(DataGridProps) {
   @Ref()
   widgetRef!: HTMLDivElement;
 
+  widget: any;
+
   @Effect()
   updateWidget(): void {
-    const widget = LegacyDataGrid.getInstance(this.widgetRef);
-    widget?.option(this.properties);
+    this.widget?.option(this.properties);
   }
 
   @Effect({ run: 'once' })
   setupWidget(): () => void {
     const widget = new LegacyDataGrid(this.widgetRef, this.properties);
 
+    this.widget = widget;
     return (): void => {
       widget.dispose();
     };
