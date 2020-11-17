@@ -27,7 +27,11 @@ import { DataGridViews } from './data_grid_views';
 import { GridInstance } from './common/types';
 // import { HeaderPanelViewInstance } from '../view-extenders/header_panel_view';
 import { RenovatedViewInstance } from '../view-extenders/view_instance';
-import { Plugins, PluginsContext } from '../plugins/context';
+import {
+  Plugins, PluginsContext, createValue,
+} from '../plugins/context';
+
+export const Grid = createValue<GridInstance>();
 
 gridCore.registerModulesOrder([
   'stateStoring',
@@ -175,6 +179,8 @@ export class DataGrid extends JSXComponent(DataGridProps) {
     instance.NAME = 'dxDataGrid';
     gridCore.processModules(instance, gridCore);
     gridCore.callModuleItemsMethod(instance, 'init');
+
+    this.plugins.set(Grid, instance);
     return instance as GridInstance;
   }
 }

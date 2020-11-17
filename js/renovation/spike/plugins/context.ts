@@ -55,21 +55,22 @@ export class Plugins {
 
   private readonly subscriptions: Record<number, Function[]> = {};
 
-  set<T, S>(entity: PluginEntity<T, S>, value: T): void {
+  set<T, S>(entity: PluginEntity<T, S>, value: S): void {
     this.items[entity.id] = value;
     const subscriptions = this.subscriptions[entity.id];
     if (subscriptions) {
+      const callbackValue = entity.getValue(value);
+
       subscriptions.forEach((handler) => {
-        handler(value);
+        handler(callbackValue);
       });
     }
   }
 
   extend<T>(entity: PluginGetter<T>, func: (base: T) => T): void {
     const value = this.items[entity.id] as ((base: T) => T)[] || [];
-    this.items[entity.id] = value;
-    value.push(func);
-    // TODO events
+    const newValue = [...value, func];
+    this.set(entity, newValue);
   }
 
   extendPlaceholder(

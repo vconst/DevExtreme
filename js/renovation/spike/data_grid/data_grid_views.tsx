@@ -26,6 +26,7 @@ export const viewFunction = ({
 }: DataGridViews) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <Fragment>
+    {gridProps.children}
     <div className={`dx-datagrid ${GRIDBASE_CONTAINER_CLASS}`}>
       {(views.map(({ name, view, ViewComponent }) => (ViewComponent ? (
         <Fragment>

@@ -1,0 +1,68 @@
+// import {
+//  JSXComponent, ComponentBindings, OneWay, Template, Component, Ref, Fragment,
+// } from 'devextreme-generator/component_declaration/common';
+import {
+  JSXComponent, Component, Effect, Consumer, Fragment,
+} from 'devextreme-generator/component_declaration/common';
+import { ToolbarItemType } from '../view-extenders/extender_types';
+
+import { ToolbarItems } from '../view-extenders/header_panel_getters';
+import { Plugins, PluginsContext } from './context';
+import { DataGridGroupPanel } from '../../ui/data_grid/props';
+import { Grid } from '../data_grid/data_grid';
+
+import { GroupPanel as GroupPanelWidget } from '../view-extenders/header_panel_group_panel';
+import { GroupPanelItemPlaceholder, GroupPanelItem } from '../view-extenders/group_panel_item';
+import { GroupPanelItemSorting } from '../view-extenders/group_panel_item_sorting';
+
+export const isVisibleGrouping = (
+  groupPanelOptions: DataGridGroupPanel | undefined,
+): boolean => {
+  let isVisible;
+  if (groupPanelOptions) {
+    isVisible = groupPanelOptions.visible;
+
+    if (isVisible === 'auto') {
+      // TODO Vitik
+      // isVisible = devices.current().deviceType === 'desktop' ? true : false;
+      isVisible = true;
+    }
+  }
+  return isVisible;
+};
+
+const viewFunction = (): JSX.Element => <Fragment />;
+
+@Component({ defaultOptionRules: null, view: viewFunction })
+export default class GroupPanel extends JSXComponent<DataGridGroupPanel>() {
+  @Consumer(PluginsContext)
+  plugins!: Plugins;
+
+  @Effect()
+  updateOptions(): void {
+    this.plugins.getValue(Grid).option('editing', this.props);
+  }
+
+  @Effect()
+  extendToolbarItems(): void {
+    return this.plugins.extend(
+      ToolbarItems,
+      (base: ToolbarItemType[]) => {
+        if (isVisibleGrouping(this.props)) {
+          return base.concat([{
+            name: 'groupPanel',
+            location: 'before',
+            templateType: GroupPanelWidget,
+          }]);
+        }
+        return base;
+      },
+    );
+  }
+
+  @Effect({ run: 'once' })
+  updateGroupItemExtenders(): void {
+    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, GroupPanelItem);
+    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, GroupPanelItemSorting);
+  }
+}

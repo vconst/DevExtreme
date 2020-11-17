@@ -1,9 +1,12 @@
 import React from 'react';
 import { useState, useCallback } from 'react';
 import DataGrid from '../artifacts/react/renovation/spike/data_grid/data_grid';
-import Button from '../artifacts/react/renovation/ui/button';
+import Editing from '../artifacts/react/renovation/spike/plugins/editing';
+import GroupPanel from '../artifacts/react/renovation/spike/plugins/group_panel';
+import Filtering from '../artifacts/react/renovation/spike/plugins/filtering';
+import Export from '../artifacts/react/renovation/spike/plugins/export';
+
 import { createStore } from 'devextreme-aspnet-data-nojquery';
-import { useMemo } from 'react';
 import type { DataGridColumnType } from '../artifacts/react/renovation/ui/data_grid/props';
 
 const url = "https://js.devexpress.com/Demos/Mvc/api/DataGridWebApi";
@@ -90,22 +93,21 @@ export default function pagerExample() {
   return (
     <>
       <DataGrid
-        export={{ enabled: true }}
-        editing={{
-          mode: "batch",
-          allowUpdating: true,
-          selectTextOnEditStart: true,
-          startEditAction: "click"
-        }}
-        groupPanel={{
-          visible: true
-        }}
         showBorders={true}
         pager={{ visible: true, showInfo: true } as any}
         dataSource={{ store }}
         remoteOperations={true}
         columns={columns}
       >
+        <GroupPanel visible={true} />
+        <Filtering />
+        <Editing
+          mode="batch"
+          allowUpdating={true}
+          startEditAction="click"
+          selectTextOnEditStart={true}
+        />
+        <Export enabled={true} />
       </DataGrid>
     </>
   );
