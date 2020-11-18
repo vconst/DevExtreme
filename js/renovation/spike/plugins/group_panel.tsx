@@ -14,8 +14,22 @@ import { Grid } from '../data_grid/data_grid';
 import { GroupPanel as GroupPanelWidget } from '../view-extenders/header_panel_group_panel';
 import { GroupPanelItemPlaceholder, GroupPanelItem } from '../view-extenders/group_panel_item';
 import { GroupPanelItemSorting } from '../view-extenders/group_panel_item_sorting';
+import { PlaceholderExtender } from '../view-extenders/placeholder_extender';
 
-const viewFunction = (): JSX.Element => <Fragment />;
+const viewFunction = (): JSX.Element => (
+  <Fragment>
+    <PlaceholderExtender
+      type={GroupPanelItemPlaceholder}
+      order={1}
+      template={GroupPanelItem}
+    />
+    <PlaceholderExtender
+      type={GroupPanelItemPlaceholder}
+      order={3}
+      template={GroupPanelItemSorting}
+    />
+  </Fragment>
+);
 
 @Component({ defaultOptionRules: null, view: viewFunction })
 export default class GroupPanel extends JSXComponent<DataGridGroupPanel>() {
@@ -44,9 +58,9 @@ export default class GroupPanel extends JSXComponent<DataGridGroupPanel>() {
     );
   }
 
-  @Effect({ run: 'once' })
-  updateGroupItemExtenders(): void {
-    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 1, GroupPanelItem);
-    this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 3, GroupPanelItemSorting);
-  }
+  // @Effect({ run: 'once' })
+  // updateGroupItemExtenders(): void {
+  //   this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 1, GroupPanelItem);
+  //   this.plugins.extendPlaceholder(GroupPanelItemPlaceholder, 3, GroupPanelItemSorting);
+  // }
 }
