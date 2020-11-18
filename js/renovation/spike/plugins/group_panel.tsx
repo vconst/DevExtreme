@@ -12,8 +12,7 @@ import { DataGridGroupPanel } from '../../ui/data_grid/props';
 import { Grid } from '../data_grid/data_grid';
 
 import { GroupPanel as GroupPanelWidget } from '../view-extenders/header_panel_group_panel';
-import { GroupPanelItemPlaceholder, GroupPanelItem } from '../view-extenders/group_panel_item';
-import { GroupPanelItemSorting } from '../view-extenders/group_panel_item_sorting';
+import { GroupPanelItemPlaceholder } from '../view-extenders/group_panel_item';
 import { PlaceholderExtender } from '../view-extenders/placeholder_extender';
 
 const viewFunction = (): JSX.Element => (
@@ -21,12 +20,24 @@ const viewFunction = (): JSX.Element => (
     <PlaceholderExtender
       type={GroupPanelItemPlaceholder}
       order={1}
-      template={GroupPanelItem}
+      template={(column: any): JSX.Element => (
+        <Fragment>
+          { column.caption }
+        </Fragment>
+      )}
     />
     <PlaceholderExtender
       type={GroupPanelItemPlaceholder}
       order={3}
-      template={GroupPanelItemSorting}
+      template={(column, children): JSX.Element => (
+        <Fragment>
+          {children}
+          {' '}
+          (
+          {column.sortOrder || 'asc'}
+          )
+        </Fragment>
+      )}
     />
   </Fragment>
 );

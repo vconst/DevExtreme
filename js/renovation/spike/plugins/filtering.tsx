@@ -1,15 +1,20 @@
 import {
-  JSXComponent, Component, ComponentBindings,
+  JSXComponent, Component, ComponentBindings, Fragment,
 } from 'devextreme-generator/component_declaration/common';
 import { GroupPanelItemPlaceholder } from '../view-extenders/group_panel_item';
-import { GroupPanelItemFilter } from '../view-extenders/group_panel_item_filtering';
 import { PlaceholderExtender } from '../view-extenders/placeholder_extender';
 
 const viewFunction = (): JSX.Element => (
   <PlaceholderExtender
     type={GroupPanelItemPlaceholder}
     order={2}
-    template={GroupPanelItemFilter}
+    template={(column, children): JSX.Element => (
+      <Fragment>
+        {children}
+        {' '}
+        (Filter)
+      </Fragment>
+    )}
   />
 );
 

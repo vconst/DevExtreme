@@ -5,18 +5,23 @@ import {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
   // eslint-disable-next-line react/prop-types
-  currentComponent: CurrentComponent, props: { componentTypes, column, index },
+  currentComponent, props: { componentTypes, column, index },
 }: PlaceholderItem) => (
   <Fragment>
     {
-  CurrentComponent
-  && (
-  <CurrentComponent
-    column={column}
-  >
-    <PlaceholderItem componentTypes={componentTypes} column={column} index={index + 1} />
-  </CurrentComponent>
-  )
+  currentComponent?.(
+      column,
+      (<PlaceholderItem componentTypes={componentTypes} column={column} index={index + 1} />)
+      )
+  /* CurrentComponent && (
+    <CurrentComponent
+      column={column}
+      childrenTemplate={(
+        <PlaceholderItem componentTypes={componentTypes} column={column} index={index + 1} />
+      )}
+    />
+
+  ) */
 }
   </Fragment>
 );

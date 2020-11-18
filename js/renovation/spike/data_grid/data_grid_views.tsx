@@ -43,7 +43,7 @@ export const viewFunction = ({
             )}
             viewName={name}
           />
-          <DataGridViewWrapper key={`${name}old`} view={view} />
+          {/* <DataGridViewWrapper key={`${name}old`} view={view} /> */}
         </Fragment>
       ) : <DataGridViewWrapper key={name} view={view} />))
     )}
