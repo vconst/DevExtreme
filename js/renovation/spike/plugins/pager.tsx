@@ -27,6 +27,7 @@ export const viewFunction = ({
       <PagerWidget
       // eslint-disable-next-line react/jsx-props-no-spreading
         {...pagerProps}
+        gridCompatibility={false}
         pageIndex={pageIndex}
         pageIndexChange={pageIndexChanged}
         pageSize={pageSize}
