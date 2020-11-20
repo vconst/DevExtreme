@@ -1,5 +1,5 @@
 import {
-  JSXComponent, Component, ComponentBindings, OneWay, Consumer, InternalState, Effect,
+  JSXComponent, Component, ComponentBindings, OneWay, Consumer, InternalState, Effect, Slot,
 } from 'devextreme-generator/component_declaration/common';
 
 import { PlaceholderItem } from './placeholder_item';
@@ -10,15 +10,19 @@ import {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
   // eslint-disable-next-line react/prop-types
-  componentTypes, props: { column },
+  componentTypes, props: { column, children },
 }: Placeholder) => (
-  <PlaceholderItem componentTypes={componentTypes} column={column} />
+  <PlaceholderItem componentTypes={componentTypes} column={column}>
+    {children}
+  </PlaceholderItem>
 );
 @ComponentBindings()
 export class GroupPanelItemPlaceholderProps {
   @OneWay() type!: any /* TODO PluginPlaceholder */;
 
   @OneWay() column: any;
+
+  @Slot() children: any;
 }
 
 @Component({ defaultOptionRules: null, view: viewFunction })

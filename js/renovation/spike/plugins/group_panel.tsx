@@ -19,15 +19,6 @@ const viewFunction = (): JSX.Element => (
   <Fragment>
     <PlaceholderExtender
       type={GroupPanelItemPlaceholder}
-      order={1}
-      template={(column: any): JSX.Element => (
-        <Fragment>
-          { column.caption }
-        </Fragment>
-      )}
-    />
-    <PlaceholderExtender
-      type={GroupPanelItemPlaceholder}
       order={3}
       template={(column, children): JSX.Element => (
         <Fragment>

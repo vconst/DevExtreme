@@ -1,18 +1,22 @@
 import {
-  JSXComponent, Component, ComponentBindings, OneWay, Fragment,
+  JSXComponent, Component, ComponentBindings, OneWay, Fragment, Slot,
 } from 'devextreme-generator/component_declaration/common';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
   // eslint-disable-next-line react/prop-types
-  currentComponent, props: { componentTypes, column, index },
+  currentComponent, props: {
+    componentTypes, column, index, children,
+  },
 }: PlaceholderItem) => (
   <Fragment>
     {
-  currentComponent?.(
-      column,
-      (<PlaceholderItem componentTypes={componentTypes} column={column} index={index + 1} />)
-      )
+  currentComponent ? currentComponent(
+    column,
+    <PlaceholderItem componentTypes={componentTypes} column={column} index={index + 1}>
+      {children}
+    </PlaceholderItem>,
+  ) : <Fragment>{children}</Fragment>
   /* CurrentComponent && (
     <CurrentComponent
       column={column}
@@ -33,6 +37,8 @@ export class PlaceholderItemProps {
   @OneWay() column: any;
 
   @OneWay() index = 0;
+
+  @Slot() children: any;
 }
 
 @Component({ defaultOptionRules: null, view: viewFunction })

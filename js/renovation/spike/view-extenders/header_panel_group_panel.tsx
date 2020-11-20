@@ -12,7 +12,9 @@ export const viewFunction = ({ items }: GroupPanel) => (
     {(items
       .map((column) => (
         <div className={column.cssClass}>
-          <Placeholder type={GroupPanelItemPlaceholder} column={column} />
+          <Placeholder type={GroupPanelItemPlaceholder} column={column}>
+            { column.caption }
+          </Placeholder>
         </div>
       )))}
   </div>
