@@ -8,7 +8,7 @@ import GroupPanel from '../artifacts/react/renovation/spike/data_grid_plugins/gr
 import Filtering from '../artifacts/react/renovation/spike/data_grid_plugins/filtering';
 import Export from '../artifacts/react/renovation/spike/data_grid_plugins/export';
 import Pager from '../artifacts/react/renovation/spike/data_grid_plugins/pager';
-
+import Toolbar from '../artifacts/react/renovation/spike/data_grid_plugins/toolbar';
 
 import { createStore } from 'devextreme-aspnet-data-nojquery';
 import type { DataGridColumnType } from '../artifacts/react/renovation/ui/data_grid/props';
@@ -100,7 +100,7 @@ export default function pagerExample() {
   const [filtering, setFiltering] = useState(true);
   const [exporting, setExporting] = useState(true);
   const [pager, setPager] = useState(true);
-
+  const [toolbar, setToolbar] = useState(true);
 
   return (
     <>
@@ -128,12 +128,18 @@ export default function pagerExample() {
         text="pager"
         value={pager}
         valueChange={setPager} />
+      <CheckBox
+        text="toolbar"
+        value={toolbar}
+        valueChange={setToolbar} />
       <DataGrid
         showBorders={true}
         dataSource={{ store }}
         remoteOperations={true}
         columns={columns}
       >
+        {toolbar && <Toolbar />}
+
         {grouping && <GroupPanel visible={true} />}
         {filtering && <Filtering />}
         {editing && <Editing

@@ -6,12 +6,12 @@ import {
 } from 'devextreme-generator/component_declaration/common';
 import { ToolbarItemType } from '../view-extenders/extender_types';
 
-import { ToolbarItems } from '../view-extenders/header_panel_view';
+import { ToolbarItems } from './toolbar';
 import { Plugins, PluginsContext } from '../plugins/context';
 import { DataGridGroupPanel } from '../../ui/data_grid/props';
 import { Grid } from '../data_grid/data_grid';
 
-import { GroupPanel as GroupPanelWidget } from './group_panel/header_panel_group_panel';
+import { GroupPanel as GroupPanelWidget } from './group_panel/group_panel';
 import { GroupPanelItemPlaceholder } from './group_panel/group_panel_item';
 import { PlaceholderExtender } from '../plugins/placeholder_extender';
 

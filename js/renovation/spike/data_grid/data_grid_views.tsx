@@ -7,7 +7,7 @@ import { DataGridViewProps } from './common/data_grid_view_props';
 import { DataGridViewWrapper } from './data_grid_view_wrapper';
 
 import { DataGridPagerView } from './data_grid_pager_view';
-import { HeaderPanelView } from '../view-extenders/header_panel_view';
+import { DataGridHeaderPanelView } from './data_grid_header_panel_view';
 import { ViewRefWrapper } from '../view-extenders/view_ref_wrapper';
 
 const GRIDBASE_CONTAINER_CLASS = 'dx-gridbase-container';
@@ -15,7 +15,7 @@ const GRIDBASE_CONTAINER_CLASS = 'dx-gridbase-container';
 const VIEW_NAMES = ['columnsSeparatorView', 'blockSeparatorView', 'trackerView', 'headerPanel', 'columnHeadersView', 'rowsView', 'footerView', 'columnChooserView', 'filterPanelView', 'pagerView', 'draggingHeaderView', 'contextMenuView', 'errorView', 'headerFilterView', 'filterBuilderView'];
 export const VIEWCOMPONENTS = {
   pagerView: { type: DataGridPagerView },
-  headerPanel: { type: HeaderPanelView },
+  headerPanel: { type: DataGridHeaderPanelView },
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

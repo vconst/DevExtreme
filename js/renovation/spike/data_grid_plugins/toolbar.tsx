@@ -2,55 +2,65 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  JSXComponent, Component, InternalState, Effect, Fragment, Consumer,
+  JSXComponent, Component, InternalState, Effect, Fragment, Consumer, ComponentBindings,
 } from 'devextreme-generator/component_declaration/common';
-import { DataGridViewProps } from '../data_grid/common/data_grid_view_props';
-import { Toolbox } from '../data_grid_plugins/toolbar/toolbox';
-import { View } from './view';
-import { RenovatedViewInstance } from './view_instance';
-import { ToolbarItemType } from './extender_types';
+import { Toolbox } from './toolbar/toolbox';
+import { View } from '../view-extenders/view';
+import { RenovatedViewInstance } from '../view-extenders/view_instance';
+import { ToolbarItemType } from '../view-extenders/extender_types';
 
 import { Plugins, PluginsContext, createGetter } from '../plugins/context';
+import { PlaceholderExtender } from '../plugins/placeholder_extender';
+import { HeaderPanelPlaceholder } from '../data_grid/data_grid_header_panel_view';
+import { Grid } from '../data_grid/data_grid';
 
 export const ToolbarItems = createGetter<ToolbarItemType[]>([]);
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
   toolbarItems, isVisible,
-  props: { gridInstance, gridProps },
 }: HeaderPanelView) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <Fragment>
-    <View isVisible={isVisible}>
-
-      <Toolbox items={(toolbarItems
-        .map(({
-          location, name, props, templateType: ItemTemplate,
-        }) => ({
-          location,
-          name,
-          template: props
-          // eslint-disable-next-line react/jsx-props-no-spreading
-            ? () => (<ItemTemplate {...props} />)
-            : () => (<ItemTemplate gridInstance={gridInstance} gridProps={gridProps} />),
-        }))
+    <PlaceholderExtender
+      type={HeaderPanelPlaceholder}
+      order={1}
+      template={(): JSX.Element => (
+        <View isVisible={isVisible}>
+          <Toolbox items={(toolbarItems
+            .map(({
+              location, name, props, templateType: ItemTemplate,
+            }) => ({
+              location,
+              name,
+              template: props
+              // eslint-disable-next-line react/jsx-props-no-spreading
+                ? () => (<ItemTemplate {...props} />)
+                : () => (<ItemTemplate />),
+            }))
       )}
-      />
-    </View>
+          />
+        </View>
+      )}
+    />
   </Fragment>
 );
 
+@ComponentBindings()
+export class ToolbarProps {
+}
+
 @Component({ defaultOptionRules: null, view: viewFunction })
-export class HeaderPanelView extends JSXComponent<DataGridViewProps, 'gridInstance' | 'gridProps'>() {
-  get viewInstance(): RenovatedViewInstance & { setToolbarItemDisabled: (i, b) => void} {
-    const viewInstance = this.props.gridInstance.getView('headerPanel');
-    return viewInstance;
-  }
+export default class HeaderPanelView extends JSXComponent<ToolbarProps>() {
+  @Consumer(PluginsContext)
+  plugins!: Plugins;
 
   @InternalState() toolbarItems: ToolbarItemType[] = [];
 
-  @Consumer(PluginsContext)
-  plugins!: Plugins;
+  get viewInstance(): RenovatedViewInstance & { setToolbarItemDisabled: (i, b) => void} {
+    const viewInstance = this.plugins.getValue(Grid).getView('headerPanel');
+    return viewInstance;
+  }
 
   @Effect()
   updateToolbarItems() {

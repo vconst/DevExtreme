@@ -8,7 +8,7 @@ import { ToolbarItemType } from '../view-extenders/extender_types';
 
 import { Button } from '../../ui/button';
 
-import { ToolbarItems } from '../view-extenders/header_panel_view';
+import { ToolbarItems } from './toolbar';
 import { Plugins, PluginsContext } from '../plugins/context';
 import { DataGridExport } from '../../ui/data_grid/props';
 import { Grid } from '../data_grid/data_grid';
