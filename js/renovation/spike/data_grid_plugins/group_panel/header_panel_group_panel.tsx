@@ -1,9 +1,9 @@
 import {
   JSXComponent, Component, InternalState, Effect,
 } from 'devextreme-generator/component_declaration/common';
-import { DataGridViewProps } from '../data_grid/common/data_grid_view_props';
+import { DataGridViewProps } from '../../data_grid/common/data_grid_view_props';
 import { GroupPanelItemPlaceholder } from './group_panel_item';
-import { Placeholder } from './placeholder';
+import { Placeholder } from '../../plugins/placeholder';
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 
 export const viewFunction = ({ items }: GroupPanel) => (

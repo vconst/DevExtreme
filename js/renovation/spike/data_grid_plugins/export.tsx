@@ -8,8 +8,8 @@ import { ToolbarItemType } from '../view-extenders/extender_types';
 
 import { Button } from '../../ui/button';
 
-import { ToolbarItems } from '../view-extenders/header_panel_getters';
-import { Plugins, PluginsContext } from './context';
+import { ToolbarItems } from '../view-extenders/header_panel_view';
+import { Plugins, PluginsContext } from '../plugins/context';
 import { DataGridExport } from '../../ui/data_grid/props';
 import { Grid } from '../data_grid/data_grid';
 
@@ -25,23 +25,27 @@ export default class Export extends JSXComponent<DataGridExport>() {
     this.plugins.getValue(Grid).option('export', this.props);
   }
 
+  get exportToolbarItems(): ToolbarItemType[] {
+    return [{
+      name: 'export',
+      location: 'after',
+      templateType: Button,
+      props: {
+        text: 'Export',
+        onClick: (): void => {
+          this.plugins.getValue(Grid).getController('export').exportToExcel();
+        },
+      },
+    }];
+  }
+
   @Effect()
   extendToolbarItems(): () => void {
     return this.plugins.extend(
       ToolbarItems, 3,
       (base: ToolbarItemType[]) => {
         if (this.props.enabled) {
-          return base.concat([{
-            name: 'export',
-            location: 'after',
-            templateType: Button,
-            props: {
-              text: 'Export',
-              onClick: (): void => {
-                this.plugins.getValue(Grid).getController('export').exportToExcel();
-              },
-            },
-          }]);
+          return base.concat(this.exportToolbarItems);
         }
         return base;
       },

@@ -5,7 +5,7 @@ import {
 import { PlaceholderItem } from './placeholder_item';
 import {
   createPlaceholder, /* PluginPlaceholder, */ PluginsContext, Plugins,
-} from '../plugins/context';
+} from './context';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({

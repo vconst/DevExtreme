@@ -1,8 +1,8 @@
 import {
   JSXComponent, Component, ComponentBindings, Fragment,
 } from 'devextreme-generator/component_declaration/common';
-import { GroupPanelItemPlaceholder } from '../view-extenders/group_panel_item';
-import { PlaceholderExtender } from '../view-extenders/placeholder_extender';
+import { GroupPanelItemPlaceholder } from './group_panel/group_panel_item';
+import { PlaceholderExtender } from '../plugins/placeholder_extender';
 
 const viewFunction = (): JSX.Element => (
   <PlaceholderExtender

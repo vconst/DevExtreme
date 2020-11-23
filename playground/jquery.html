@@ -21,11 +21,12 @@
 
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/1.7.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.2/jszip.min.js"></script> -->
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.2/jszip.min.js"></script>
     <script type="text/javascript" src="../artifacts/js/dx.all.debug.js" charset="utf-8"></script>
+ -->
+
     <!-- RENOVATION -->
-    <!-- <script type="text/javascript" src="../artifacts/js-renovation/dx.all.debug.js" charset="utf-8"></script> -->
+     <script type="text/javascript" src="../artifacts/js-renovation/dx.all.debug.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="button1"></div>
@@ -36,31 +37,42 @@
         const data = [{key: 1, field1: '11', field2: '12', field3: '13' },{ key: 2, field1: '21', field2: '22', field3: '23' }];
         let instance;
         $(function() {
-            $('#button1').dxrButton({ text: 'Toggle Visible', onClick: () => {
-                const visible = $('#grid').dxrDataGrid('instance').option('columns[1].visible');
-                $('#grid').dxrDataGrid('instance').option('columns[1].visible', !visible);
-            }
-        });
-        $('#button2').dxrButton({ text: 'Add to center', onClick: () => {
-                const columns = [...$('#grid').dxrDataGrid('instance').option('columns')];
-                columns.splice(1, 0, { dataField: 'field3' });
-                $('#grid').dxrDataGrid('instance').option('columns', columns);
-            }
-        });
-        $('#button3').dxrButton({ text: 'Delete from center', onClick: () => {
-                const columns = [ ...$('#grid').dxrDataGrid('instance').option('columns')];
-                columns.splice(0, 1);
-                $('#grid').dxrDataGrid('instance').option('columns', columns);
-            }
-        });
-            $('#grid').dxrDataGrid({
-                export: { enabled: false },
+            $('#button1').dxButton({ text: 'Add Row via Data Source', onClick: () => {
+                const items = grid.option('dataSource');
+                items.push({ id: items.length + 1, text: 'text ' + (items.length + 1) });
+                grid.option('dataSource', items);
+
+            }});
+
+        $('#button2').dxButton({ text: 'Toggle Filter Row', onClick: () => {
+            const visible = grid.option('filterRow.visible');
+            grid.option('filterRow.visible', !visible);
+        }});
+
+        $('#button3').dxButton({ text: 'Toggle Column Visibility', onClick: () => {
+            const visible = grid.option('columns[1].visible');
+            grid.option('columns[1].visible', !visible);
+        }});
+            var grid = new DevExpress.ui.dxDataGrid($('#grid')[0], {
                 columns: [
-                    {dataField: 'key'},
-                    {dataField: 'field1'},
-                    {dataField: 'field2'},
+                    { dataField: 'id' },
+                    { dataField: 'text' },
                 ],
-                dataSource: { store: { type: 'array', key:'key', data} }
+                dataSource1: [{
+                    id: 1, text: 'text 1'
+                }, {
+                    id: 2, text: 'text 2'
+                }],
+                dataSource: {
+                    load() {
+                        console.log('load');
+                        return [{
+                            id: 1, text: 'text 1'
+                        }, {
+                            id: 2, text: 'text 2'
+                        }];
+                    }
+                }
             });
         });
     </script>

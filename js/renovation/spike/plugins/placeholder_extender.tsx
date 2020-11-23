@@ -4,7 +4,7 @@ import {
 
 import {
   createPlaceholder, /* PluginPlaceholder, */ PluginsContext, Plugins,
-} from '../plugins/context';
+} from './context';
 
 @ComponentBindings()
 export class PlaceholderExtenderProps {

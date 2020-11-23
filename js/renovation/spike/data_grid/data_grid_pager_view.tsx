@@ -3,7 +3,7 @@ import {
   JSXComponent, Component,
 } from 'devextreme-generator/component_declaration/common';
 import { DataGridViewProps } from './common/data_grid_view_props';
-import { Placeholder } from '../view-extenders/placeholder';
+import { Placeholder } from '../plugins/placeholder';
 import { createPlaceholder } from '../plugins/context';
 
 export const PagerPlaceholder = createPlaceholder();

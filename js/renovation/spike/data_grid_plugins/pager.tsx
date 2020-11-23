@@ -3,10 +3,10 @@ import {
 } from 'devextreme-generator/component_declaration/common';
 import { DataGridPager } from '../../ui/data_grid/props';
 import PagerProps from '../../ui/pager/common/pager_props';
-import { PluginsContext, Plugins } from './context';
+import { PluginsContext, Plugins } from '../plugins/context';
 import { Grid } from '../data_grid/data_grid';
 import { Pager as PagerWidget } from '../../ui/pager/pager';
-import { PlaceholderExtender } from '../view-extenders/placeholder_extender';
+import { PlaceholderExtender } from '../plugins/placeholder_extender';
 import { PagerPlaceholder } from '../data_grid/data_grid_pager_view';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -23,7 +23,7 @@ export const viewFunction = ({
   <PlaceholderExtender
     type={PagerPlaceholder}
     order={1}
-    template={() => (
+    template={(): JSX.Element => (
       <PagerWidget
       // eslint-disable-next-line react/jsx-props-no-spreading
         {...pagerProps}

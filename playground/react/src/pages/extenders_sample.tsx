@@ -3,11 +3,11 @@ import { useState, useCallback } from 'react';
 import DataGrid from '../artifacts/react/renovation/spike/data_grid/data_grid';
 import CheckBox from '../artifacts/react/renovation/ui/check_box';
 
-import Editing from '../artifacts/react/renovation/spike/plugins/editing';
-import GroupPanel from '../artifacts/react/renovation/spike/plugins/group_panel';
-import Filtering from '../artifacts/react/renovation/spike/plugins/filtering';
-import Export from '../artifacts/react/renovation/spike/plugins/export';
-import Pager from '../artifacts/react/renovation/spike/plugins/pager';
+import Editing from '../artifacts/react/renovation/spike/data_grid_plugins/editing';
+import GroupPanel from '../artifacts/react/renovation/spike/data_grid_plugins/group_panel';
+import Filtering from '../artifacts/react/renovation/spike/data_grid_plugins/filtering';
+import Export from '../artifacts/react/renovation/spike/data_grid_plugins/export';
+import Pager from '../artifacts/react/renovation/spike/data_grid_plugins/pager';
 
 
 import { createStore } from 'devextreme-aspnet-data-nojquery';

@@ -1,5 +1,5 @@
 import { DataGridViewProps } from '../data_grid/common/data_grid_view_props';
-import { ToolboxItemPositionType } from './toolbox_item';
+import { ToolboxItemPositionType } from '../data_grid_plugins/toolbar/toolbox_item';
 
 export interface ViewExtender {
   isVisible: (gridProps: DataGridViewProps['gridProps']) => boolean;

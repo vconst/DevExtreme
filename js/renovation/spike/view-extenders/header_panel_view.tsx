@@ -5,13 +5,14 @@ import {
   JSXComponent, Component, InternalState, Effect, Fragment, Consumer,
 } from 'devextreme-generator/component_declaration/common';
 import { DataGridViewProps } from '../data_grid/common/data_grid_view_props';
-import { Toolbox } from './toolbox';
+import { Toolbox } from '../data_grid_plugins/toolbar/toolbox';
 import { View } from './view';
 import { RenovatedViewInstance } from './view_instance';
 import { ToolbarItemType } from './extender_types';
-import { ToolbarItems } from './header_panel_getters';
 
-import { Plugins, PluginsContext } from '../plugins/context';
+import { Plugins, PluginsContext, createGetter } from '../plugins/context';
+
+export const ToolbarItems = createGetter<ToolbarItemType[]>([]);
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const viewFunction = ({
