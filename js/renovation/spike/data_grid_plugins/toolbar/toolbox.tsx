@@ -9,13 +9,13 @@ export const viewFunction = ({
 }: Toolbox) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <Fragment>
-    <div>
+    <div key="before">
       {(beforeItems.map(({ name, template: Template }) => (Template ? (
         <Template key={name} name={name} />
       ) : <span key={name}>{name}</span>))
     )}
     </div>
-    <div>
+    <div key="after">
       {(afterItems.map(({ name, template: Template }) => (Template ? (
         <Template key={name} name={name} />
       ) : <span key={name}>{name}</span>))

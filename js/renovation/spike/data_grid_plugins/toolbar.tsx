@@ -27,17 +27,18 @@ export const viewFunction = ({
       order={1}
       template={(): JSX.Element => (
         <View isVisible={isVisible}>
-          <Toolbox items={(toolbarItems
-            .map(({
-              location, name, props, templateType: ItemTemplate,
-            }) => ({
-              location,
-              name,
-              template: props
-              // eslint-disable-next-line react/jsx-props-no-spreading
-                ? () => (<ItemTemplate {...props} />)
-                : () => (<ItemTemplate />),
-            }))
+          <Toolbox
+            items={(toolbarItems
+              .map(({
+                location, name, props, templateType: ItemTemplate,
+              }) => ({
+                location,
+                name,
+                template: props
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                  ? () => (<ItemTemplate key={name} {...props} />)
+                  : ItemTemplate,
+              }))
       )}
           />
         </View>

@@ -15,6 +15,12 @@ import { GroupPanel as GroupPanelWidget } from './group_panel/group_panel';
 import { GroupPanelItemPlaceholder } from './group_panel/group_panel_item';
 import { PlaceholderExtender } from '../plugins/placeholder_extender';
 
+const groupingToolbarItems: ToolbarItemType[] = [{
+  name: 'groupPanel',
+  location: 'before',
+  templateType: GroupPanelWidget,
+}];
+
 const viewFunction = (): JSX.Element => (
   <Fragment>
     <PlaceholderExtender
@@ -43,22 +49,13 @@ export default class GroupPanel extends JSXComponent<DataGridGroupPanel>() {
     this.plugins.getValue(Grid).option('editing', this.props);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  get groupingToolbarItems(): ToolbarItemType[] {
-    return [{
-      name: 'groupPanel',
-      location: 'before',
-      templateType: GroupPanelWidget,
-    }];
-  }
-
   @Effect()
   extendToolbarItems(): () => void {
     return this.plugins.extend(
       ToolbarItems, 1,
       (base: ToolbarItemType[]) => {
         if (this.props.visible) {
-          return base.concat(this.groupingToolbarItems);
+          return base.concat(groupingToolbarItems);
         }
         return base;
       },

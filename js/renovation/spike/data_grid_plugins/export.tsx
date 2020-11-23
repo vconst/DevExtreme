@@ -39,16 +39,17 @@ export default class Export extends JSXComponent<DataGridExport>() {
     }];
   }
 
+  getToolbarItems(base: ToolbarItemType[]): ToolbarItemType[] {
+    if (this.props.enabled) {
+      return base.concat(this.exportToolbarItems);
+    }
+    return base;
+  }
+
   @Effect()
   extendToolbarItems(): () => void {
     return this.plugins.extend(
-      ToolbarItems, 3,
-      (base: ToolbarItemType[]) => {
-        if (this.props.enabled) {
-          return base.concat(this.exportToolbarItems);
-        }
-        return base;
-      },
+      ToolbarItems, 3, this.getToolbarItems,
     );
   }
 }

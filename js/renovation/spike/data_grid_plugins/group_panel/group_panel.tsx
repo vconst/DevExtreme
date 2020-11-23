@@ -13,7 +13,7 @@ export const viewFunction = ({ items }: GroupPanel): JSX.Element => (
     {(items
       .map((column) => (
         <div className={column.cssClass}>
-          <Placeholder type={GroupPanelItemPlaceholder} column={column}>
+          <Placeholder key={column.dataField} type={GroupPanelItemPlaceholder} column={column}>
             { column.caption }
           </Placeholder>
         </div>
@@ -32,7 +32,7 @@ export class GroupPanel extends JSXComponent<GroupPanelProps>() {
 
   @InternalState() groupingColumns;
 
-  get items(): { caption: string; cssClass: string }[] {
+  get items(): { caption: string; cssClass: string; index: number; dataField: string }[] {
     const groupColumns = this.groupingColumns || this.plugins.getValue(Grid).getController('columns').getGroupColumns();
     return groupColumns;
   }
