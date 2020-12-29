@@ -75,6 +75,14 @@ const restoreFocus = function(focusedElement, selectionRange) {
     gridCoreUtils.setSelectionRange(focusedElement, selectionRange);
 };
 
+const getPercentTotalWidth = (columnWidths) => columnWidths.reduce((sum, width) => {
+    if(!isPercentWidth(width)) {
+        return sum;
+    }
+
+    return sum + parseFloat(width);
+}, 0);
+
 const ResizingController = modules.ViewController.inherit({
     _initPostRenderHandlers: function() {
         const that = this;
@@ -336,15 +344,32 @@ const ResizingController = modules.ViewController.inherit({
     },
 
     _correctColumnWidths: function(resultWidths, visibleColumns) {
-        const that = this;
-        let i;
-        let hasPercentWidth = false;
-        let hasAutoWidth = false;
         let isColumnWidthsCorrected = false;
-        const $element = that.component.$element();
-        const hasWidth = that._hasWidth;
 
-        for(i = 0; i < visibleColumns.length; i++) {
+        if(this._correctMinWidth(resultWidths, visibleColumns)) {
+            isColumnWidthsCorrected = true;
+        }
+
+        const hasAutoWidth = visibleColumns.some(column => !isDefined(column.width));
+        const hasPercentWidth = visibleColumns.some(column => isPercentWidth(column.width));
+
+        if(!hasAutoWidth && hasPercentWidth) {
+            if(this._correctPercentWidths(resultWidths)) {
+                isColumnWidthsCorrected = true;
+            }
+        }
+
+        if(this._correctLastColumnWidthAndMaxWidth(resultWidths, visibleColumns, hasAutoWidth, hasPercentWidth)) {
+            isColumnWidthsCorrected = true;
+        }
+        return isColumnWidthsCorrected;
+    },
+
+    _correctMinWidth: function(resultWidths, visibleColumns) {
+        const that = this;
+        let isColumnWidthsCorrected = false;
+
+        for(let i = 0; i < visibleColumns.length; i++) {
             const index = i;
             const column = visibleColumns[index];
             const isHiddenColumn = resultWidths[index] === HIDDEN_COLUMNS_WIDTH;
@@ -363,43 +388,81 @@ const ResizingController = modules.ViewController.inherit({
                     }
                 }
             }
-            if(minWidth && that._getRealColumnWidth(width) < minWidth && !isHiddenColumn) {
+
+            const realColumnWidth = that._getRealColumnWidth(index, resultWidths.map(function(columnWidth, columnIndex) {
+                return index === columnIndex ? width : columnWidth;
+            }));
+
+            if(minWidth && !isHiddenColumn && realColumnWidth < minWidth) {
                 resultWidths[index] = minWidth;
                 isColumnWidthsCorrected = true;
                 i = -1;
             }
-            if(!isDefined(column.width)) {
-                hasAutoWidth = true;
-            }
-            if(isPercentWidth(column.width)) {
-                hasPercentWidth = true;
-            }
         }
 
-        if($element && that._maxWidth) {
-            delete that._maxWidth;
-            $element.css('maxWidth', '');
+        return isColumnWidthsCorrected;
+    },
+
+    _correctPercentWidths: function(resultWidths) {
+        let isColumnWidthsCorrected = false;
+        const percentTotalWidth = getPercentTotalWidth(resultWidths);
+        if(percentTotalWidth > 0 && percentTotalWidth < 100) {
+            for(let i = 0; i < resultWidths.length; i++) {
+                const width = resultWidths[i];
+                if(isPercentWidth(width)) {
+                    resultWidths[i] = (parseFloat(width) * 100 / percentTotalWidth).toFixed(3) + '%';
+                    isColumnWidthsCorrected = true;
+                }
+            }
         }
+        return isColumnWidthsCorrected;
+    },
+
+    _correctLastColumnWidthAndMaxWidth: function(resultWidths, visibleColumns, hasAutoWidth, hasPercentWidth) {
+        const that = this;
+
+        const hasWidth = that._hasWidth;
+
+        this._resetMaxWidth();
 
         if(!hasAutoWidth && resultWidths.length) {
             const contentWidth = that._rowsView.contentWidth();
             const scrollbarWidth = that._rowsView.getScrollbarWidth();
             const totalWidth = that._getTotalWidth(resultWidths, contentWidth);
-
             if(totalWidth < contentWidth) {
-                const lastColumnIndex = gridCoreUtils.getLastResizableColumnIndex(visibleColumns, resultWidths);
-
-                if(lastColumnIndex >= 0) {
-                    resultWidths[lastColumnIndex] = 'auto';
-                    isColumnWidthsCorrected = true;
+                if(this._correctLastColumnWidth(resultWidths, visibleColumns)) {
                     if(hasWidth === false && !hasPercentWidth) {
-                        that._maxWidth = totalWidth + scrollbarWidth + (that.option('showBorders') ? 2 : 0);
-                        $element.css('maxWidth', that._maxWidth);
+                        this._updateMaxWidth(totalWidth, scrollbarWidth);
                     }
+                    return true;
                 }
             }
         }
-        return isColumnWidthsCorrected;
+    },
+
+    _correctLastColumnWidth: function(resultWidths, visibleColumns) {
+        const lastColumnIndex = gridCoreUtils.getLastResizableColumnIndex(visibleColumns, resultWidths);
+
+        if(lastColumnIndex >= 0) {
+            resultWidths[lastColumnIndex] = 'auto';
+            return true;
+        }
+    },
+
+    _resetMaxWidth: function() {
+        const $element = this.component.$element();
+
+        if($element && this._maxWidth) {
+            delete this._maxWidth;
+            $element.css('maxWidth', '');
+        }
+    },
+
+    _updateMaxWidth: function(totalWidth, scrollbarWidth) {
+        const $element = this.component.$element();
+
+        this._maxWidth = totalWidth + scrollbarWidth + (this.option('showBorders') ? 2 : 0);
+        $element.css('maxWidth', this._maxWidth);
     },
 
     _processStretch: function(resultSizes, visibleColumns) {
@@ -438,14 +501,33 @@ const ResizingController = modules.ViewController.inherit({
         }
     },
 
-    _getRealColumnWidth: function(width, groupWidth) {
+    _getRealColumnWidth: function(columnIndex, columnWidths, groupWidth) {
+        let ratio = 1;
+        const width = columnWidths[columnIndex];
+
         if(!isPercentWidth(width)) {
             return parseFloat(width);
         }
 
+        const percentWidth = getPercentTotalWidth(columnWidths);
+        const notPercentWidth = columnWidths.reduce((sum, width, index) => {
+            if(!width || width === HIDDEN_COLUMNS_WIDTH || columnIndex === index || isPercentWidth(width)) {
+                return sum;
+            }
+
+            return sum + parseFloat(width);
+        }, 0);
+
         groupWidth = groupWidth || this._rowsView.contentWidth();
 
-        return parseFloat(width) * groupWidth / 100;
+        const freeSpace = groupWidth - notPercentWidth;
+
+        if(notPercentWidth > 0) {
+            const percentWidthInPixel = percentWidth * freeSpace / 100;
+            ratio = freeSpace > percentWidthInPixel ? freeSpace / percentWidthInPixel : 1;
+        }
+
+        return parseFloat(width) * freeSpace * ratio / 100;
     },
 
     _getTotalWidth: function(widths, groupWidth) {
@@ -454,7 +536,7 @@ const ResizingController = modules.ViewController.inherit({
         for(let i = 0; i < widths.length; i++) {
             const width = widths[i];
             if(width && width !== HIDDEN_COLUMNS_WIDTH) {
-                result += this._getRealColumnWidth(width, groupWidth);
+                result += this._getRealColumnWidth(i, widths, groupWidth);
             }
         }
 

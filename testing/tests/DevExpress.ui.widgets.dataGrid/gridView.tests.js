@@ -1245,10 +1245,10 @@ QUnit.module('Synchronize columns', {
         const columnsHeader = testElement.find('table').find('tbody > tr').first().find('td');
 
         // assert
-        assert.equal(columnsHeader.eq(0).outerWidth(), 160);
-        assert.equal(columnsHeader.eq(1).outerWidth(), 120);
-        assert.equal(columnsHeader.eq(2).outerWidth(), 120);
-        assert.equal(columnsHeader.eq(3).outerWidth(), 400, 'last column width reset to auto');
+        assert.equal(columnsHeader.eq(0).outerWidth(), 240);
+        assert.equal(columnsHeader.eq(1).outerWidth(), 180);
+        assert.equal(columnsHeader.eq(2).outerWidth(), 180);
+        assert.equal(columnsHeader.eq(3).outerWidth(), 200, 'last column width is not reseted to auto');
     });
 
     // B252877
@@ -1298,10 +1298,10 @@ QUnit.module('Synchronize columns', {
         const columnsHeader = testElement.find('table').find('tbody > tr').first().find('td');
 
         // assert
-        assert.equal(columnsHeader.eq(0).outerWidth(), 240);
+        assert.equal(columnsHeader.eq(0).outerWidth(), 390);
         assert.equal(columnsHeader.eq(1).outerWidth(), 200);
         assert.equal(columnsHeader.eq(2).outerWidth(), 160);
-        assert.equal(columnsHeader.eq(3).outerWidth(), 200);
+        assert.equal(columnsHeader.eq(3).outerWidth(), 50);
     });
 
     QUnit.test('Columns with percentage width and fixed widths when columnWidth is auto', function(assert) {
