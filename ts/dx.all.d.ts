@@ -1076,7 +1076,7 @@ declare module DevExpress {
         /**
          * [descr:positionConfig.boundary]
          */
-        boundary?: string | Element | JQuery | Window;
+        boundary?: string | TElement | Window;
         /**
          * [descr:positionConfig.boundaryOffset]
          */
@@ -1092,7 +1092,7 @@ declare module DevExpress {
         /**
          * [descr:positionConfig.of]
          */
-        of?: string | Element | JQuery | Window;
+        of?: string | TElement | Window;
         /**
          * [descr:positionConfig.offset]
          */
@@ -1253,12 +1253,14 @@ declare module DevExpress {
 declare module DevExpress.core {
     /**
      * [descr:dxElement]
+     * @deprecated [depNote:dxElement]
      */
-    export type dxElement = HTMLElement & JQuery;
+    export type dxElement = TElement<HTMLElement>;
     /**
      * [descr:dxSVGElement]
+     * @deprecated [depNote:dxSVGElement]
      */
-    export type dxSVGElement = SVGElement & JQuery;
+    export type dxSVGElement = TElement<SVGElement>;
     /**
      * [descr:dxTemplate.Options]
      */
@@ -1277,7 +1279,7 @@ declare module DevExpress.core {
     /**
      * [descr:template]
      */
-    export type template = string | Function | Element | JQuery;
+    export type template = string | Function | TElement;
 }
 declare module DevExpress.data {
     /**
@@ -2488,6 +2490,7 @@ declare module DevExpress.events {
     }
     /**
      * [descr:event]
+     * @deprecated [depNote:event]
      */
     export type event = dxEvent | JQueryEventObject;
     /**
@@ -2597,7 +2600,7 @@ declare module DevExpress.excelExporter {
         /**
          * [descr:ExcelDataGridCell.column]
          */
-        column?: DevExpress.ui.dxDataGridColumn;
+        column?: DevExpress.ui.Column;
         /**
          * [descr:ExcelDataGridCell.data]
          */
@@ -3018,7 +3021,7 @@ declare module DevExpress.pdfExporter {
         /**
          * [descr:PdfDataGridCell.column]
          */
-        column?: DevExpress.ui.dxDataGridColumn;
+        column?: dxDataGridColumn;
         /**
          * [descr:PdfDataGridCell.data]
          */
@@ -3083,6 +3086,10 @@ declare module DevExpress.pdfExporter {
     export function exportDataGrid(options: PdfExportDataGridProps): Promise<void> & JQueryPromise<void>;
 }
 declare module DevExpress.ui {
+    /**
+     * [descr:* ]
+     */
+    export type *  = boolean;
     /**
      * [descr:AsyncRule]
      */
@@ -3231,6 +3238,418 @@ declare module DevExpress.ui {
         visible?: boolean;
     }
     /**
+     * [descr:Column]
+     */
+    export interface Column extends ColumnBase {
+        /**
+         * [descr:Column.allowExporting]
+         */
+        allowExporting?: boolean;
+        /**
+         * [descr:Column.allowGrouping]
+         */
+        allowGrouping?: boolean;
+        /**
+         * [descr:Column.autoExpandGroup]
+         */
+        autoExpandGroup?: boolean;
+        /**
+         * [descr:Column.buttons]
+         */
+        buttons?: Array<'cancel' | 'delete' | 'edit' | 'save' | 'undelete' | ColumnButton>;
+        /**
+         * [descr:Column.calculateGroupValue]
+         */
+        calculateGroupValue?: string | ((rowData: any) => any);
+        /**
+         * [descr:Column.cellTemplate]
+         */
+        cellTemplate?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { data?: any, component?: dxDataGrid, value?: any, oldValue?: any, displayValue?: any, text?: string, columnIndex?: number, rowIndex?: number, column?: dxDataGridColumn, row?: dxDataGridRowObject, rowType?: string, watch?: Function }) => any);
+        /**
+         * [descr:Column.columns]
+         */
+        columns?: Array<Column | string>;
+        /**
+         * [descr:Column.editCellTemplate]
+         */
+        editCellTemplate?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { setValue?: any, data?: any, component?: dxDataGrid, value?: any, displayValue?: any, text?: string, columnIndex?: number, rowIndex?: number, column?: dxDataGridColumn, row?: dxDataGridRowObject, rowType?: string, watch?: Function }) => any);
+        /**
+         * [descr:Column.groupCellTemplate]
+         */
+        groupCellTemplate?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { data?: any, component?: dxDataGrid, value?: any, text?: string, displayValue?: any, columnIndex?: number, rowIndex?: number, column?: dxDataGridColumn, row?: dxDataGridRowObject, summaryItems?: Array<any>, groupContinuesMessage?: string, groupContinuedMessage?: string }) => any);
+        /**
+         * [descr:Column.groupIndex]
+         */
+        groupIndex?: number;
+        /**
+         * [descr:Column.headerCellTemplate]
+         */
+        headerCellTemplate?: DevExpress.core.template | ((columnHeader: DevExpress.core.dxElement, headerInfo: { component?: dxDataGrid, columnIndex?: number, column?: dxDataGridColumn }) => any);
+        /**
+         * [descr:Column.showWhenGrouped]
+         */
+        showWhenGrouped?: boolean;
+        /**
+         * [descr:Column.type]
+         */
+        type?: 'adaptive' | 'buttons' | 'detailExpand' | 'groupExpand' | 'selection' | 'drag';
+    }
+    /**
+     * [descr:ColumnBase]
+     */
+    export interface ColumnBase {
+        /**
+         * [descr:ColumnBase.alignment]
+         */
+        alignment?: 'center' | 'left' | 'right' | undefined;
+        /**
+         * [descr:ColumnBase.allowEditing]
+         */
+        allowEditing?: boolean;
+        /**
+         * [descr:ColumnBase.allowFiltering]
+         */
+        allowFiltering?: boolean;
+        /**
+         * [descr:ColumnBase.allowFixing]
+         */
+        allowFixing?: boolean;
+        /**
+         * [descr:ColumnBase.allowHeaderFiltering]
+         */
+        allowHeaderFiltering?: boolean;
+        /**
+         * [descr:ColumnBase.allowHiding]
+         */
+        allowHiding?: boolean;
+        /**
+         * [descr:ColumnBase.allowReordering]
+         */
+        allowReordering?: boolean;
+        /**
+         * [descr:ColumnBase.allowResizing]
+         */
+        allowResizing?: boolean;
+        /**
+         * [descr:ColumnBase.allowSearch]
+         */
+        allowSearch?: boolean;
+        /**
+         * [descr:ColumnBase.allowSorting]
+         */
+        allowSorting?: boolean;
+        /**
+         * [descr:ColumnBase.calculateCellValue]
+         */
+        calculateCellValue?: ((rowData: any) => any);
+        /**
+         * [descr:ColumnBase.calculateDisplayValue]
+         */
+        calculateDisplayValue?: string | ((rowData: any) => any);
+        /**
+         * [descr:ColumnBase.calculateFilterExpression]
+         */
+        calculateFilterExpression?: ((filterValue: any, selectedFilterOperation: string, target: string) => string | Array<any> | Function);
+        /**
+         * [descr:ColumnBase.calculateSortValue]
+         */
+        calculateSortValue?: string | ((rowData: any) => any);
+        /**
+         * [descr:ColumnBase.caption]
+         */
+        caption?: string;
+        /**
+         * [descr:ColumnBase.cssClass]
+         */
+        cssClass?: string;
+        /**
+         * [descr:ColumnBase.customizeText]
+         */
+        customizeText?: ((cellInfo: { value?: string | number | Date, valueText?: string, target?: string, groupInterval?: string | number }) => string);
+        /**
+         * [descr:ColumnBase.dataField]
+         */
+        dataField?: string;
+        /**
+         * [descr:ColumnBase.dataType]
+         */
+        dataType?: 'string' | 'number' | 'date' | 'boolean' | 'object' | 'datetime';
+        /**
+         * [descr:ColumnBase.editorOptions]
+         */
+        editorOptions?: any;
+        /**
+         * [descr:ColumnBase.encodeHtml]
+         */
+        encodeHtml?: boolean;
+        /**
+         * [descr:ColumnBase.falseText]
+         */
+        falseText?: string;
+        /**
+         * [descr:ColumnBase.filterOperations]
+         */
+        filterOperations?: Array<'=' | '<>' | '<' | '<=' | '>' | '>=' | 'contains' | 'endswith' | 'isblank' | 'isnotblank' | 'notcontains' | 'startswith' | 'between' | 'anyof' | 'noneof' | string>;
+        /**
+         * [descr:ColumnBase.filterType]
+         */
+        filterType?: 'exclude' | 'include';
+        /**
+         * [descr:ColumnBase.filterValue]
+         */
+        filterValue?: any;
+        /**
+         * [descr:ColumnBase.filterValues]
+         */
+        filterValues?: Array<any>;
+        /**
+         * [descr:ColumnBase.fixed]
+         */
+        fixed?: boolean;
+        /**
+         * [descr:ColumnBase.fixedPosition]
+         */
+        fixedPosition?: 'left' | 'right';
+        /**
+         * [descr:ColumnBase.formItem]
+         */
+        formItem?: dxFormSimpleItem;
+        /**
+         * [descr:ColumnBase.format]
+         */
+        format?: format;
+        /**
+         * [descr:ColumnBase.headerFilter]
+         */
+        headerFilter?: ColumnHeaderFilter;
+        /**
+         * [descr:ColumnBase.hidingPriority]
+         */
+        hidingPriority?: number;
+        /**
+         * [descr:ColumnBase.isBand]
+         */
+        isBand?: boolean;
+        /**
+         * [descr:ColumnBase.lookup]
+         */
+        lookup?: ColumnLookup;
+        /**
+         * [descr:ColumnBase.minWidth]
+         */
+        minWidth?: number;
+        /**
+         * [descr:ColumnBase.name]
+         */
+        name?: string;
+        /**
+         * [descr:ColumnBase.ownerBand]
+         */
+        ownerBand?: number;
+        /**
+         * [descr:ColumnBase.renderAsync]
+         */
+        renderAsync?: boolean;
+        /**
+         * [descr:ColumnBase.selectedFilterOperation]
+         */
+        selectedFilterOperation?: '<' | '<=' | '<>' | '=' | '>' | '>=' | 'between' | 'contains' | 'endswith' | 'notcontains' | 'startswith';
+        /**
+         * [descr:ColumnBase.setCellValue]
+         */
+        setCellValue?: ((newData: any, value: any, currentRowData: any) => void | Promise<void> | JQueryPromise<void>);
+        /**
+         * [descr:ColumnBase.showEditorAlways]
+         */
+        showEditorAlways?: boolean;
+        /**
+         * [descr:ColumnBase.showInColumnChooser]
+         */
+        showInColumnChooser?: boolean;
+        /**
+         * [descr:ColumnBase.sortIndex]
+         */
+        sortIndex?: number;
+        /**
+         * [descr:ColumnBase.sortOrder]
+         */
+        sortOrder?: 'asc' | 'desc' | undefined;
+        /**
+         * [descr:ColumnBase.sortingMethod]
+         */
+        sortingMethod?: ((value1: any, value2: any) => number);
+        /**
+         * [descr:ColumnBase.trueText]
+         */
+        trueText?: string;
+        /**
+         * [descr:ColumnBase.validationRules]
+         */
+        validationRules?: Array<RequiredRule | NumericRule | RangeRule | StringLengthRule | CustomRule | CompareRule | PatternRule | EmailRule | AsyncRule>;
+        /**
+         * [descr:ColumnBase.visible]
+         */
+        visible?: boolean;
+        /**
+         * [descr:ColumnBase.visibleIndex]
+         */
+        visibleIndex?: number;
+        /**
+         * [descr:ColumnBase.width]
+         */
+        width?: number | string;
+    }
+    /**
+     * [descr:ColumnButton]
+     */
+    export interface ColumnButton extends ColumnButtonBase {
+        /**
+         * [descr:ColumnButton.name]
+         */
+        name?: 'cancel' | 'delete' | 'edit' | 'save' | 'undelete' | string;
+        /**
+         * [descr:ColumnButton.onClick]
+         */
+        onClick?: ((e: { component?: dxDataGrid, element?: DevExpress.core.dxElement, model?: any, event?: DevExpress.events.event, row?: dxDataGridRowObject, column?: dxDataGridColumn }) => any) | string;
+        /**
+         * [descr:ColumnButton.template]
+         */
+        template?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { component?: dxDataGrid, data?: any, key?: any, columnIndex?: number, column?: dxDataGridColumn, rowIndex?: number, rowType?: string, row?: dxDataGridRowObject }) => string | Element | JQuery);
+        /**
+         * [descr:ColumnButton.visible]
+         */
+        visible?: boolean | ((options: { component?: dxDataGrid, row?: dxDataGridRowObject, column?: dxDataGridColumn }) => boolean);
+    }
+    /**
+     * [descr:ColumnButtonBase]
+     */
+    export interface ColumnButtonBase {
+        /**
+         * [descr:ColumnButtonBase.cssClass]
+         */
+        cssClass?: string;
+        /**
+         * [descr:ColumnButtonBase.hint]
+         */
+        hint?: string;
+        /**
+         * [descr:ColumnButtonBase.icon]
+         */
+        icon?: string;
+        /**
+         * [descr:ColumnButtonBase.text]
+         */
+        text?: string;
+    }
+    /**
+     * [descr:ColumnChooser]
+     */
+    export interface ColumnChooser {
+        /**
+         * [descr:ColumnChooser.allowSearch]
+         */
+        allowSearch?: boolean;
+        /**
+         * [descr:ColumnChooser.emptyPanelText]
+         */
+        emptyPanelText?: string;
+        /**
+         * [descr:ColumnChooser.enabled]
+         */
+        enabled?: boolean;
+        /**
+         * [descr:ColumnChooser.height]
+         */
+        height?: number;
+        /**
+         * [descr:ColumnChooser.mode]
+         */
+        mode?: 'dragAndDrop' | 'select';
+        /**
+         * [descr:ColumnChooser.searchTimeout]
+         */
+        searchTimeout?: number;
+        /**
+         * [descr:ColumnChooser.title]
+         */
+        title?: string;
+        /**
+         * [descr:ColumnChooser.width]
+         */
+        width?: number;
+    }
+    /**
+     * [descr:ColumnFixingTexts]
+     */
+    export interface ColumnFixingTexts {
+        /**
+         * [descr:ColumnFixingTexts.fix]
+         */
+        fix?: string;
+        /**
+         * [descr:ColumnFixingTexts.leftPosition]
+         */
+        leftPosition?: string;
+        /**
+         * [descr:ColumnFixingTexts.rightPosition]
+         */
+        rightPosition?: string;
+        /**
+         * [descr:ColumnFixingTexts.unfix]
+         */
+        unfix?: string;
+    }
+    /**
+     * [descr:ColumnHeaderFilter]
+     */
+    export interface ColumnHeaderFilter {
+        /**
+         * [descr:ColumnHeaderFilter.allowSearch]
+         */
+        allowSearch?: boolean;
+        /**
+         * [descr:ColumnHeaderFilter.dataSource]
+         */
+        dataSource?: Array<any> | ((options: { component?: any, dataSource?: DevExpress.data.DataSourceOptions }) => any) | DevExpress.data.DataSourceOptions;
+        /**
+         * [descr:ColumnHeaderFilter.groupInterval]
+         */
+        groupInterval?: 'day' | 'hour' | 'minute' | 'month' | 'quarter' | 'second' | 'year' | number;
+        /**
+         * [descr:ColumnHeaderFilter.height]
+         */
+        height?: number;
+        /**
+         * [descr:ColumnHeaderFilter.searchMode]
+         */
+        searchMode?: 'contains' | 'startswith' | 'equals';
+        /**
+         * [descr:ColumnHeaderFilter.width]
+         */
+        width?: number;
+    }
+    /**
+     * [descr:ColumnLookup]
+     */
+    export interface ColumnLookup {
+        /**
+         * [descr:ColumnLookup.allowClearing]
+         */
+        allowClearing?: boolean;
+        /**
+         * [descr:ColumnLookup.dataSource]
+         */
+        dataSource?: Array<any> | DevExpress.data.DataSourceOptions | DevExpress.data.Store | ((options: { data?: any, key?: any }) => Array<any> | DevExpress.data.DataSourceOptions | DevExpress.data.Store);
+        /**
+         * [descr:ColumnLookup.displayExpr]
+         */
+        displayExpr?: string | ((data: any) => string);
+        /**
+         * [descr:ColumnLookup.valueExpr]
+         */
+        valueExpr?: string;
+    }
+    /**
      * [descr:CompareRule]
      */
     export interface CompareRule {
@@ -3334,11 +3753,11 @@ declare module DevExpress.ui {
         /**
          * [descr:DraggableBase.Options.boundary]
          */
-        boundary?: string | Element | JQuery;
+        boundary?: string | TElement;
         /**
          * [descr:DraggableBase.Options.container]
          */
-        container?: string | Element | JQuery;
+        container?: string | TElement;
         /**
          * [descr:DraggableBase.Options.cursorOffset]
          */
@@ -3441,6 +3860,177 @@ declare module DevExpress.ui {
         type: 'required' | 'numeric' | 'range' | 'stringLength' | 'custom' | 'compare' | 'pattern' | 'email' | 'async';
     }
     /**
+     * [descr:Export]
+     */
+    export interface Export {
+        /**
+         * [descr:Export.allowExportSelectedData]
+         */
+        allowExportSelectedData?: boolean;
+        /**
+         * [descr:Export.customizeExcelCell]
+         * @deprecated [depNote:Export.customizeExcelCell]
+         */
+        customizeExcelCell?: ((options: { component?: dxDataGrid, horizontalAlignment?: 'center' | 'centerContinuous' | 'distributed' | 'fill' | 'general' | 'justify' | 'left' | 'right', verticalAlignment?: 'bottom' | 'center' | 'distributed' | 'justify' | 'top', wrapTextEnabled?: boolean, backgroundColor?: string, fillPatternType?: 'darkDown' | 'darkGray' | 'darkGrid' | 'darkHorizontal' | 'darkTrellis' | 'darkUp' | 'darkVertical' | 'gray0625' | 'gray125' | 'lightDown' | 'lightGray' | 'lightGrid' | 'lightHorizontal' | 'lightTrellis' | 'lightUp' | 'lightVertical' | 'mediumGray' | 'none' | 'solid', fillPatternColor?: string, font?: DevExpress.exporter.ExcelFont, value?: string | number | Date, numberFormat?: string, gridCell?: DevExpress.excelExporter.ExcelDataGridCell }) => any);
+        /**
+         * [descr:Export.enabled]
+         */
+        enabled?: boolean;
+        /**
+         * [descr:Export.excelFilterEnabled]
+         * @deprecated [depNote:Export.excelFilterEnabled]
+         */
+        excelFilterEnabled?: boolean;
+        /**
+         * [descr:Export.excelWrapTextEnabled]
+         * @deprecated [depNote:Export.excelWrapTextEnabled]
+         */
+        excelWrapTextEnabled?: boolean;
+        /**
+         * [descr:Export.fileName]
+         * @deprecated [depNote:Export.fileName]
+         */
+        fileName?: string;
+        /**
+         * [descr:Export.ignoreExcelErrors]
+         * @deprecated [depNote:Export.ignoreExcelErrors]
+         */
+        ignoreExcelErrors?: boolean;
+        /**
+         * [descr:Export.proxyUrl]
+         * @deprecated [depNote:Export.proxyUrl]
+         */
+        proxyUrl?: string;
+        /**
+         * [descr:Export.texts]
+         */
+        texts?: ExportTexts;
+    }
+    /**
+     * [descr:ExportTexts]
+     */
+    export interface ExportTexts {
+        /**
+         * [descr:ExportTexts.exportAll]
+         */
+        exportAll?: string;
+        /**
+         * [descr:ExportTexts.exportSelectedRows]
+         */
+        exportSelectedRows?: string;
+        /**
+         * [descr:ExportTexts.exportTo]
+         */
+        exportTo?: string;
+    }
+    /**
+     * [descr:FilterPanelTexts]
+     */
+    export interface FilterPanelTexts {
+        /**
+         * [descr:FilterPanelTexts.clearFilter]
+         */
+        clearFilter?: string;
+        /**
+         * [descr:FilterPanelTexts.createFilter]
+         */
+        createFilter?: string;
+        /**
+         * [descr:FilterPanelTexts.filterEnabledHint]
+         */
+        filterEnabledHint?: string;
+    }
+    /**
+     * [descr:FilterRow]
+     */
+    export interface FilterRow {
+        /**
+         * [descr:FilterRow.applyFilter]
+         */
+        applyFilter?: 'auto' | 'onClick';
+        /**
+         * [descr:FilterRow.applyFilterText]
+         */
+        applyFilterText?: string;
+        /**
+         * [descr:FilterRow.betweenEndText]
+         */
+        betweenEndText?: string;
+        /**
+         * [descr:FilterRow.betweenStartText]
+         */
+        betweenStartText?: string;
+        /**
+         * [descr:FilterRow.operationDescriptions]
+         */
+        operationDescriptions?: FilterRowOperationDescriptions;
+        /**
+         * [descr:FilterRow.resetOperationText]
+         */
+        resetOperationText?: string;
+        /**
+         * [descr:FilterRow.showAllText]
+         */
+        showAllText?: string;
+        /**
+         * [descr:FilterRow.showOperationChooser]
+         */
+        showOperationChooser?: boolean;
+        /**
+         * [descr:FilterRow.visible]
+         */
+        visible?: boolean;
+    }
+    /**
+     * [descr:FilterRowOperationDescriptions]
+     */
+    export interface FilterRowOperationDescriptions {
+        /**
+         * [descr:FilterRowOperationDescriptions.between]
+         */
+        between?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.contains]
+         */
+        contains?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.endsWith]
+         */
+        endsWith?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.equal]
+         */
+        equal?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.greaterThan]
+         */
+        greaterThan?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.greaterThanOrEqual]
+         */
+        greaterThanOrEqual?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.lessThan]
+         */
+        lessThan?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.lessThanOrEqual]
+         */
+        lessThanOrEqual?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.notContains]
+         */
+        notContains?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.notEqual]
+         */
+        notEqual?: string;
+        /**
+         * [descr:FilterRowOperationDescriptions.startsWith]
+         */
+        startsWith?: string;
+    }
+    /**
      * [descr:GridBase.Options]
      */
     export interface GridBaseOptions<T = GridBase> extends WidgetOptions<T> {
@@ -3471,11 +4061,11 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.columnChooser]
          */
-        columnChooser?: { allowSearch?: boolean, emptyPanelText?: string, enabled?: boolean, height?: number, mode?: 'dragAndDrop' | 'select', searchTimeout?: number, title?: string, width?: number };
+        columnChooser?: ColumnChooser;
         /**
          * [descr:GridBase.Options.columnFixing]
          */
-        columnFixing?: { enabled?: boolean, texts?: { fix?: string, leftPosition?: string, rightPosition?: string, unfix?: string } };
+        columnFixing?: GridBaseColumnFixing;
         /**
          * [descr:GridBase.Options.columnHidingEnabled]
          */
@@ -3495,7 +4085,7 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.columns]
          */
-        columns?: Array<GridBaseColumn | string>;
+        columns?: Array<ColumnBase | string>;
         /**
          * [descr:GridBase.Options.dataSource]
          */
@@ -3523,11 +4113,11 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.filterPanel]
          */
-        filterPanel?: { customizeText?: ((e: { component?: T, filterValue?: any, text?: string }) => string), filterEnabled?: boolean, texts?: { clearFilter?: string, createFilter?: string, filterEnabledHint?: string }, visible?: boolean };
+        filterPanel?: { customizeText?: ((e: { component?: T, filterValue?: any, text?: string }) => string), filterEnabled?: boolean, texts?: FilterPanelTexts, visible?: boolean };
         /**
          * [descr:GridBase.Options.filterRow]
          */
-        filterRow?: { applyFilter?: 'auto' | 'onClick', applyFilterText?: string, betweenEndText?: string, betweenStartText?: string, operationDescriptions?: { between?: string, contains?: string, endsWith?: string, equal?: string, greaterThan?: string, greaterThanOrEqual?: string, lessThan?: string, lessThanOrEqual?: string, notContains?: string, notEqual?: string, startsWith?: string }, resetOperationText?: string, showAllText?: string, showOperationChooser?: boolean, visible?: boolean };
+        filterRow?: FilterRow;
         /**
          * [descr:GridBase.Options.filterSyncEnabled]
          */
@@ -3555,7 +4145,7 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.headerFilter]
          */
-        headerFilter?: { allowSearch?: boolean, height?: number, searchTimeout?: number, texts?: { cancel?: string, emptyValue?: string, ok?: string }, visible?: boolean, width?: number };
+        headerFilter?: HeaderFilter;
         /**
          * [descr:GridBase.Options.highlightChanges]
          */
@@ -3563,11 +4153,11 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.keyboardNavigation]
          */
-        keyboardNavigation?: { editOnKeyPress?: boolean, enabled?: boolean, enterKeyAction?: 'startEdit' | 'moveFocus', enterKeyDirection?: 'none' | 'column' | 'row' };
+        keyboardNavigation?: GridBaseKeyboardNavigation;
         /**
          * [descr:GridBase.Options.loadPanel]
          */
-        loadPanel?: { enabled?: boolean | 'auto', height?: number, indicatorSrc?: string, shading?: boolean, shadingColor?: string, showIndicator?: boolean, showPane?: boolean, text?: string, width?: number };
+        loadPanel?: LoadPanel;
         /**
          * [descr:GridBase.Options.noDataText]
          */
@@ -3659,7 +4249,7 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.pager]
          */
-        pager?: { allowedPageSizes?: Array<number> | 'auto', infoText?: string, showInfo?: boolean, showNavigationButtons?: boolean, showPageSizeSelector?: boolean, visible?: boolean | 'auto' };
+        pager?: Pager;
         /**
          * [descr:GridBase.Options.paging]
          */
@@ -3679,7 +4269,7 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.rowDragging]
          */
-        rowDragging?: { allowDropInsideItem?: boolean, allowReordering?: boolean, autoScroll?: boolean, boundary?: string | Element | JQuery, container?: string | Element | JQuery, cursorOffset?: string | { x?: number, y?: number }, data?: any, dragDirection?: 'both' | 'horizontal' | 'vertical', dragTemplate?: DevExpress.core.template | ((dragInfo: { itemData?: any, itemElement?: DevExpress.core.dxElement }, containerElement: DevExpress.core.dxElement) => string | Element | JQuery), dropFeedbackMode?: 'push' | 'indicate', filter?: string, group?: string, handle?: string, onAdd?: ((e: { component?: T, event?: DevExpress.events.event, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean }) => any), onDragChange?: ((e: { component?: T, event?: DevExpress.events.event, cancel?: boolean, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean }) => any), onDragEnd?: ((e: { component?: T, event?: DevExpress.events.event, cancel?: boolean, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean }) => any), onDragMove?: ((e: { component?: T, event?: DevExpress.events.event, cancel?: boolean, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean }) => any), onDragStart?: ((e: { component?: T, event?: DevExpress.events.event, cancel?: boolean, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, fromData?: any }) => any), onRemove?: ((e: { component?: T, event?: DevExpress.events.event, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any }) => any), onReorder?: ((e: { component?: T, event?: DevExpress.events.event, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean, promise?: Promise<void> | JQueryPromise<void> }) => any), scrollSensitivity?: number, scrollSpeed?: number, showDragIcons?: boolean };
+        rowDragging?: { allowDropInsideItem?: boolean, allowReordering?: boolean, autoScroll?: boolean, boundary?: string | TElement, container?: string | TElement, cursorOffset?: string | { x?: number, y?: number }, data?: any, dragDirection?: 'both' | 'horizontal' | 'vertical', dragTemplate?: DevExpress.core.template | ((dragInfo: { itemData?: any, itemElement?: DevExpress.core.dxElement }, containerElement: DevExpress.core.dxElement) => string | Element | JQuery), dropFeedbackMode?: 'push' | 'indicate', filter?: string, group?: string, handle?: string, onAdd?: ((e: { component?: T, event?: DevExpress.events.event, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean }) => any), onDragChange?: ((e: { component?: T, event?: DevExpress.events.event, cancel?: boolean, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean }) => any), onDragEnd?: ((e: { component?: T, event?: DevExpress.events.event, cancel?: boolean, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean }) => any), onDragMove?: ((e: { component?: T, event?: DevExpress.events.event, cancel?: boolean, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean }) => any), onDragStart?: ((e: { component?: T, event?: DevExpress.events.event, cancel?: boolean, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, fromData?: any }) => any), onRemove?: ((e: { component?: T, event?: DevExpress.events.event, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any }) => any), onReorder?: ((e: { component?: T, event?: DevExpress.events.event, itemData?: any, itemElement?: DevExpress.core.dxElement, fromIndex?: number, toIndex?: number, fromComponent?: dxSortable | dxDraggable, toComponent?: dxSortable | dxDraggable, fromData?: any, toData?: any, dropInsideItem?: boolean, promise?: Promise<void> | JQueryPromise<void> }) => any), scrollSensitivity?: number, scrollSpeed?: number };
         /**
          * [descr:GridBase.Options.scrolling]
          */
@@ -3687,7 +4277,7 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.searchPanel]
          */
-        searchPanel?: { highlightCaseSensitive?: boolean, highlightSearchText?: boolean, placeholder?: string, searchVisibleColumnsOnly?: boolean, text?: string, visible?: boolean, width?: number };
+        searchPanel?: SearchPanel;
         /**
          * [descr:GridBase.Options.selectedRowKeys]
          */
@@ -3715,11 +4305,11 @@ declare module DevExpress.ui {
         /**
          * [descr:GridBase.Options.sorting]
          */
-        sorting?: { ascendingText?: string, clearText?: string, descendingText?: string, mode?: 'multiple' | 'none' | 'single', showSortIndexes?: boolean };
+        sorting?: Sorting;
         /**
          * [descr:GridBase.Options.stateStoring]
          */
-        stateStoring?: { customLoad?: (() => Promise<any> | JQueryPromise<any>), customSave?: ((gridState: any) => any), enabled?: boolean, savingTimeout?: number, storageKey?: string, type?: 'custom' | 'localStorage' | 'sessionStorage' };
+        stateStoring?: StateStoring;
         /**
          * [descr:GridBase.Options.twoWayBindingEnabled]
          */
@@ -4166,230 +4756,151 @@ declare module DevExpress.ui {
         updateDimensions(): void;
     }
     /**
-     * [descr:GridBaseColumn]
+     * [descr:GridBaseColumnFixing]
      */
-    export interface GridBaseColumn {
+    export interface GridBaseColumnFixing {
         /**
-         * [descr:GridBaseColumn.alignment]
+         * [descr:GridBaseColumnFixing.enabled]
          */
-        alignment?: 'center' | 'left' | 'right' | undefined;
+        enabled?: boolean;
         /**
-         * [descr:GridBaseColumn.allowEditing]
+         * [descr:GridBaseColumnFixing.texts]
          */
-        allowEditing?: boolean;
+        texts?: ColumnFixingTexts;
+    }
+    /**
+     * [descr:GridBaseKeyboardNavigation]
+     */
+    export interface GridBaseKeyboardNavigation {
         /**
-         * [descr:GridBaseColumn.allowFiltering]
+         * [descr:GridBaseKeyboardNavigation.editOnKeyPress]
          */
-        allowFiltering?: boolean;
+        editOnKeyPress?: boolean;
         /**
-         * [descr:GridBaseColumn.allowFixing]
+         * [descr:GridBaseKeyboardNavigation.enabled]
          */
-        allowFixing?: boolean;
+        enabled?: boolean;
         /**
-         * [descr:GridBaseColumn.allowHeaderFiltering]
+         * [descr:GridBaseKeyboardNavigation.enterKeyAction]
          */
-        allowHeaderFiltering?: boolean;
+        enterKeyAction?: 'startEdit' | 'moveFocus';
         /**
-         * [descr:GridBaseColumn.allowHiding]
+         * [descr:GridBaseKeyboardNavigation.enterKeyDirection]
          */
-        allowHiding?: boolean;
+        enterKeyDirection?: 'none' | 'column' | 'row';
+    }
+    /**
+     * [descr:GroupPanel]
+     */
+    export interface GroupPanel {
         /**
-         * [descr:GridBaseColumn.allowReordering]
+         * [descr:GroupPanel.allowColumnDragging]
          */
-        allowReordering?: boolean;
+        allowColumnDragging?: boolean;
         /**
-         * [descr:GridBaseColumn.allowResizing]
+         * [descr:GroupPanel.emptyPanelText]
          */
-        allowResizing?: boolean;
+        emptyPanelText?: string;
         /**
-         * [descr:GridBaseColumn.allowSearch]
+         * [descr:GroupPanel.visible]
+         */
+        visible?: boolean | 'auto';
+    }
+    /**
+     * [descr:Grouping]
+     */
+    export interface Grouping {
+        /**
+         * [descr:Grouping.allowCollapsing]
+         */
+        allowCollapsing?: boolean;
+        /**
+         * [descr:Grouping.autoExpandAll]
+         */
+        autoExpandAll?: boolean;
+        /**
+         * [descr:Grouping.contextMenuEnabled]
+         */
+        contextMenuEnabled?: boolean;
+        /**
+         * [descr:Grouping.expandMode]
+         */
+        expandMode?: 'buttonClick' | 'rowClick';
+        /**
+         * [descr:Grouping.texts]
+         */
+        texts?: GroupingTexts;
+    }
+    /**
+     * [descr:GroupingTexts]
+     */
+    export interface GroupingTexts {
+        /**
+         * [descr:GroupingTexts.groupByThisColumn]
+         */
+        groupByThisColumn?: string;
+        /**
+         * [descr:GroupingTexts.groupContinuedMessage]
+         */
+        groupContinuedMessage?: string;
+        /**
+         * [descr:GroupingTexts.groupContinuesMessage]
+         */
+        groupContinuesMessage?: string;
+        /**
+         * [descr:GroupingTexts.ungroup]
+         */
+        ungroup?: string;
+        /**
+         * [descr:GroupingTexts.ungroupAll]
+         */
+        ungroupAll?: string;
+    }
+    /**
+     * [descr:HeaderFilter]
+     */
+    export interface HeaderFilter {
+        /**
+         * [descr:HeaderFilter.allowSearch]
          */
         allowSearch?: boolean;
         /**
-         * [descr:GridBaseColumn.allowSorting]
+         * [descr:HeaderFilter.height]
          */
-        allowSorting?: boolean;
+        height?: number;
         /**
-         * [descr:GridBaseColumn.calculateCellValue]
+         * [descr:HeaderFilter.searchTimeout]
          */
-        calculateCellValue?: ((rowData: any) => any);
+        searchTimeout?: number;
         /**
-         * [descr:GridBaseColumn.calculateDisplayValue]
+         * [descr:HeaderFilter.texts]
          */
-        calculateDisplayValue?: string | ((rowData: any) => any);
+        texts?: HeaderFilterTexts;
         /**
-         * [descr:GridBaseColumn.calculateFilterExpression]
-         */
-        calculateFilterExpression?: ((filterValue: any, selectedFilterOperation: string, target: string) => string | Array<any> | Function);
-        /**
-         * [descr:GridBaseColumn.calculateSortValue]
-         */
-        calculateSortValue?: string | ((rowData: any) => any);
-        /**
-         * [descr:GridBaseColumn.caption]
-         */
-        caption?: string;
-        /**
-         * [descr:GridBaseColumn.cssClass]
-         */
-        cssClass?: string;
-        /**
-         * [descr:GridBaseColumn.customizeText]
-         */
-        customizeText?: ((cellInfo: { value?: string | number | Date, valueText?: string, target?: string, groupInterval?: string | number }) => string);
-        /**
-         * [descr:GridBaseColumn.dataField]
-         */
-        dataField?: string;
-        /**
-         * [descr:GridBaseColumn.dataType]
-         */
-        dataType?: 'string' | 'number' | 'date' | 'boolean' | 'object' | 'datetime';
-        /**
-         * [descr:GridBaseColumn.editorOptions]
-         */
-        editorOptions?: any;
-        /**
-         * [descr:GridBaseColumn.encodeHtml]
-         */
-        encodeHtml?: boolean;
-        /**
-         * [descr:GridBaseColumn.falseText]
-         */
-        falseText?: string;
-        /**
-         * [descr:GridBaseColumn.filterOperations]
-         */
-        filterOperations?: Array<'=' | '<>' | '<' | '<=' | '>' | '>=' | 'contains' | 'endswith' | 'isblank' | 'isnotblank' | 'notcontains' | 'startswith' | 'between' | 'anyof' | 'noneof' | string>;
-        /**
-         * [descr:GridBaseColumn.filterType]
-         */
-        filterType?: 'exclude' | 'include';
-        /**
-         * [descr:GridBaseColumn.filterValue]
-         */
-        filterValue?: any;
-        /**
-         * [descr:GridBaseColumn.filterValues]
-         */
-        filterValues?: Array<any>;
-        /**
-         * [descr:GridBaseColumn.fixed]
-         */
-        fixed?: boolean;
-        /**
-         * [descr:GridBaseColumn.fixedPosition]
-         */
-        fixedPosition?: 'left' | 'right';
-        /**
-         * [descr:GridBaseColumn.formItem]
-         */
-        formItem?: dxFormSimpleItem;
-        /**
-         * [descr:GridBaseColumn.format]
-         */
-        format?: format;
-        /**
-         * [descr:GridBaseColumn.headerFilter]
-         */
-        headerFilter?: { allowSearch?: boolean, dataSource?: Array<any> | ((options: { component?: any, dataSource?: DevExpress.data.DataSourceOptions }) => any) | DevExpress.data.DataSourceOptions, groupInterval?: 'day' | 'hour' | 'minute' | 'month' | 'quarter' | 'second' | 'year' | number, height?: number, searchMode?: 'contains' | 'startswith' | 'equals', width?: number };
-        /**
-         * [descr:GridBaseColumn.hidingPriority]
-         */
-        hidingPriority?: number;
-        /**
-         * [descr:GridBaseColumn.isBand]
-         */
-        isBand?: boolean;
-        /**
-         * [descr:GridBaseColumn.lookup]
-         */
-        lookup?: { allowClearing?: boolean, dataSource?: Array<any> | DevExpress.data.DataSourceOptions | DevExpress.data.Store | ((options: { data?: any, key?: any }) => Array<any> | DevExpress.data.DataSourceOptions | DevExpress.data.Store), displayExpr?: string | ((data: any) => string), valueExpr?: string };
-        /**
-         * [descr:GridBaseColumn.minWidth]
-         */
-        minWidth?: number;
-        /**
-         * [descr:GridBaseColumn.name]
-         */
-        name?: string;
-        /**
-         * [descr:GridBaseColumn.ownerBand]
-         */
-        ownerBand?: number;
-        /**
-         * [descr:GridBaseColumn.renderAsync]
-         */
-        renderAsync?: boolean;
-        /**
-         * [descr:GridBaseColumn.selectedFilterOperation]
-         */
-        selectedFilterOperation?: '<' | '<=' | '<>' | '=' | '>' | '>=' | 'between' | 'contains' | 'endswith' | 'notcontains' | 'startswith';
-        /**
-         * [descr:GridBaseColumn.setCellValue]
-         */
-        setCellValue?: ((newData: any, value: any, currentRowData: any) => void | Promise<void> | JQueryPromise<void>);
-        /**
-         * [descr:GridBaseColumn.showEditorAlways]
-         */
-        showEditorAlways?: boolean;
-        /**
-         * [descr:GridBaseColumn.showInColumnChooser]
-         */
-        showInColumnChooser?: boolean;
-        /**
-         * [descr:GridBaseColumn.sortIndex]
-         */
-        sortIndex?: number;
-        /**
-         * [descr:GridBaseColumn.sortOrder]
-         */
-        sortOrder?: 'asc' | 'desc' | undefined;
-        /**
-         * [descr:GridBaseColumn.sortingMethod]
-         */
-        sortingMethod?: ((value1: any, value2: any) => number);
-        /**
-         * [descr:GridBaseColumn.trueText]
-         */
-        trueText?: string;
-        /**
-         * [descr:GridBaseColumn.validationRules]
-         */
-        validationRules?: Array<RequiredRule | NumericRule | RangeRule | StringLengthRule | CustomRule | CompareRule | PatternRule | EmailRule | AsyncRule>;
-        /**
-         * [descr:GridBaseColumn.visible]
+         * [descr:HeaderFilter.visible]
          */
         visible?: boolean;
         /**
-         * [descr:GridBaseColumn.visibleIndex]
+         * [descr:HeaderFilter.width]
          */
-        visibleIndex?: number;
-        /**
-         * [descr:GridBaseColumn.width]
-         */
-        width?: number | string;
+        width?: number;
     }
     /**
-     * [descr:GridBaseColumnButton]
+     * [descr:HeaderFilterTexts]
      */
-    export interface GridBaseColumnButton {
+    export interface HeaderFilterTexts {
         /**
-         * [descr:GridBaseColumnButton.cssClass]
+         * [descr:HeaderFilterTexts.cancel]
          */
-        cssClass?: string;
+        cancel?: string;
         /**
-         * [descr:GridBaseColumnButton.hint]
+         * [descr:HeaderFilterTexts.emptyValue]
          */
-        hint?: string;
+        emptyValue?: string;
         /**
-         * [descr:GridBaseColumnButton.icon]
+         * [descr:HeaderFilterTexts.ok]
          */
-        icon?: string;
-        /**
-         * [descr:GridBaseColumnButton.text]
-         */
-        text?: string;
+        ok?: string;
     }
     /**
      * [descr:HierarchicalCollectionWidget.Options]
@@ -4432,6 +4943,47 @@ declare module DevExpress.ui {
         constructor(element: JQuery, options?: HierarchicalCollectionWidgetOptions)
     }
     /**
+     * [descr:LoadPanel]
+     */
+    export interface LoadPanel {
+        /**
+         * [descr:LoadPanel.enabled]
+         */
+        enabled?: boolean | 'auto';
+        /**
+         * [descr:LoadPanel.height]
+         */
+        height?: number;
+        /**
+         * [descr:LoadPanel.indicatorSrc]
+         */
+        indicatorSrc?: string;
+        /**
+         * [descr:LoadPanel.shading]
+         */
+        shading?: boolean;
+        /**
+         * [descr:LoadPanel.shadingColor]
+         */
+        shadingColor?: string;
+        /**
+         * [descr:LoadPanel.showIndicator]
+         */
+        showIndicator?: boolean;
+        /**
+         * [descr:LoadPanel.showPane]
+         */
+        showPane?: boolean;
+        /**
+         * [descr:LoadPanel.text]
+         */
+        text?: string;
+        /**
+         * [descr:LoadPanel.width]
+         */
+        width?: number;
+    }
+    /**
      * [descr:MapLocation]
      */
     export interface MapLocation {
@@ -4443,6 +4995,56 @@ declare module DevExpress.ui {
          * [descr:MapLocation.lng]
          */
         lng?: number;
+    }
+    /**
+     * [descr:MasterDetail]
+     */
+    export interface MasterDetail {
+        /**
+         * [descr:MasterDetail.autoExpandAll]
+         */
+        autoExpandAll?: boolean;
+        /**
+         * [descr:MasterDetail.enabled]
+         */
+        enabled?: boolean;
+        /**
+         * [descr:MasterDetail.template]
+         */
+        template?: DevExpress.core.template | ((detailElement: DevExpress.core.dxElement, detailInfo: { key?: any, data?: any, watch?: Function }) => any);
+    }
+    /**
+     * [descr:Node]
+     */
+    export interface Node {
+        /**
+         * [descr:Node.children]
+         */
+        children?: Array<Node>;
+        /**
+         * [descr:Node.data]
+         */
+        data?: any;
+        /**
+         * [descr:Node.hasChildren]
+         */
+        hasChildren?: boolean;
+        /**
+         * [descr:Node.key]
+         */
+        key?: any;
+        /**
+         * [descr:Node.level]
+         */
+        level?: number;
+        /**
+         * [descr:Node.parent]
+         */
+        parent?: Node;
+        /**
+         * [descr:Node.visible]
+         */
+        visible?: boolean;
     }
     /**
      * [descr:NumericRule]
@@ -4460,6 +5062,35 @@ declare module DevExpress.ui {
          * [descr:NumericRule.type]
          */
         type: 'required' | 'numeric' | 'range' | 'stringLength' | 'custom' | 'compare' | 'pattern' | 'email' | 'async';
+    }
+    /**
+     * [descr:Pager]
+     */
+    export interface Pager {
+        /**
+         * [descr:Pager.allowedPageSizes]
+         */
+        allowedPageSizes?: Array<number> | 'auto';
+        /**
+         * [descr:Pager.infoText]
+         */
+        infoText?: string;
+        /**
+         * [descr:Pager.showInfo]
+         */
+        showInfo?: boolean;
+        /**
+         * [descr:Pager.showNavigationButtons]
+         */
+        showNavigationButtons?: boolean;
+        /**
+         * [descr:Pager.showPageSizeSelector]
+         */
+        showPageSizeSelector?: boolean;
+        /**
+         * [descr:Pager.visible]
+         */
+        visible?: boolean | 'auto';
     }
     /**
      * [descr:PatternRule]
@@ -4529,6 +5160,59 @@ declare module DevExpress.ui {
         type: 'required' | 'numeric' | 'range' | 'stringLength' | 'custom' | 'compare' | 'pattern' | 'email' | 'async';
     }
     /**
+     * [descr:RowObject]
+     */
+    export interface RowObject {
+        /**
+         * [descr:RowObject.data]
+         */
+        data?: any;
+        /**
+         * [descr:RowObject.groupIndex]
+         */
+        groupIndex?: number;
+        /**
+         * [descr:RowObject.isEditing]
+         */
+        isEditing?: boolean;
+        /**
+         * [descr:RowObject.isExpanded]
+         */
+        isExpanded?: boolean;
+        /**
+         * [descr:RowObject.isNewRow]
+         */
+        isNewRow?: boolean;
+        /**
+         * [descr:RowObject.isSelected]
+         */
+        isSelected?: boolean;
+        /**
+         * [descr:RowObject.key]
+         */
+        key?: any;
+        /**
+         * [descr:RowObject.level]
+         */
+        level?: number;
+        /**
+         * [descr:RowObject.node]
+         */
+        node?: Node;
+        /**
+         * [descr:RowObject.rowIndex]
+         */
+        rowIndex?: number;
+        /**
+         * [descr:RowObject.rowType]
+         */
+        rowType?: string;
+        /**
+         * [descr:RowObject.values]
+         */
+        values?: Array<any>;
+    }
+    /**
      * [descr:SearchBoxMixin.Options]
      */
     export interface SearchBoxMixinOptions<T = SearchBoxMixin> {
@@ -4564,6 +5248,93 @@ declare module DevExpress.ui {
         constructor(options?: SearchBoxMixinOptions)
     }
     /**
+     * [descr:SearchPanel]
+     */
+    export interface SearchPanel {
+        /**
+         * [descr:SearchPanel.highlightCaseSensitive]
+         */
+        highlightCaseSensitive?: boolean;
+        /**
+         * [descr:SearchPanel.highlightSearchText]
+         */
+        highlightSearchText?: boolean;
+        /**
+         * [descr:SearchPanel.placeholder]
+         */
+        placeholder?: string;
+        /**
+         * [descr:SearchPanel.searchVisibleColumnsOnly]
+         */
+        searchVisibleColumnsOnly?: boolean;
+        /**
+         * [descr:SearchPanel.text]
+         */
+        text?: string;
+        /**
+         * [descr:SearchPanel.visible]
+         */
+        visible?: boolean;
+        /**
+         * [descr:SearchPanel.width]
+         */
+        width?: number;
+    }
+    /**
+     * [descr:Sorting]
+     */
+    export interface Sorting {
+        /**
+         * [descr:Sorting.ascendingText]
+         */
+        ascendingText?: string;
+        /**
+         * [descr:Sorting.clearText]
+         */
+        clearText?: string;
+        /**
+         * [descr:Sorting.descendingText]
+         */
+        descendingText?: string;
+        /**
+         * [descr:Sorting.mode]
+         */
+        mode?: 'multiple' | 'none' | 'single';
+        /**
+         * [descr:Sorting.showSortIndexes]
+         */
+        showSortIndexes?: boolean;
+    }
+    /**
+     * [descr:StateStoring]
+     */
+    export interface StateStoring {
+        /**
+         * [descr:StateStoring.customLoad]
+         */
+        customLoad?: (() => Promise<any> | JQueryPromise<any>);
+        /**
+         * [descr:StateStoring.customSave]
+         */
+        customSave?: ((gridState: any) => any);
+        /**
+         * [descr:StateStoring.enabled]
+         */
+        enabled?: boolean;
+        /**
+         * [descr:StateStoring.savingTimeout]
+         */
+        savingTimeout?: number;
+        /**
+         * [descr:StateStoring.storageKey]
+         */
+        storageKey?: string;
+        /**
+         * [descr:StateStoring.type]
+         */
+        type?: 'custom' | 'localStorage' | 'sessionStorage';
+    }
+    /**
      * [descr:StringLengthRule]
      */
     export interface StringLengthRule {
@@ -4591,6 +5362,166 @@ declare module DevExpress.ui {
          * [descr:StringLengthRule.type]
          */
         type: 'required' | 'numeric' | 'range' | 'stringLength' | 'custom' | 'compare' | 'pattern' | 'email' | 'async';
+    }
+    /**
+     * [descr:Summary]
+     */
+    export interface Summary {
+        /**
+         * [descr:Summary.calculateCustomSummary]
+         */
+        calculateCustomSummary?: ((options: { component?: dxDataGrid, name?: string, summaryProcess?: string, value?: any, totalValue?: any, groupIndex?: number }) => any);
+        /**
+         * [descr:Summary.groupItems]
+         */
+        groupItems?: Array<any>;
+        /**
+         * [descr:Summary.recalculateWhileEditing]
+         */
+        recalculateWhileEditing?: boolean;
+        /**
+         * [descr:Summary.skipEmptyValues]
+         */
+        skipEmptyValues?: boolean;
+        /**
+         * [descr:Summary.texts]
+         */
+        texts?: SummaryTexts;
+        /**
+         * [descr:Summary.totalItems]
+         */
+        totalItems?: Array<any>;
+    }
+    /**
+     * [descr:SummaryGroupItem]
+     */
+    export interface SummaryGroupItem {
+        /**
+         * [descr:SummaryGroupItem.alignByColumn]
+         */
+        alignByColumn?: boolean;
+        /**
+         * [descr:SummaryGroupItem.column]
+         */
+        column?: string;
+        /**
+         * [descr:SummaryGroupItem.customizeText]
+         */
+        customizeText?: ((itemInfo: { value?: string | number | Date, valueText?: string }) => string);
+        /**
+         * [descr:SummaryGroupItem.displayFormat]
+         */
+        displayFormat?: string;
+        /**
+         * [descr:SummaryGroupItem.name]
+         */
+        name?: string;
+        /**
+         * [descr:SummaryGroupItem.showInColumn]
+         */
+        showInColumn?: string;
+        /**
+         * [descr:SummaryGroupItem.showInGroupFooter]
+         */
+        showInGroupFooter?: boolean;
+        /**
+         * [descr:SummaryGroupItem.skipEmptyValues]
+         */
+        skipEmptyValues?: boolean;
+        /**
+         * [descr:SummaryGroupItem.summaryType]
+         */
+        summaryType?: 'avg' | 'count' | 'custom' | 'max' | 'min' | 'sum' | string;
+        /**
+         * [descr:SummaryGroupItem.valueFormat]
+         */
+        valueFormat?: format;
+    }
+    /**
+     * [descr:SummaryTexts]
+     */
+    export interface SummaryTexts {
+        /**
+         * [descr:SummaryTexts.avg]
+         */
+        avg?: string;
+        /**
+         * [descr:SummaryTexts.avgOtherColumn]
+         */
+        avgOtherColumn?: string;
+        /**
+         * [descr:SummaryTexts.count]
+         */
+        count?: string;
+        /**
+         * [descr:SummaryTexts.max]
+         */
+        max?: string;
+        /**
+         * [descr:SummaryTexts.maxOtherColumn]
+         */
+        maxOtherColumn?: string;
+        /**
+         * [descr:SummaryTexts.min]
+         */
+        min?: string;
+        /**
+         * [descr:SummaryTexts.minOtherColumn]
+         */
+        minOtherColumn?: string;
+        /**
+         * [descr:SummaryTexts.sum]
+         */
+        sum?: string;
+        /**
+         * [descr:SummaryTexts.sumOtherColumn]
+         */
+        sumOtherColumn?: string;
+    }
+    /**
+     * [descr:SummaryTotalItem]
+     */
+    export interface SummaryTotalItem {
+        /**
+         * [descr:SummaryTotalItem.alignment]
+         */
+        alignment?: 'center' | 'left' | 'right';
+        /**
+         * [descr:SummaryTotalItem.column]
+         */
+        column?: string;
+        /**
+         * [descr:SummaryTotalItem.cssClass]
+         */
+        cssClass?: string;
+        /**
+         * [descr:SummaryTotalItem.customizeText]
+         */
+        customizeText?: ((itemInfo: { value?: string | number | Date, valueText?: string }) => string);
+        /**
+         * [descr:SummaryTotalItem.displayFormat]
+         */
+        displayFormat?: string;
+        /**
+         * [descr:SummaryTotalItem.name]
+         */
+        name?: string;
+        /**
+         * [descr:SummaryTotalItem.showInColumn]
+         */
+        showInColumn?: string;
+        /**
+         * [descr:SummaryTotalItem.skipEmptyValues]
+         */
+        skipEmptyValues?: boolean;
+        /**
+         * [descr:SummaryTotalItem.summaryType]
+         */
+        summaryType?: 'avg' | 'count' | 'custom' | 'max' | 'min' | 'sum' | string;
+        /**
+         * [descr:SummaryTotalItem.valueFormat]
+         */
+        valueFormat?: format;
     }
     /**
      * [descr:Widget.Options]
@@ -4776,7 +5707,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxActionSheet.Options.target]
          */
-        target?: string | Element | JQuery;
+        target?: string | TElement;
         /**
          * [descr:dxActionSheet.Options.title]
          */
@@ -5235,7 +6166,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxContextMenu.Options.target]
          */
-        target?: string | Element | JQuery;
+        target?: string | TElement;
         /**
          * [descr:dxContextMenu.Options.visible]
          */
@@ -5276,7 +6207,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxDataGrid.Options.columns]
          */
-        columns?: Array<dxDataGridColumn | string>;
+        columns?: Array<Column | string>;
         /**
          * [descr:dxDataGrid.Options.customizeColumns]
          */
@@ -5293,15 +6224,15 @@ declare module DevExpress.ui {
         /**
          * [descr:dxDataGrid.Options.export]
          */
-        export?: { allowExportSelectedData?: boolean, customizeExcelCell?: ((options: { component?: dxDataGrid, horizontalAlignment?: 'center' | 'centerContinuous' | 'distributed' | 'fill' | 'general' | 'justify' | 'left' | 'right', verticalAlignment?: 'bottom' | 'center' | 'distributed' | 'justify' | 'top', wrapTextEnabled?: boolean, backgroundColor?: string, fillPatternType?: 'darkDown' | 'darkGray' | 'darkGrid' | 'darkHorizontal' | 'darkTrellis' | 'darkUp' | 'darkVertical' | 'gray0625' | 'gray125' | 'lightDown' | 'lightGray' | 'lightGrid' | 'lightHorizontal' | 'lightTrellis' | 'lightUp' | 'lightVertical' | 'mediumGray' | 'none' | 'solid', fillPatternColor?: string, font?: DevExpress.exporter.ExcelFont, value?: string | number | Date, numberFormat?: string, gridCell?: DevExpress.excelExporter.ExcelDataGridCell }) => any), enabled?: boolean, excelFilterEnabled?: boolean, excelWrapTextEnabled?: boolean, fileName?: string, ignoreExcelErrors?: boolean, proxyUrl?: string, texts?: { exportAll?: string, exportSelectedRows?: string, exportTo?: string } };
+        export?: Export;
         /**
          * [descr:dxDataGrid.Options.groupPanel]
          */
-        groupPanel?: { allowColumnDragging?: boolean, emptyPanelText?: string, visible?: boolean | 'auto' };
+        groupPanel?: GroupPanel;
         /**
          * [descr:dxDataGrid.Options.grouping]
          */
-        grouping?: { allowCollapsing?: boolean, autoExpandAll?: boolean, contextMenuEnabled?: boolean, expandMode?: 'buttonClick' | 'rowClick', texts?: { groupByThisColumn?: string, groupContinuedMessage?: string, groupContinuesMessage?: string, ungroup?: string, ungroupAll?: string } };
+        grouping?: Grouping;
         /**
          * [descr:dxDataGrid.Options.keyExpr]
          */
@@ -5309,7 +6240,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxDataGrid.Options.masterDetail]
          */
-        masterDetail?: { autoExpandAll?: boolean, enabled?: boolean, template?: DevExpress.core.template | ((detailElement: DevExpress.core.dxElement, detailInfo: { key?: any, data?: any, watch?: Function }) => any) };
+        masterDetail?: MasterDetail;
         /**
          * [descr:dxDataGrid.Options.onCellClick]
          */
@@ -5407,11 +6338,11 @@ declare module DevExpress.ui {
         /**
          * [descr:dxDataGrid.Options.sortByGroupSummaryInfo]
          */
-        sortByGroupSummaryInfo?: Array<{ groupColumn?: string, sortOrder?: 'asc' | 'desc', summaryItem?: string | number }>;
+        sortByGroupSummaryInfo?: Array<dxDataGridSortByGroupSummaryInfoItem>;
         /**
          * [descr:dxDataGrid.Options.summary]
          */
-        summary?: { calculateCustomSummary?: ((options: { component?: dxDataGrid, name?: string, summaryProcess?: string, value?: any, totalValue?: any, groupIndex?: number }) => any), groupItems?: Array<{ alignByColumn?: boolean, column?: string, customizeText?: ((itemInfo: { value?: string | number | Date, valueText?: string }) => string), displayFormat?: string, name?: string, showInColumn?: string, showInGroupFooter?: boolean, skipEmptyValues?: boolean, summaryType?: 'avg' | 'count' | 'custom' | 'max' | 'min' | 'sum' | string, valueFormat?: format }>, recalculateWhileEditing?: boolean, skipEmptyValues?: boolean, texts?: { avg?: string, avgOtherColumn?: string, count?: string, max?: string, maxOtherColumn?: string, min?: string, minOtherColumn?: string, sum?: string, sumOtherColumn?: string }, totalItems?: Array<{ alignment?: 'center' | 'left' | 'right', column?: string, cssClass?: string, customizeText?: ((itemInfo: { value?: string | number | Date, valueText?: string }) => string), displayFormat?: string, name?: string, showInColumn?: string, skipEmptyValues?: boolean, summaryType?: 'avg' | 'count' | 'custom' | 'max' | 'min' | 'sum' | string, valueFormat?: format }> };
+        summary?: Summary;
     }
     /**
      * [descr:dxDataGrid.Options.editing]
@@ -5543,125 +6474,24 @@ declare module DevExpress.ui {
     /**
      * [descr:dxDataGridColumn]
      */
-    export interface dxDataGridColumn extends GridBaseColumn {
-        /**
-         * [descr:dxDataGridColumn.allowExporting]
-         */
-        allowExporting?: boolean;
-        /**
-         * [descr:dxDataGridColumn.allowGrouping]
-         */
-        allowGrouping?: boolean;
-        /**
-         * [descr:dxDataGridColumn.autoExpandGroup]
-         */
-        autoExpandGroup?: boolean;
-        /**
-         * [descr:dxDataGridColumn.buttons]
-         */
-        buttons?: Array<'cancel' | 'delete' | 'edit' | 'save' | 'undelete' | dxDataGridColumnButton>;
-        /**
-         * [descr:dxDataGridColumn.calculateGroupValue]
-         */
-        calculateGroupValue?: string | ((rowData: any) => any);
-        /**
-         * [descr:dxDataGridColumn.cellTemplate]
-         */
-        cellTemplate?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { data?: any, component?: dxDataGrid, value?: any, oldValue?: any, displayValue?: any, text?: string, columnIndex?: number, rowIndex?: number, column?: dxDataGridColumn, row?: dxDataGridRowObject, rowType?: string, watch?: Function }) => any);
-        /**
-         * [descr:dxDataGridColumn.columns]
-         */
-        columns?: Array<dxDataGridColumn | string>;
-        /**
-         * [descr:dxDataGridColumn.editCellTemplate]
-         */
-        editCellTemplate?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { setValue?: any, data?: any, component?: dxDataGrid, value?: any, displayValue?: any, text?: string, columnIndex?: number, rowIndex?: number, column?: dxDataGridColumn, row?: dxDataGridRowObject, rowType?: string, watch?: Function }) => any);
-        /**
-         * [descr:dxDataGridColumn.groupCellTemplate]
-         */
-        groupCellTemplate?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { data?: any, component?: dxDataGrid, value?: any, text?: string, displayValue?: any, columnIndex?: number, rowIndex?: number, column?: dxDataGridColumn, row?: dxDataGridRowObject, summaryItems?: Array<any>, groupContinuesMessage?: string, groupContinuedMessage?: string }) => any);
-        /**
-         * [descr:dxDataGridColumn.groupIndex]
-         */
-        groupIndex?: number;
-        /**
-         * [descr:dxDataGridColumn.headerCellTemplate]
-         */
-        headerCellTemplate?: DevExpress.core.template | ((columnHeader: DevExpress.core.dxElement, headerInfo: { component?: dxDataGrid, columnIndex?: number, column?: dxDataGridColumn }) => any);
-        /**
-         * [descr:dxDataGridColumn.showWhenGrouped]
-         */
-        showWhenGrouped?: boolean;
-        /**
-         * [descr:dxDataGridColumn.type]
-         */
-        type?: 'adaptive' | 'buttons' | 'detailExpand' | 'groupExpand' | 'selection' | 'drag';
+    export interface dxDataGridColumn {
     }
     /**
-     * [descr:dxDataGridColumnButton]
+     * [descr:dxDataGridSortByGroupSummaryInfoItem]
      */
-    export interface dxDataGridColumnButton extends GridBaseColumnButton {
+    export interface dxDataGridSortByGroupSummaryInfoItem {
         /**
-         * [descr:dxDataGridColumnButton.name]
+         * [descr:dxDataGridSortByGroupSummaryInfoItem.groupColumn]
          */
-        name?: 'cancel' | 'delete' | 'edit' | 'save' | 'undelete' | string;
+        groupColumn?: string;
         /**
-         * [descr:dxDataGridColumnButton.onClick]
+         * [descr:dxDataGridSortByGroupSummaryInfoItem.sortOrder]
          */
-        onClick?: ((e: { component?: dxDataGrid, element?: DevExpress.core.dxElement, model?: any, event?: DevExpress.events.event, row?: dxDataGridRowObject, column?: dxDataGridColumn }) => any) | string;
+        sortOrder?: 'asc' | 'desc' | undefined;
         /**
-         * [descr:dxDataGridColumnButton.template]
+         * [descr:dxDataGridSortByGroupSummaryInfoItem.summaryItem]
          */
-        template?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { component?: dxDataGrid, data?: any, key?: any, columnIndex?: number, column?: dxDataGridColumn, rowIndex?: number, rowType?: string, row?: dxDataGridRowObject }) => string | Element | JQuery);
-        /**
-         * [descr:dxDataGridColumnButton.visible]
-         */
-        visible?: boolean | ((options: { component?: dxDataGrid, row?: dxDataGridRowObject, column?: dxDataGridColumn }) => boolean);
-    }
-    /**
-     * [descr:dxDataGridRowObject]
-     */
-    export interface dxDataGridRowObject {
-        /**
-         * [descr:dxDataGridRowObject.data]
-         */
-        data?: any;
-        /**
-         * [descr:dxDataGridRowObject.groupIndex]
-         */
-        groupIndex?: number;
-        /**
-         * [descr:dxDataGridRowObject.isEditing]
-         */
-        isEditing?: boolean;
-        /**
-         * [descr:dxDataGridRowObject.isExpanded]
-         */
-        isExpanded?: boolean;
-        /**
-         * [descr:dxDataGridRowObject.isNewRow]
-         */
-        isNewRow?: boolean;
-        /**
-         * [descr:dxDataGridRowObject.isSelected]
-         */
-        isSelected?: boolean;
-        /**
-         * [descr:dxDataGridRowObject.key]
-         */
-        key?: any;
-        /**
-         * [descr:dxDataGridRowObject.rowIndex]
-         */
-        rowIndex?: number;
-        /**
-         * [descr:dxDataGridRowObject.rowType]
-         */
-        rowType?: string;
-        /**
-         * [descr:dxDataGridRowObject.values]
-         */
-        values?: Array<any>;
+        summaryItem?: string | number;
     }
     /**
      * [descr:dxDateBox.Options]
@@ -6339,7 +7169,7 @@ declare module DevExpress.ui {
          * [descr:dxDrawer.Options.target]
          * @deprecated [depNote:dxDrawer.Options.target]
          */
-        target?: string | Element | JQuery;
+        target?: string | TElement;
         /**
          * [descr:dxDrawer.Options.template]
          */
@@ -6977,11 +7807,11 @@ declare module DevExpress.ui {
         /**
          * [descr:dxFileUploader.Options.dialogTrigger]
          */
-        dialogTrigger?: string | Element | JQuery;
+        dialogTrigger?: string | TElement;
         /**
          * [descr:dxFileUploader.Options.dropZone]
          */
-        dropZone?: string | Element | JQuery;
+        dropZone?: string | TElement;
         /**
          * [descr:dxFileUploader.Options.focusStateEnabled]
          */
@@ -8324,7 +9154,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxHtmlEditorToolbar.container]
          */
-        container?: string | Element | JQuery;
+        container?: string | TElement;
         /**
          * [descr:dxHtmlEditorToolbar.items]
          */
@@ -8696,7 +9526,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxLoadPanel.Options.container]
          */
-        container?: string | Element | JQuery;
+        container?: string | TElement;
         /**
          * [descr:dxLoadPanel.Options.delay]
          */
@@ -9839,7 +10669,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxPopover.Options.target]
          */
-        target?: string | Element | JQuery;
+        target?: string | TElement;
         /**
          * [descr:dxPopover.Options.width]
          */
@@ -9884,7 +10714,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxPopup.Options.container]
          */
-        container?: string | Element | JQuery;
+        container?: string | TElement;
         /**
          * [descr:dxPopup.Options.dragEnabled]
          */
@@ -11836,7 +12666,7 @@ declare module DevExpress.ui {
         /**
          * [descr:dxTreeList.Options.columns]
          */
-        columns?: Array<dxTreeListColumn | string>;
+        columns?: Array<Column | string>;
         /**
          * [descr:dxTreeList.Options.customizeColumns]
          */
@@ -12105,134 +12935,6 @@ declare module DevExpress.ui {
          * [descr:dxTreeList.loadDescendants(keys, childrenOnly)]
          */
         loadDescendants(keys: Array<any>, childrenOnly: boolean): Promise<void> & JQueryPromise<void>;
-    }
-    /**
-     * [descr:dxTreeListColumn]
-     */
-    export interface dxTreeListColumn extends GridBaseColumn {
-        /**
-         * [descr:dxTreeListColumn.buttons]
-         */
-        buttons?: Array<'add' | 'cancel' | 'delete' | 'edit' | 'save' | 'undelete' | dxTreeListColumnButton>;
-        /**
-         * [descr:dxTreeListColumn.cellTemplate]
-         */
-        cellTemplate?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { data?: any, component?: dxTreeList, value?: any, oldValue?: any, displayValue?: any, text?: string, columnIndex?: number, rowIndex?: number, column?: dxTreeListColumn, row?: dxTreeListRowObject, rowType?: string, watch?: Function }) => any);
-        /**
-         * [descr:dxTreeListColumn.columns]
-         */
-        columns?: Array<dxTreeListColumn | string>;
-        /**
-         * [descr:dxTreeListColumn.editCellTemplate]
-         */
-        editCellTemplate?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { setValue?: any, data?: any, component?: dxTreeList, value?: any, displayValue?: any, text?: string, columnIndex?: number, rowIndex?: number, column?: dxTreeListColumn, row?: dxTreeListRowObject, rowType?: string, watch?: Function }) => any);
-        /**
-         * [descr:dxTreeListColumn.headerCellTemplate]
-         */
-        headerCellTemplate?: DevExpress.core.template | ((columnHeader: DevExpress.core.dxElement, headerInfo: { component?: dxTreeList, columnIndex?: number, column?: dxTreeListColumn }) => any);
-        /**
-         * [descr:dxTreeListColumn.type]
-         */
-        type?: 'adaptive' | 'buttons' | 'drag';
-    }
-    /**
-     * [descr:dxTreeListColumnButton]
-     */
-    export interface dxTreeListColumnButton extends GridBaseColumnButton {
-        /**
-         * [descr:dxTreeListColumnButton.name]
-         */
-        name?: 'add' | 'cancel' | 'delete' | 'edit' | 'save' | 'undelete' | string;
-        /**
-         * [descr:dxTreeListColumnButton.onClick]
-         */
-        onClick?: ((e: { component?: dxTreeList, element?: DevExpress.core.dxElement, model?: any, event?: DevExpress.events.event, row?: dxTreeListRowObject, column?: dxTreeListColumn }) => any) | string;
-        /**
-         * [descr:dxTreeListColumnButton.template]
-         */
-        template?: DevExpress.core.template | ((cellElement: DevExpress.core.dxElement, cellInfo: { component?: dxTreeList, data?: any, key?: any, columnIndex?: number, column?: dxTreeListColumn, rowIndex?: number, rowType?: string, row?: dxTreeListRowObject }) => string | Element | JQuery);
-        /**
-         * [descr:dxTreeListColumnButton.visible]
-         */
-        visible?: boolean | ((options: { component?: dxTreeList, row?: dxTreeListRowObject, column?: dxTreeListColumn }) => boolean);
-    }
-    /**
-     * [descr:dxTreeListNode]
-     */
-    export interface dxTreeListNode {
-        /**
-         * [descr:dxTreeListNode.children]
-         */
-        children?: Array<dxTreeListNode>;
-        /**
-         * [descr:dxTreeListNode.data]
-         */
-        data?: any;
-        /**
-         * [descr:dxTreeListNode.hasChildren]
-         */
-        hasChildren?: boolean;
-        /**
-         * [descr:dxTreeListNode.key]
-         */
-        key?: any;
-        /**
-         * [descr:dxTreeListNode.level]
-         */
-        level?: number;
-        /**
-         * [descr:dxTreeListNode.parent]
-         */
-        parent?: dxTreeListNode;
-        /**
-         * [descr:dxTreeListNode.visible]
-         */
-        visible?: boolean;
-    }
-    /**
-     * [descr:dxTreeListRowObject]
-     */
-    export interface dxTreeListRowObject {
-        /**
-         * [descr:dxTreeListRowObject.isEditing]
-         */
-        isEditing?: boolean;
-        /**
-         * [descr:dxTreeListRowObject.isExpanded]
-         */
-        isExpanded?: boolean;
-        /**
-         * [descr:dxTreeListRowObject.isNewRow]
-         */
-        isNewRow?: boolean;
-        /**
-         * [descr:dxTreeListRowObject.isSelected]
-         */
-        isSelected?: boolean;
-        /**
-         * [descr:dxTreeListRowObject.key]
-         */
-        key?: any;
-        /**
-         * [descr:dxTreeListRowObject.level]
-         */
-        level?: number;
-        /**
-         * [descr:dxTreeListRowObject.node]
-         */
-        node?: dxTreeListNode;
-        /**
-         * [descr:dxTreeListRowObject.rowIndex]
-         */
-        rowIndex?: number;
-        /**
-         * [descr:dxTreeListRowObject.rowType]
-         */
-        rowType?: string;
-        /**
-         * [descr:dxTreeListRowObject.values]
-         */
-        values?: Array<any>;
     }
     /**
      * [descr:dxTreeView.Options]
@@ -13526,7 +14228,7 @@ declare module DevExpress.viz {
         /**
          * [descr:BaseWidget.Options.tooltip.container]
          */
-        container?: string | Element | JQuery;
+        container?: string | TElement;
         /**
          * [descr:BaseWidget.Options.tooltip.cornerRadius]
          */

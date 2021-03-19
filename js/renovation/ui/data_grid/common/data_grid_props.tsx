@@ -8,11 +8,11 @@ import {
   Template,
 } from 'devextreme-generator/component_declaration/common';
 import DxDataGrid from '../../../../ui/data_grid';
-import type { /* Options, */ dxDataGridColumn, dxDataGridRowObject } from '../../../../ui/data_grid';
+import type { /* Options, */ Column, RowObject } from '../../../../ui/data_grid';
 import { BaseWidgetProps } from '../../../utils/base_props';
 
 import type { dxFilterBuilderOptions } from '../../../../ui/filter_builder';
-import { TPromise } from '../../../../core/index';
+import type { TPromise } from '../../../../core/utils/deferred';
 import type { TElement } from '../../../../core/element';
 import type { template } from '../../../../core/templates/template';
 import type { EventExtension, TEvent } from '../../../../events/index';
@@ -52,8 +52,8 @@ export class DataGridColumnButton {
     element?: TElement;
     model?: any;
     event?: TEvent;
-    row?: dxDataGridRowObject;
-    column?: dxDataGridColumn;
+    row?: RowObject;
+    column?: Column;
   }) => any)
   | string;
 
@@ -67,10 +67,10 @@ export class DataGridColumnButton {
       data?: any;
       key?: any;
       columnIndex?: number;
-      column?: dxDataGridColumn;
+      column?: Column;
       rowIndex?: number;
       rowType?: string;
-      row?: dxDataGridRowObject;
+      row?: RowObject;
     },
   ) => string | TElement);
 
@@ -79,8 +79,8 @@ export class DataGridColumnButton {
   | boolean
   | ((options: {
     component?: DxDataGrid;
-    row?: dxDataGridRowObject;
-    column?: dxDataGridColumn;
+    row?: RowObject;
+    column?: Column;
   }) => boolean);
 }
 
@@ -354,15 +354,15 @@ export class DataGridColumn {
       text?: string;
       columnIndex?: number;
       rowIndex?: number;
-      column?: dxDataGridColumn;
-      row?: dxDataGridRowObject;
+      column?: Column;
+      row?: RowObject;
       rowType?: string;
       watch?: ((...args: any[]) => any);
     },
   ) => any);
 
   @OneWay()
-  columns?: (dxDataGridColumn | string)[];
+  columns?: (Column | string)[];
 
   @OneWay()
   editCellTemplate?:
@@ -378,8 +378,8 @@ export class DataGridColumn {
       text?: string;
       columnIndex?: number;
       rowIndex?: number;
-      column?: dxDataGridColumn;
-      row?: dxDataGridRowObject;
+      column?: Column;
+      row?: RowObject;
       rowType?: string;
       watch?: ((...args: any[]) => any);
     },
@@ -398,8 +398,8 @@ export class DataGridColumn {
       displayValue?: any;
       columnIndex?: number;
       rowIndex?: number;
-      column?: dxDataGridColumn;
-      row?: dxDataGridRowObject;
+      column?: Column;
+      row?: RowObject;
       summaryItems?: any[];
       groupContinuesMessage?: string;
       groupContinuedMessage?: string;
@@ -417,7 +417,7 @@ export class DataGridColumn {
     headerInfo: {
       component?: DxDataGrid;
       columnIndex?: number;
-      column?: dxDataGridColumn;
+      column?: Column;
     },
   ) => any);
 
@@ -469,12 +469,12 @@ export class DataGridEditing {
   @OneWay()
   allowDeleting?:
   | boolean
-  | ((options: { component?: DxDataGrid; row?: dxDataGridRowObject }) => boolean);
+  | ((options: { component?: DxDataGrid; row?: RowObject }) => boolean);
 
   @OneWay()
   allowUpdating?:
   | boolean
-  | ((options: { component?: DxDataGrid; row?: dxDataGridRowObject }) => boolean);
+  | ((options: { component?: DxDataGrid; row?: RowObject }) => boolean);
 
   @OneWay()
   confirmDelete?: boolean;
@@ -1226,11 +1226,11 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
 
   @Template() rowTemplate?: template | ((rowElement: TElement, rowInfo: any) => any);
 
-  @OneWay() customizeColumns?: (columns: dxDataGridColumn[]) => any;
+  @OneWay() customizeColumns?: (columns: Column[]) => any;
 
   @OneWay() customizeExportData?: (
-    columns: dxDataGridColumn[],
-    rows: dxDataGridRowObject[],
+    columns: Column[],
+    rows: RowObject[],
   ) => any;
 
   @OneWay() keyExpr?: string | string[];
@@ -1332,7 +1332,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     rowIndex?: number;
     rowType?: string;
     cellElement?: TElement;
-    row?: dxDataGridRowObject;
+    row?: RowObject;
   } & EventExtension) => any);
 
   @Event() onCellDblClick?: (e: {
@@ -1346,11 +1346,11 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     displayValue?: any;
     text?: string;
     columnIndex?: number;
-    column?: dxDataGridColumn;
+    column?: Column;
     rowIndex?: number;
     rowType?: string;
     cellElement?: TElement;
-    row?: dxDataGridRowObject;
+    row?: RowObject;
   }) => any;
 
   @Event() onCellHoverChanged?: (e: {
@@ -1365,10 +1365,10 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     displayValue?: any;
     columnIndex?: number;
     rowIndex?: number;
-    column?: dxDataGridColumn;
+    column?: Column;
     rowType?: string;
     cellElement?: TElement;
-    row?: dxDataGridRowObject;
+    row?: RowObject;
   }) => any;
 
   @Event() onCellPrepared?: (e: {
@@ -1381,10 +1381,10 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     displayValue?: any;
     text?: string;
     columnIndex?: number;
-    column?: dxDataGridColumn;
+    column?: Column;
     rowIndex?: number;
     rowType?: string;
-    row?: dxDataGridRowObject;
+    row?: RowObject;
     isSelected?: boolean;
     isExpanded?: boolean;
     isNewRow?: boolean;
@@ -1401,9 +1401,9 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     target?: string;
     targetElement?: TElement;
     columnIndex?: number;
-    column?: dxDataGridColumn;
+    column?: Column;
     rowIndex?: number;
-    row?: dxDataGridRowObject;
+    row?: RowObject;
   }) => any;
 
   @Event() onEditingStart?: (e: {
@@ -1430,7 +1430,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     editorElement?: TElement;
     readOnly?: boolean;
     dataField?: string;
-    row?: dxDataGridRowObject;
+    row?: RowObject;
   }) => any;
 
   @Event() onEditorPreparing?: (e: {
@@ -1450,7 +1450,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     editorName?: string;
     editorOptions?: any;
     dataField?: string;
-    row?: dxDataGridRowObject;
+    row?: RowObject;
   }) => any;
 
   @Event() onExported?: (e: { component?: DxDataGrid; element?: TElement; model?: any }) => any;
@@ -1479,8 +1479,8 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     cellElement?: TElement;
     columnIndex?: number;
     rowIndex?: number;
-    row?: dxDataGridRowObject;
-    column?: dxDataGridColumn;
+    row?: RowObject;
+    column?: Column;
   }) => any;
 
   @Event() onFocusedCellChanging?: (e: {
@@ -1493,8 +1493,8 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     newColumnIndex?: number;
     newRowIndex?: number;
     event?: TEvent;
-    rows?: dxDataGridRowObject[];
-    columns?: dxDataGridColumn[];
+    rows?: RowObject[];
+    columns?: Column[];
     cancel?: boolean;
     isHighlighted?: boolean;
   }) => any;
@@ -1505,7 +1505,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     model?: any;
     rowElement?: TElement;
     rowIndex?: number;
-    row?: dxDataGridRowObject;
+    row?: RowObject;
   }) => any;
 
   @Event() onFocusedRowChanging?: (e: {
@@ -1516,7 +1516,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     prevRowIndex?: number;
     newRowIndex?: number;
     event?: TEvent;
-    rows?: dxDataGridRowObject[];
+    rows?: RowObject[];
     cancel?: boolean;
   }) => any;
 
@@ -1547,7 +1547,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     data?: any;
     key?: any;
     values?: any[];
-    columns?: dxDataGridColumn[];
+    columns?: Column[];
     rowIndex?: number;
     rowType?: string;
     isSelected?: boolean;
@@ -1564,7 +1564,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     data?: any;
     key?: any;
     values?: any[];
-    columns?: dxDataGridColumn[];
+    columns?: Column[];
     rowIndex?: number;
     rowType?: string;
     groupIndex?: number;
