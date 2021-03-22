@@ -5032,11 +5032,11 @@ declare module DevExpress.ui {
         /**
          * [descr:Node.key]
          */
-        key?: any;
+        key: any;
         /**
          * [descr:Node.level]
          */
-        level?: number;
+        level: number;
         /**
          * [descr:Node.parent]
          */
@@ -5166,7 +5166,7 @@ declare module DevExpress.ui {
         /**
          * [descr:RowObject.data]
          */
-        data?: any;
+        data: any;
         /**
          * [descr:RowObject.groupIndex]
          */
@@ -5190,27 +5190,27 @@ declare module DevExpress.ui {
         /**
          * [descr:RowObject.key]
          */
-        key?: any;
+        key: any;
         /**
          * [descr:RowObject.level]
          */
-        level?: number;
+        level: number;
         /**
          * [descr:RowObject.node]
          */
-        node?: Node;
+        node: Node;
         /**
          * [descr:RowObject.rowIndex]
          */
-        rowIndex?: number;
+        rowIndex: number;
         /**
          * [descr:RowObject.rowType]
          */
-        rowType?: string;
+        rowType: string;
         /**
          * [descr:RowObject.values]
          */
-        values?: Array<any>;
+        values: Array<any>;
     }
     /**
      * [descr:SearchBoxMixin.Options]
@@ -12799,15 +12799,15 @@ declare module DevExpress.ui {
         /**
          * [descr:dxTreeList.Options.editing.allowAdding]
          */
-        allowAdding?: boolean | ((options: { component?: dxTreeList, row?: dxTreeListRowObject }) => boolean);
+        allowAdding?: boolean | ((options: { readonly component?: dxTreeList, row?: dxTreeListRowObject }) => boolean);
         /**
          * [descr:dxTreeList.Options.editing.allowDeleting]
          */
-        allowDeleting?: boolean | ((options: { component?: dxTreeList, row?: dxTreeListRowObject }) => boolean);
+        allowDeleting?: boolean | ((options: { readonly component?: dxTreeList, row?: dxTreeListRowObject }) => boolean);
         /**
          * [descr:dxTreeList.Options.editing.allowUpdating]
          */
-        allowUpdating?: boolean | ((options: { component?: dxTreeList, row?: dxTreeListRowObject }) => boolean);
+        allowUpdating?: boolean | ((options: { readonly component?: dxTreeList, row?: dxTreeListRowObject }) => boolean);
         /**
          * [descr:dxTreeList.Options.editing.texts]
          */
