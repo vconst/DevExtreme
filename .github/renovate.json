@@ -7,7 +7,7 @@
     "semanticPrefix": "chore:",
     "commitMessagePrefix": "chore:",
     "timezone": "America/Los_Angeles",
-    "schedule": ["after 1pm and before 5pm every 1 day"],
+    "schedule": ["every 1 day"],
     "rangeStrategy": "bump",
     "lockFileMaintenance": { 
       "enabled": true,
