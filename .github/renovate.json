@@ -1,0 +1,69 @@
+{
+    "extends": [
+      "config:base"
+    ],
+    "statusCheckVerify": true,
+    "semanticCommits": true,
+    "semanticPrefix": "chore:",
+    "commitMessagePrefix": "chore:",
+    "timezone": "America/Los_Angeles",
+    "schedule": ["after 1pm and before 5pm every 1 day"],
+    "rangeStrategy": "bump",
+    "lockFileMaintenance": { "enabled": true },
+    "node": {
+      "supportPolicy": ["lts_latest"]
+    },
+    "packageRules": [
+      {
+        "packagePatterns": [ "*" ],
+        "excludePackagePatterns": [
+          "^@types",
+          "^react",
+          "^inferno",
+          "^jquery",
+          "typescript"
+        ],
+        "groupName": "deps"
+      },
+      {
+        "packagePatterns": [ "^@types" ],
+        "groupName": "Types",
+        "depTypeList": [
+          "dependencies",
+          "devDependencies"
+        ]
+      },
+      {
+        "packagePatterns": [ "^react" ],
+        "groupName": "React",
+        "depTypeList": [
+          "dependencies",
+          "devDependencies"
+        ]
+      },
+      {
+        "packagePatterns": [ "^inferno" ],
+        "groupName": "Inferno",
+        "depTypeList": [
+          "dependencies",
+          "devDependencies"
+        ]
+      },
+      {
+        "packagePatterns": [ "^jquery" ],
+        "groupName": "JQuery",
+        "depTypeList": [
+          "dependencies",
+          "devDependencies"
+        ]
+      },
+      {
+        "packageNames": [ "typescript" ],
+        "groupName": "TypeScript",
+        "depTypeList": [
+          "dependencies",
+          "devDependencies"
+        ]
+      }
+    ]
+  }
