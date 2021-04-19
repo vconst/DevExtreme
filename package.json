@@ -54,7 +54,7 @@
     "@devextreme-generator/core": "1.0.5",
     "@devextreme-generator/declarations": "1.0.5",
     "@devextreme-generator/inferno": "1.0.5",
-    "@devextreme-generator/react": "1.0.5",
+    "@devextreme-generator/react": "1.1.0",
     "@devextreme-generator/vue": "1.0.5",
     "@types/enzyme": "^3.10.5",
     "@types/jest": "^24.0.24",
