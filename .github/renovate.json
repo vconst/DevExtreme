@@ -9,7 +9,10 @@
     "timezone": "America/Los_Angeles",
     "schedule": ["after 1pm and before 5pm every 1 day"],
     "rangeStrategy": "bump",
-    "lockFileMaintenance": { "enabled": true },
+    "lockFileMaintenance": { 
+      "enabled": true,
+      "schedule": "every day"
+    },
     "node": {
       "supportPolicy": ["lts_latest"]
     },
