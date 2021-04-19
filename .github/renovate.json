@@ -12,7 +12,7 @@
     "rangeStrategy": "bump",
     "lockFileMaintenance": { 
       "enabled": true,
-      "schedule": "every day"
+      "schedule": "every 1 day"
     },
     "node": {
       "supportPolicy": ["lts_latest"]
