@@ -4,7 +4,7 @@
     ],
     "renovateFork": true,
     "statusCheckVerify": true,
-    "semanticCommits": true,
+    "semanticCommits": false,
     "semanticPrefix": "chore:",
     "commitMessagePrefix": "chore:",
     "timezone": "America/Los_Angeles",
