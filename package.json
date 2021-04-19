@@ -122,7 +122,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
     "gulp-shell": "^0.8.0",
-    "gulp-tap": "^1.0.1",
+    "gulp-tap": "^2.0.0",
     "gulp-template": "^4.0.0",
     "gulp-typescript": "^5.0.0",
     "gulp-uglify": "^1.5.3",
