@@ -52,7 +52,7 @@
     "@devextreme-generator/angular": "1.0.5",
     "@devextreme-generator/build-helpers": "1.0.5",
     "@devextreme-generator/core": "1.0.5",
-    "@devextreme-generator/declarations": "1.0.5",
+    "@devextreme-generator/declarations": "1.1.0",
     "@devextreme-generator/inferno": "1.0.5",
     "@devextreme-generator/react": "1.0.5",
     "@devextreme-generator/vue": "1.0.5",
