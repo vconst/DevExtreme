@@ -110,7 +110,7 @@
     "gulp-eslint": "^6.0.0",
     "gulp-file": "^0.4.0",
     "gulp-flatmap": "^1.0.2",
-    "gulp-footer": "^1.0.5",
+    "gulp-footer": "^2.0.2",
     "gulp-header": "^1.7.1",
     "gulp-if": "^2.0.0",
     "gulp-jsbeautifier": "^2.0.3",
