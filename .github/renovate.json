@@ -2,7 +2,7 @@
     "extends": [
       "config:base"
     ],
-    "baseBranches": ["21_1", "20_1"],
+    "baseBranches": ["renovate_21_1"],
     "renovateFork": true,
     "statusCheckVerify": true,
     "semanticCommits": false,
