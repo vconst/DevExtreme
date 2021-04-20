@@ -8,46 +8,24 @@
     "semanticPrefix": "chore:",
     "commitMessagePrefix": "chore:",
     "timezone": "America/Los_Angeles",
-    "schedule": ["every 1 day"],
+    "schedule": ["every 2 day"],
     "rangeStrategy": "bump",
     "lockFileMaintenance": { 
       "enabled": true,
-      "schedule": "every 1 day"
+      "schedule": ["every 1 day"],
+      "automerge": true
+    },
+    "vulnerabilityAlerts": {
+      "enabled": true
     },
     "node": {
       "supportPolicy": ["lts_latest"]
     },
     "packageRules": [
       {
-        "packagePatterns": [ "*" ],
-        "excludePackagePatterns": [
-          "^@types",
-          "^react",
-          "^inferno",
-          "^jquery",
-          "typescript"
-        ],
-        "groupName": "deps"
-      },
-      {
-        "packagePatterns": [ "^@types" ],
-        "groupName": "Types",
-        "depTypeList": [
-          "dependencies",
-          "devDependencies"
-        ]
-      },
-      {
-        "packagePatterns": [ "^react" ],
-        "groupName": "React",
-        "depTypeList": [
-          "dependencies",
-          "devDependencies"
-        ]
-      },
-      {
         "packagePatterns": [ "^inferno" ],
         "groupName": "Inferno",
+        "matchUpdateTypes": ["minor", "patch"],
         "depTypeList": [
           "dependencies",
           "devDependencies"
@@ -56,17 +34,54 @@
       {
         "packagePatterns": [ "^jquery" ],
         "groupName": "JQuery",
+        "matchUpdateTypes": ["minor", "patch"],
         "depTypeList": [
           "dependencies",
           "devDependencies"
         ]
       },
       {
-        "packageNames": [ "typescript" ],
-        "groupName": "TypeScript",
+        "packagePatterns": [ "^react" ],
+        "groupName": "React",
+        "matchUpdateTypes": ["minor", "patch"],
         "depTypeList": [
           "dependencies",
           "devDependencies"
+        ]
+      },
+      {
+        "packageNames": [ "typescript", "^@types" ],
+        "groupName": "TypeScript",
+        "matchUpdateTypes": ["minor", "patch"],
+        "depTypeList": [
+          "dependencies",
+          "devDependencies"
+        ]
+      },
+      {
+        "packagePatterns": [ "*" ],
+        "groupName": "Dev Deps",
+        "matchUpdateTypes": ["minor", "patch"],
+        "matchDepTypes": ["devDependencies"],
+        "excludePackagePatterns": [
+          "^@types",
+          "^react",
+          "^inferno",
+          "^jquery",
+          "typescript"
+        ]
+      },
+      {
+        "packagePatterns": [ "*" ],
+        "groupName": "Deps",
+        "matchUpdateTypes": ["minor", "patch"],
+        "matchDepTypes": ["dependencies"],
+        "excludePackagePatterns": [
+          "^@types",
+          "^react",
+          "^inferno",
+          "^jquery",
+          "typescript"
         ]
       }
     ]
