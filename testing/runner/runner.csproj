@@ -5,7 +5,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />
   </ItemGroup>
 
   <PropertyGroup>
