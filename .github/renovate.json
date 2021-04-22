@@ -19,64 +19,33 @@
     "vulnerabilityAlerts": {
       "enabled": true
     },
+    "major": {
+      "enabled": false
+    },
     "node": {
       "supportPolicy": ["lts_latest"]
     },
     "packageRules": [
       {
         "packagePatterns": [ "^inferno" ],
-        "groupName": "Inferno",
-        "matchUpdateTypes": ["minor", "patch"],
-        "depTypeList": [
-          "dependencies",
-          "devDependencies"
-        ]
+        "groupName": "Inferno"
       },
       {
         "packagePatterns": [ "^jquery" ],
-        "groupName": "JQuery",
-        "matchUpdateTypes": ["minor", "patch"],
-        "depTypeList": [
-          "dependencies",
-          "devDependencies"
-        ]
+        "groupName": "JQuery"
       },
       {
         "packagePatterns": [ "^react" ],
-        "groupName": "React",
-        "matchUpdateTypes": ["minor", "patch"],
-        "depTypeList": [
-          "dependencies",
-          "devDependencies"
-        ]
+        "groupName": "React"
       },
       {
         "packageNames": [ "typescript", "^@types" ],
-        "groupName": "TypeScript",
-        "matchUpdateTypes": ["minor", "patch"],
-        "depTypeList": [
-          "dependencies",
-          "devDependencies"
-        ]
-      },
-      {
-        "packagePatterns": [ "*" ],
-        "groupName": "Dev Deps",
-        "matchUpdateTypes": ["minor", "patch"],
-        "matchDepTypes": ["devDependencies"],
-        "excludePackagePatterns": [
-          "^@types",
-          "^react",
-          "^inferno",
-          "^jquery",
-          "typescript"
-        ]
+        "groupName": "TypeScript"
       },
       {
         "packagePatterns": [ "*" ],
         "groupName": "Deps",
-        "matchUpdateTypes": ["minor", "patch"],
-        "matchDepTypes": ["dependencies"],
+        "matchDepTypes": ["devDependencies", "dependencies"],
         "excludePackagePatterns": [
           "^@types",
           "^react",
@@ -85,5 +54,6 @@
           "typescript"
         ]
       }
-    ]
+    ],
+    "ignorePaths": [".github"]
   }
