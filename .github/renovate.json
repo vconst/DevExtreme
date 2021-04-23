@@ -39,7 +39,7 @@
         "groupName": "React"
       },
       {
-        "packageNames": [ "typescript", "^@types" ],
+        "packagePatterns": [ "typescript", "^@types" ],
         "groupName": "TypeScript"
       },
       {
