@@ -37,7 +37,7 @@
     "@types/dependency-tree": "^7.2.0",
     "@types/filing-cabinet": "^2.5.0",
     "@types/fs-extra": "9.0.7",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.22",
     "@types/less": "^3.0.2",
     "@types/node-sass": "^4.11.1",
     "express": "^4.17.1",
