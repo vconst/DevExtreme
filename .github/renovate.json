@@ -58,7 +58,7 @@
       },
       {
         "packagePatterns": [ "*" ],
-        "groupName": "Patch Deps",
+        "groupName": "Pinned Deps",
         "matchDepTypes": ["devDependencies", "dependencies"],
         "enabled": false,
         "excludePackagePatterns": [
