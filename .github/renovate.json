@@ -9,7 +9,7 @@
     "semanticPrefix": "chore:",
     "commitMessagePrefix": "chore:",
     "timezone": "America/Los_Angeles",
-    "schedule": ["every 2 day"],
+    "schedule": ["every 1 day"],
     "rangeStrategy": "bump",
     "lockFileMaintenance": { 
       "enabled": true,
@@ -21,9 +21,6 @@
     },
     "major": {
       "enabled": false
-    },
-    "node": {
-      "supportPolicy": ["lts_latest"]
     },
     "packageRules": [
       {
@@ -43,16 +40,21 @@
         "groupName": "TypeScript"
       },
       {
-        "packagePatterns": [ "*" ],
-        "groupName": "Deps",
+        "packagePatterns": [ "^*" ],
+        "groupName": "Minor Deps",
         "matchDepTypes": ["devDependencies", "dependencies"],
         "excludePackagePatterns": [
           "^@types",
           "^react",
           "^inferno",
-          "^jquery",
-          "typescript"
+          "^jquery"
         ]
+      },
+      {
+        "packagePatterns": [ "~*" ],
+        "groupName": "Patch Deps",
+        "matchDepTypes": ["devDependencies", "dependencies"],
+        "matchUpdateTypes": ["patch"]
       }
     ],
     "ignorePaths": [".github"]
