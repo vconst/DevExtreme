@@ -55,6 +55,16 @@
         "groupName": "Patch Deps",
         "matchDepTypes": ["devDependencies", "dependencies"],
         "matchUpdateTypes": ["patch"]
+      },
+      {
+        "packagePatterns": [ "*" ],
+        "groupName": "Patch Deps",
+        "matchDepTypes": ["devDependencies", "dependencies"],
+        "enabled": false,
+        "excludePackagePatterns": [
+          "^*",
+          "~*"
+        ]
       }
     ],
     "ignorePaths": [".github"]
