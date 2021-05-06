@@ -27,4 +27,13 @@ jobs:
     - name: Build test bundle by webpack
       run: npx webpack --config ./testing/test_bundlers/webpack.config.js
 
+    - name: Upload artifacts
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: screenshots
+        path: |
+          artifacts/npm
+          artifacts/test_bundlers
+
 
