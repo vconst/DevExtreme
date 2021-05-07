@@ -1,39 +1,31 @@
 {
-    "extends": [
-      "config:base"
+  "extends": [
+    "config:base"
+  ],
+  "baseBranches": [
+    "renovate_21_1"
+  ],
+  "renovateFork": true,
+  "timezone": "America/Los_Angeles",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "every 1 day"
     ],
-    "baseBranches": ["renovate_21_1"],
-    "renovateFork": true,
-    "statusCheckVerify": true,
-    "semanticCommits": false,
-    "semanticPrefix": "chore:",
-    "commitMessagePrefix": "chore:",
-    "timezone": "America/Los_Angeles",
-    "schedule": ["every 1 day"],
-    "rangeStrategy": "bump",
-    "lockFileMaintenance": { 
-      "enabled": true,
-      "schedule": ["every 1 day"],
-      "automerge": true
-    },
-    "vulnerabilityAlerts": {
-      "enabled": true
-    },
-    "major": {
+    "automerge": true
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "packagePatterns": [
+        "*"
+      ],
       "enabled": false
-    },
-    "packageRules": [
-      {
-        "packagePatterns": [ "^jquery" ],
-        "groupName": "JQuery"
-      },
-      {
-        "packagePatterns": [ "*" ],
-        "enabled": false,
-        "excludePackagePatterns": [
-          "^jquery"
-        ]
-      }
-    ],
-    "ignorePaths": [".github"]
-  }
+    }
+  ],
+  "ignorePaths": [
+    ".github"
+  ]
+}
