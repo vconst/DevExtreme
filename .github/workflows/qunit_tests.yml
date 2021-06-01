@@ -14,11 +14,12 @@ jobs:
     timeout-minutes: 60
 
     steps:
-    - uses: browser-actions/setup-chrome@latest
-    - run: chrome --version
-
     - name: Get sources
       uses: actions/checkout@v2
+
+    - name: update chrome
+      run: |
+        sudo apt-get install -y google-chrome-stable
 
     - run: |
         sudo apt-get install -y dbus-x11 httping x11vnc xvfb
