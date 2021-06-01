@@ -19,6 +19,7 @@ jobs:
 
     - name: update chrome
       run: |
+        sudo apt-get update
         sudo apt-get install -y google-chrome-stable
 
     - run: |
