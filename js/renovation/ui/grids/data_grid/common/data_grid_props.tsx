@@ -1265,7 +1265,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     },
   };
 
-  @Nested() columnChooser?: DataGridColumnChooser = {
+  @Nested() columnChooser?: DataGridColumnChooser/* = {
     enabled: false,
     allowSearch: false,
     searchTimeout: 500,
@@ -1274,7 +1274,7 @@ export class DataGridProps extends BaseWidgetProps /* implements Options */ {
     height: 260,
     title: messageLocalization.format('dxDataGrid-columnChooserTitle'),
     emptyPanelText: messageLocalization.format('dxDataGrid-columnChooserEmptyText'),
-  };
+  } */;
 
   @Nested() columnFixing?: DataGridColumnFixing = {
     enabled: false,
