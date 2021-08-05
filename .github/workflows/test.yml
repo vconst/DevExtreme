@@ -1,0 +1,29 @@
+name: DevExtreme package tests
+
+concurrency:
+  group: test
+  cancel-in-progress: true
+
+on: [push]
+
+jobs:
+  test_angular:
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+    - name: Get sources
+      uses: actions/checkout@v2
+
+    - name: create file
+      run: echo '' > 1.tgz
+
+    - name: ls
+      run: ls
+
+    - name: npm install package
+      run: npm install $(find . -maxdepth 1 -name "*.tgz")
+
+    - name: npm install package
+      run: npm install $(ls *.tgz)
