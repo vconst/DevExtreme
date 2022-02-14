@@ -70,6 +70,7 @@ const aria = {
 
 @Component({
   defaultOptionRules: null,
+  angular: { innerComponent: false },
   jQuery: { register: true },
   view: viewFunction,
 })
